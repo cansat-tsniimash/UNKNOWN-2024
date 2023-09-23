@@ -1,0 +1,2 @@
+csv_file.c:13:10:sd_parse_to_bytes_pack1	80	static
+csv_file.c:21:10:sd_parse_to_bytes_pack2	56	static

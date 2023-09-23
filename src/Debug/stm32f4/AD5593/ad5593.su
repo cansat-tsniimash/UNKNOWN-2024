@@ -1,0 +1,11 @@
+ad5593.c:43:19:_write	16	static
+ad5593.c:49:19:_read	24	static
+ad5593.c:59:5:ad5593_ctor	32	static
+ad5593.c:67:6:ad5593_dtor	16	static
+ad5593.c:74:5:ad5593_sw_reset	24	static
+ad5593.c:83:5:ad5593_power_config	24	static
+ad5593.c:123:5:ad5593_an_config	24	static
+ad5593.c:154:5:ad5593_pin_config	80	static
+ad5593.c:216:5:ad5593_adc_auto_setup	32	static
+ad5593.c:230:5:ad5593_adc_auto_read	40	static
+ad5593.c:245:5:ad5593_adc_read	40	static
