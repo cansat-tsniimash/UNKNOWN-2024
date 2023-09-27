@@ -14,6 +14,9 @@
 #include "csv_file.h"
 #include "structs.h"
 #include <fatfs.h>
+#include <ATGM336H/nmea_gps.h>
+
+extern SPI_HandleTypeDef hspi5;
 
 int app_main(){
 	//файлы
@@ -52,6 +55,8 @@ int app_main(){
 	float lat;
 	float lon;
 	float alt;
+	int fix_;
+	int64_t cookie;
 	uint16_t str_wr;
 	UINT Bytes;
 	char str_buf[300];
@@ -60,7 +65,7 @@ int app_main(){
 	double bmp_humidity;
 	//сдвиговый регистр
 	shift_reg_t shift_reg_n;
-	shift_reg_n.bus = &hspi1;
+	shift_reg_n.bus = &hspi5;
 	shift_reg_n.latch_port = GPIOC;
 	shift_reg_n.latch_pin = GPIO_PIN_1;
 	shift_reg_n.oe_port = GPIOC;
@@ -70,7 +75,7 @@ int app_main(){
 	shift_reg_write_16(&shift_reg_n, 0xFFFF);
 
 	shift_reg_t shift_reg_r;
-	shift_reg_r.bus = &hspi1;
+	shift_reg_r.bus = &hspi5;
 	shift_reg_r.latch_port = GPIOC;
 	shift_reg_r.latch_pin = GPIO_PIN_4;
 	shift_reg_r.oe_port = GPIOC;
@@ -82,7 +87,7 @@ int app_main(){
 	struct bme_spi_intf_sr bme_struct;
 	bme_struct.sr_pin = 2;
 	bme_struct.sr = &shift_reg_n;
-	bme_struct.spi = &hspi1;
+	bme_struct.spi = &hspi5;
 	struct bme280_dev bme;
 	bme_init_default_sr(&bme, &bme_struct);
 	struct bme280_data bme_data;
@@ -91,15 +96,20 @@ int app_main(){
 	stmdev_ctx_t ctx_lsm;
 	struct lsm_spi_intf_sr lsm_sr;
 	lsm_sr.sr_pin = 4;
-	lsm_sr.spi = &hspi1;
+	lsm_sr.spi = &hspi5;
 	lsm_sr.sr = &shift_reg_n;
 	lsmset_sr(&ctx_lsm, &lsm_sr);
-
+	//gps
+	gps_init();
+	//__HAL_UART_ENABLE_IT(&huart6, UART_IT_RXNE);
+	//__HAL_UART_ENABLE_IT(&huart6, UART_IT_ERR);
+	uint64_t gps_time_s;
+	uint32_t gps_time_us;
 	//стх и структура лиса
 	stmdev_ctx_t ctx_lis;
 	struct lis_spi_intf_sr lis_sr;
 	lis_sr.sr_pin = 3;
-	lis_sr.spi = &hspi1;
+	lis_sr.spi = &hspi5;
 	lis_sr.sr = &shift_reg_n;
 	lisset_sr(&ctx_lis, &lis_sr);
 	pack1_t pack1;
@@ -112,11 +122,15 @@ int app_main(){
 		bmp_press = bme_data.pressure;
 		bmp_humidity = bme_data.humidity;
 
+		gps_work();
+		gps_get_coords(&cookie, &lat, &lon, &alt, &fix_);
+		gps_get_time(&cookie, &gps_time_s, &gps_time_us);
+
 		lsmread(&ctx_lsm, &temperature_celsius_gyro, &acc_g, &gyro_dps);
 		lisread(&ctx_lis, &temperature_celsius_mag, &mag);
 
 
-		pack2.bmp_temp = bmp_temp;
+/		pack2.bmp_temp = bmp_temp;
 		pack2.bmp_press = bmp_press;
 		pack2.bmp_humidity = bmp_humidity;
 		for (int i = 0; i < 3; i++){
