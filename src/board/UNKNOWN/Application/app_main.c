@@ -17,6 +17,7 @@
 #include <ATGM336H/nmea_gps.h>
 
 extern SPI_HandleTypeDef hspi5;
+extern UART_HandleTypeDef huart1;
 
 int app_main(){
 	//файлы
@@ -101,8 +102,8 @@ int app_main(){
 	lsmset_sr(&ctx_lsm, &lsm_sr);
 	//gps
 	gps_init();
-	//__HAL_UART_ENABLE_IT(&huart6, UART_IT_RXNE);
-	//__HAL_UART_ENABLE_IT(&huart6, UART_IT_ERR);
+	__HAL_UART_ENABLE_IT(&huart1, UART_IT_RXNE);
+	__HAL_UART_ENABLE_IT(&huart1, UART_IT_ERR);
 	uint64_t gps_time_s;
 	uint32_t gps_time_us;
 	//стх и структура лиса
@@ -130,7 +131,7 @@ int app_main(){
 		lisread(&ctx_lis, &temperature_celsius_mag, &mag);
 
 
-/		pack2.bmp_temp = bmp_temp;
+		pack2.bmp_temp = bmp_temp;
 		pack2.bmp_press = bmp_press;
 		pack2.bmp_humidity = bmp_humidity;
 		for (int i = 0; i < 3; i++){
