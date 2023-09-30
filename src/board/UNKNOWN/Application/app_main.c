@@ -142,10 +142,12 @@ int app_main(){
 		if(res1 == FR_OK){
 			str_wr = sd_parse_to_bytes_pack1(str_buf, &pack1);
 			res1 = f_write(&File1, str_buf, str_wr, &Bytes); // отправка на запись в файл
+			res1 = f_sync(&File1);
 		}
 		if(res2 == FR_OK){
 			str_wr = sd_parse_to_bytes_pack2(str_buf, &pack2);
 			res2 = f_write(&File2, str_buf, str_wr, &Bytes); // отправка на запись в файл
+			res2 = f_sync(&File2);
 		}
 
 	}
