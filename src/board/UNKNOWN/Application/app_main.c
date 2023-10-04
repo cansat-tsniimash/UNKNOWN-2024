@@ -123,9 +123,15 @@ int app_main(){
 		bmp_press = bme_data.pressure;
 		bmp_humidity = bme_data.humidity;
 
+
+
+
 		gps_work();
 		gps_get_coords(&cookie, &lat, &lon, &alt, &fix_);
 		gps_get_time(&cookie, &gps_time_s, &gps_time_us);
+
+
+
 
 		lsmread(&ctx_lsm, &temperature_celsius_gyro, &acc_g, &gyro_dps);
 		lisread(&ctx_lis, &temperature_celsius_mag, &mag);
