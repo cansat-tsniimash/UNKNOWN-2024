@@ -15,9 +15,21 @@
 #include "structs.h"
 #include <fatfs.h>
 #include <ATGM336H/nmea_gps.h>
+#include <nRF24L01_PL/nrf24_upper_api.h>
+#include <nRF24L01_PL/nrf24_lower_api_stm32.h>
+#include <nRF24L01_PL/nrf24_defs.h>
 
 extern SPI_HandleTypeDef hspi5;
 extern UART_HandleTypeDef huart1;
+SPI_HandleTypeDef hspi4;
+
+typedef enum
+{
+	STATE_GEN_PACK_1 = 1,
+	STATE_WAIT = 2,
+	STATE_GEN_PACK_2 = 3,
+} state_nrf_t;
+
 
 int app_main(){
 	//файлы
@@ -48,6 +60,12 @@ int app_main(){
 	}
 
 	//переменные
+	uint8_t counter = 0;
+	state_nrf_t state_nrf;
+	state_nrf = STATE_GEN_PACK_1;
+	uint32_t start_time_nrf = HAL_GetTick();
+	nrf24_fifo_status_t rx_status = NRF24_FIFO_EMPTY;
+	nrf24_fifo_status_t tx_status = NRF24_FIFO_EMPTY;
 	float temperature_celsius_gyro = 0.0;
 	float acc_g[3] = {0};
 	float gyro_dps[3] = {0};
@@ -57,6 +75,7 @@ int app_main(){
 	float lon;
 	float alt;
 	int fix_;
+	int comp = 0;
 	int64_t cookie;
 	uint16_t str_wr;
 	UINT Bytes;
@@ -100,6 +119,50 @@ int app_main(){
 	lsm_sr.spi = &hspi5;
 	lsm_sr.sr = &shift_reg_n;
 	lsmset_sr(&ctx_lsm, &lsm_sr);
+
+	//настройка радио
+	nrf24_spi_pins_t nrf_pins;
+	nrf_pins.ce_port = GPIOC;
+	nrf_pins.cs_port = GPIOC;
+	nrf_pins.ce_pin = GPIO_PIN_13;
+	nrf_pins.cs_pin = GPIO_PIN_14;
+	nrf24_lower_api_config_t nrf24;
+	nrf24_spi_init(&nrf24, &hspi4, &nrf_pins);
+
+	nrf24_mode_power_down(&nrf24);
+	nrf24_rf_config_t nrf_config;
+	nrf_config.data_rate = NRF24_DATARATE_250_KBIT;
+	nrf_config.tx_power = NRF24_TXPOWER_MINUS_0_DBM;
+	nrf_config.rf_channel = 30;
+	nrf24_setup_rf(&nrf24, &nrf_config);
+	nrf24_protocol_config_t nrf_protocol_config;
+	nrf_protocol_config.crc_size = NRF24_CRCSIZE_1BYTE;
+	nrf_protocol_config.address_width = NRF24_ADDRES_WIDTH_5_BYTES;
+	nrf_protocol_config.en_dyn_payload_size = true;
+	nrf_protocol_config.en_ack_payload = true;
+	nrf_protocol_config.en_dyn_ack = true;
+	nrf_protocol_config.auto_retransmit_count = 0;
+	nrf_protocol_config.auto_retransmit_delay = 0;
+	nrf24_setup_protocol(&nrf24, &nrf_protocol_config);
+	nrf24_pipe_set_tx_addr(&nrf24, 0x123456789a);
+
+	nrf24_pipe_config_t pipe_config;
+	for (int i = 1; i < 6; i++)
+	{
+		pipe_config.address = 0xcfcfcfcfcf;
+		pipe_config.address = (pipe_config.address & ~((uint64_t)0xff << 32)) | ((uint64_t)(i + 7) << 32);
+		pipe_config.enable_auto_ack = false;
+		pipe_config.payload_size = -1;
+		nrf24_pipe_rx_start(&nrf24, i, &pipe_config);
+	}
+
+	pipe_config.address = 0xafafafaf01;
+	pipe_config.enable_auto_ack = false;
+	pipe_config.payload_size = -1;
+	nrf24_pipe_rx_start(&nrf24, 0, &pipe_config);
+
+	nrf24_mode_standby(&nrf24);
+	nrf24_mode_tx(&nrf24);
 	//gps
 	gps_init();
 	__HAL_UART_ENABLE_IT(&huart1, UART_IT_RXNE);
@@ -136,7 +199,49 @@ int app_main(){
 		lsmread(&ctx_lsm, &temperature_celsius_gyro, &acc_g, &gyro_dps);
 		lisread(&ctx_lis, &temperature_celsius_mag, &mag);
 
-
+		switch(state_nrf){
+		case STATE_GEN_PACK_1:
+			nrf24_fifo_flush_tx(&nrf24);
+			nrf24_fifo_write(&nrf24, (uint8_t *)&pack1, sizeof(pack1), false);//32
+			state_nrf = STATE_WAIT;
+			break;
+		case STATE_WAIT:
+			if(HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_2)== GPIO_PIN_RESET){
+				nrf24_irq_get(&nrf24, &comp);
+				nrf24_irq_clear(&nrf24, comp);
+				nrf24_fifo_status(&nrf24, &rx_status, &tx_status);
+				if(tx_status == NRF24_FIFO_EMPTY){
+					counter++;
+					if(counter == 2){
+						state_nrf = STATE_GEN_PACK_2;
+						counter = 0;
+					}
+					else{
+						state_nrf = STATE_GEN_PACK_1;
+					}
+				}
+			}
+			if (HAL_GetTick()-start_time_nrf >= 100)
+			{
+				nrf24_fifo_status(&nrf24, &rx_status, &tx_status);
+				nrf24_fifo_flush_tx(&nrf24);
+				nrf24_fifo_status(&nrf24, &rx_status, &tx_status);
+				counter++;
+				if(counter == 2){
+					state_nrf = STATE_GEN_PACK_2;
+					counter = 0;
+				}
+				else{
+					state_nrf = STATE_GEN_PACK_1;
+				}
+			}
+			break;
+		case STATE_GEN_PACK_2:
+			nrf24_fifo_flush_tx(&nrf24);
+			nrf24_fifo_write(&nrf24, (uint8_t *)&pack2, sizeof(pack2), false);
+			state_nrf = STATE_WAIT;
+			break;
+		}
 		pack2.bmp_temp = bmp_temp;
 		pack2.bmp_press = bmp_press;
 		pack2.bmp_humidity = bmp_humidity;
