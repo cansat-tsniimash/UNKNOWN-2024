@@ -9,7 +9,7 @@ from RF24 import RF24_1MBPS, RF24_250KBPS, RF24_2MBPS
 from RF24 import RF24_CRC_16, RF24_CRC_8, RF24_CRC_DISABLED
 from RF24 import RF24 as RF24_CLASS
 from RF24 import RF24_CRC_DISABLED
-from RF24 import RF24_CRC_8 
+from RF24 import RF24_CRC_8
 from RF24 import RF24_CRC_16
 
 
@@ -47,7 +47,7 @@ if __name__ == '__main__':
 
     radio2.enableAckPayload()
     radio2.enableDynamicAck()
-    radio2.setCRCLength(RF24_CRC_DISABLED)
+    radio2.setCRCLength(RF24_CRC_8)
  
     radio2.startListening()
     radio2.printDetails()
@@ -57,17 +57,17 @@ if __name__ == '__main__':
     filename_f1 = "./log/knpn_1.csv"
     filename_f2 = "./log/knpn_2.csv"
     filename_f3 = "./log/knpn_3.csv"
-    f = open(filename_f, 'wb')
-    f.flush()
+    # f = open(filename_f, 'wb')
+    # f.flush()
     f1 = open(filename_f1, 'w')
-    f1.write('"Time Pack";"Number";"Temp BME";"Pressure";"Height BME";Current";"Bus voltage";"State";"Photo"\n')
+    f1.write('"Temp BME";"Pressure";"Humidity"\n')
     f1.flush()
     f2 = open(filename_f2, 'w')
-    f2.write('"Time Pack";"Number";"Mag x";"Mag y";"Mag z";"Accel x";"Accel y";"Accel z";"Gyro x";"Gyro y";"Gyro z"\n')
+    f2.write('"Mag x";"Mag y";"Mag z";"Accel x";"Accel y";"Accel z";"Gyro x";"Gyro y";"Gyro z"\n')
     f2.flush()
-    f3 = open(filename_f3, 'w')
-    f3.write('"Time Pack";"Number";"Temp DS";"Latitude";"Longitude";"Height";"Time, s";"Time, mks";"Fix"\n')
-    f3.flush()
+    # f3 = open(filename_f3, 'w')
+    # f3.write('"Time Pack";"Number";"Temp DS";"Latitude";"Longitude";"Height";"Time, s";"Time, mks";"Fix"\n')
+    # f3.flush()
 
 
     while True:
@@ -93,13 +93,13 @@ if __name__ == '__main__':
                     unpack_data = struct.unpack("<BIHhIffhbIH", data[:30])
                     print ("Temperature BME", unpack_data[3]/100)
                     print ("Pressure", unpack_data[4])
-                    print ("Height BME", unpack_data[5])
-                    print ("Bus voltage", unpack_data[7]/1000)
-                    print ("Current", unpack_data[6]/1000)
-                    print ("Number", unpack_data[2])
-                    print ("Photo", unpack_data[9]/100)
-                    print ("State", unpack_data[8])
-                    print ("Time", unpack_data[1])
+                    print ("Humidity", unpack_data[5])
+                    # print ("Bus voltage", unpack_data[7]/1000)
+                    # print ("Current", unpack_data[6]/1000)
+                    # print ("Number", unpack_data[2])
+                    # print ("Photo", unpack_data[9]/100)
+                    # print ("State", unpack_data[8])
+                    # print ("Time", unpack_data[1])
 
                     print ('\n')
 
@@ -122,8 +122,8 @@ if __name__ == '__main__':
                     print ("Magnetometer x", unpack_data[3]/1000)
                     print ("Magnetometer y", unpack_data[4]/1000)
                     print ("Magnetometer z", unpack_data[5]/1000)
-                    print ("Number", unpack_data[2])
-                    print ("Time", unpack_data[1])
+                    # print ("Number", unpack_data[2])
+                    # print ("Time", unpack_data[1])
 
                     print ('\n')
 
@@ -133,27 +133,27 @@ if __name__ == '__main__':
                         f2.flush()
                     f2.write('\n')
 
-                elif data[0] == 204: 
-                    #continue
-                    print("==== Пакет тип 3 ====")
-                    unpack_data = struct.unpack("<BIHh3f2IbH", data[:32])
-                    print ("Latitude", unpack_data[4])
-                    print ("Longitude", unpack_data[5])
-                    print ("Height", unpack_data[6])
-                    print ("Time, s", unpack_data[7]) 
-                    print ("Time, mks", unpack_data[8])
-                    print ("Fix", unpack_data[9])
-                    print ("Number", unpack_data[2])
-                    print ("Time", unpack_data[1])
-                    print ("Temperature DS", unpack_data[3])
+                # elif data[0] == 204: 
+                #     #continue
+                #     print("==== Пакет тип 3 ====")
+                #     unpack_data = struct.unpack("<BIHh3f2IbH", data[:32])
+                #     print ("Latitude", unpack_data[4])
+                #     print ("Longitude", unpack_data[5])
+                #     print ("Height", unpack_data[6])
+                #     print ("Time, s", unpack_data[7]) 
+                #     print ("Time, mks", unpack_data[8])
+                #     print ("Fix", unpack_data[9])
+                #     print ("Number", unpack_data[2])
+                #     print ("Time", unpack_data[1])
+                #     print ("Temperature DS", unpack_data[3])
 
-                    print ('\n')
+                #     print ('\n')
 
-                    for i in range(1,10):
-                        f3.write(str(unpack_data[i]))
-                        f3.write(";")
-                        f3.flush()
-                    f3.write('\n')
+                #     for i in range(1,10):
+                #         f3.write(str(unpack_data[i]))
+                #         f3.write(";")
+                #         f3.flush()
+                #     f3.write('\n')
                 else:
                     print('unknown flag ', data[0])
             except Exception as e:
