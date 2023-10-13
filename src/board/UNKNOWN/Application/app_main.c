@@ -4,7 +4,6 @@
  *  Created on: Sep 20, 2023
  *      Author: Install
  */
-#include "BME280/DriverForBME280.h"
 #include "main.h"
 #include "Shift_Register/shift_reg.h"
 #include <LSM6DS3/DLSM.h>
@@ -18,10 +17,13 @@
 #include <nRF24L01_PL/nrf24_upper_api.h>
 #include <nRF24L01_PL/nrf24_lower_api_stm32.h>
 #include <nRF24L01_PL/nrf24_defs.h>
+#include <BME280_I2C/its_bme280.h>
+#include <BME280_I2C/bme280_defs.h>
+#include <BME280_I2C/bme280.h>
 
 extern SPI_HandleTypeDef hspi5;
 extern UART_HandleTypeDef huart1;
-SPI_HandleTypeDef hspi4;
+extern SPI_HandleTypeDef hspi4;
 
 typedef enum
 {
@@ -84,41 +86,37 @@ int app_main(){
 	double bmp_press;
 	double bmp_humidity;
 	//сдвиговый регистр
-	shift_reg_t shift_reg_n;
-	shift_reg_n.bus = &hspi5;
-	shift_reg_n.latch_port = GPIOC;
-	shift_reg_n.latch_pin = GPIO_PIN_1;
-	shift_reg_n.oe_port = GPIOC;
-	shift_reg_n.oe_pin = GPIO_PIN_13;
-	shift_reg_n.value = 0;
-	shift_reg_init(&shift_reg_n);
-	shift_reg_write_16(&shift_reg_n, 0xFFFF);
 
 	shift_reg_t shift_reg_r;
 	shift_reg_r.bus = &hspi5;
-	shift_reg_r.latch_port = GPIOC;
-	shift_reg_r.latch_pin = GPIO_PIN_4;
-	shift_reg_r.oe_port = GPIOC;
-	shift_reg_r.oe_pin = GPIO_PIN_5;
+	shift_reg_r.latch_port = GPIOB;
+	shift_reg_r.latch_pin = GPIO_PIN_2;
+	shift_reg_r.oe_port = GPIOB;
+	shift_reg_r.oe_pin = GPIO_PIN_10;
 	shift_reg_r.value = 0;
 	shift_reg_init(&shift_reg_r);
 	shift_reg_write_8(&shift_reg_r, 0xFF);
 	//работа бме
-	struct bme_spi_intf_sr bme_struct;
+	/*struct bme_spi_intf_sr bme_struct;
 	bme_struct.sr_pin = 2;
-	bme_struct.sr = &shift_reg_n;
+	bme_struct.sr = &shift_reg_r;
 	bme_struct.spi = &hspi5;
 	struct bme280_dev bme;
 	bme_init_default_sr(&bme, &bme_struct);
 	struct bme280_data bme_data;
-	bme_data = bme_read_data(&bme);
+	bme_data = bme_read_data(&bme);*/
+
+	bme_important_shit_t bme_shit;
+	its_bme280_init(UNKNOWN_BME);
+	its_bme280_read(UNKNOWN_BME, &bme_shit);
 	//стх и структура лcмa
 	stmdev_ctx_t ctx_lsm;
 	struct lsm_spi_intf_sr lsm_sr;
 	lsm_sr.sr_pin = 4;
 	lsm_sr.spi = &hspi5;
-	lsm_sr.sr = &shift_reg_n;
+	lsm_sr.sr = &shift_reg_r;
 	lsmset_sr(&ctx_lsm, &lsm_sr);
+
 
 	//настройка радио
 	nrf24_spi_pins_t nrf_pins;
@@ -133,7 +131,7 @@ int app_main(){
 	nrf24_rf_config_t nrf_config;
 	nrf_config.data_rate = NRF24_DATARATE_250_KBIT;
 	nrf_config.tx_power = NRF24_TXPOWER_MINUS_0_DBM;
-	nrf_config.rf_channel = 30;
+	nrf_config.rf_channel = 101;
 	nrf24_setup_rf(&nrf24, &nrf_config);
 	nrf24_protocol_config_t nrf_protocol_config;
 	nrf_protocol_config.crc_size = NRF24_CRCSIZE_1BYTE;
@@ -144,12 +142,12 @@ int app_main(){
 	nrf_protocol_config.auto_retransmit_count = 0;
 	nrf_protocol_config.auto_retransmit_delay = 0;
 	nrf24_setup_protocol(&nrf24, &nrf_protocol_config);
-	nrf24_pipe_set_tx_addr(&nrf24, 0x123456789a);
+	nrf24_pipe_set_tx_addr(&nrf24, 0xacacacacac);
 
 	nrf24_pipe_config_t pipe_config;
 	for (int i = 1; i < 6; i++)
 	{
-		pipe_config.address = 0xcfcfcfcfcf;
+		pipe_config.address = 0xacacacacac;
 		pipe_config.address = (pipe_config.address & ~((uint64_t)0xff << 32)) | ((uint64_t)(i + 7) << 32);
 		pipe_config.enable_auto_ack = false;
 		pipe_config.payload_size = -1;
@@ -172,21 +170,27 @@ int app_main(){
 	//стх и структура лиса
 	stmdev_ctx_t ctx_lis;
 	struct lis_spi_intf_sr lis_sr;
-	lis_sr.sr_pin = 3;
+	lis_sr.sr_pin = 1;
 	lis_sr.spi = &hspi5;
-	lis_sr.sr = &shift_reg_n;
+	lis_sr.sr = &shift_reg_r;
 	lisset_sr(&ctx_lis, &lis_sr);
 	pack1_t pack1;
 	pack2_t pack2;
+	pack1.flag = 0xAA;
+	pack2.flag = 0xBB;
 	//давление на земле
 	//double ground_pressure = bme_data.pressure;
 	while(1){
-		bme_data = bme_read_data(&bme);
-		bmp_temp = bme_data.temperature * 100;
-		bmp_press = bme_data.pressure;
-		bmp_humidity = bme_data.humidity;
+		//bme_data = bme_read_data(&bme);
+		//bmp_temp = bme_data.temperature * 100;
+		//bmp_press = bme_data.pressure;
+		//bmp_humidity = bme_data.humidity;
+		its_bme280_read(UNKNOWN_BME, &bme_shit);
+		bmp_temp = bme_shit.temperature * 100;
+		bmp_press = bme_shit.pressure;
+		bmp_humidity = bme_shit.humidity;
 
-
+		shift_reg_write_bit_8(&shift_reg_r, 3, 1);
 
 
 		gps_work();
@@ -206,7 +210,7 @@ int app_main(){
 			state_nrf = STATE_WAIT;
 			break;
 		case STATE_WAIT:
-			if(HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_2)== GPIO_PIN_RESET){
+			if(HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_15)== GPIO_PIN_RESET){
 				nrf24_irq_get(&nrf24, &comp);
 				nrf24_irq_clear(&nrf24, comp);
 				nrf24_fifo_status(&nrf24, &rx_status, &tx_status);
