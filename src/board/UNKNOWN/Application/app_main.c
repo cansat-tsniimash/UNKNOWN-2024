@@ -22,6 +22,7 @@
 #include <BME280_I2C/bme280.h>
 
 extern SPI_HandleTypeDef hspi5;
+extern SPI_HandleTypeDef hspi1;
 extern UART_HandleTypeDef huart1;
 extern SPI_HandleTypeDef hspi4;
 
@@ -88,7 +89,7 @@ int app_main(){
 	//сдвиговый регистр
 
 	shift_reg_t shift_reg_r;
-	shift_reg_r.bus = &hspi5;
+	shift_reg_r.bus = &hspi1;
 	shift_reg_r.latch_port = GPIOB;
 	shift_reg_r.latch_pin = GPIO_PIN_2;
 	shift_reg_r.oe_port = GPIOB;
@@ -113,7 +114,7 @@ int app_main(){
 	stmdev_ctx_t ctx_lsm;
 	struct lsm_spi_intf_sr lsm_sr;
 	lsm_sr.sr_pin = 4;
-	lsm_sr.spi = &hspi5;
+	lsm_sr.spi = &hspi1;
 	lsm_sr.sr = &shift_reg_r;
 	lsmset_sr(&ctx_lsm, &lsm_sr);
 
@@ -130,15 +131,15 @@ int app_main(){
 	nrf24_mode_power_down(&nrf24);
 	nrf24_rf_config_t nrf_config;
 	nrf_config.data_rate = NRF24_DATARATE_250_KBIT;
-	nrf_config.tx_power = NRF24_TXPOWER_MINUS_0_DBM;
+	nrf_config.tx_power = NRF24_TXPOWER_MINUS_18_DBM;
 	nrf_config.rf_channel = 101;
 	nrf24_setup_rf(&nrf24, &nrf_config);
 	nrf24_protocol_config_t nrf_protocol_config;
 	nrf_protocol_config.crc_size = NRF24_CRCSIZE_1BYTE;
 	nrf_protocol_config.address_width = NRF24_ADDRES_WIDTH_5_BYTES;
-	nrf_protocol_config.en_dyn_payload_size = true;
-	nrf_protocol_config.en_ack_payload = true;
-	nrf_protocol_config.en_dyn_ack = true;
+	nrf_protocol_config.en_dyn_payload_size = false;
+	nrf_protocol_config.en_ack_payload = false;
+	nrf_protocol_config.en_dyn_ack = false;
 	nrf_protocol_config.auto_retransmit_count = 0;
 	nrf_protocol_config.auto_retransmit_delay = 0;
 	nrf24_setup_protocol(&nrf24, &nrf_protocol_config);
@@ -171,13 +172,13 @@ int app_main(){
 	stmdev_ctx_t ctx_lis;
 	struct lis_spi_intf_sr lis_sr;
 	lis_sr.sr_pin = 1;
-	lis_sr.spi = &hspi5;
+	lis_sr.spi = &hspi1;
 	lis_sr.sr = &shift_reg_r;
 	lisset_sr(&ctx_lis, &lis_sr);
 	pack1_t pack1;
 	pack2_t pack2;
-	pack1.flag = 0xAA;
-	pack2.flag = 0xBB;
+	pack1.flag = 0xBB;
+	pack2.flag = 0xAA;
 	//давление на земле
 	//double ground_pressure = bme_data.pressure;
 	while(1){
@@ -203,10 +204,10 @@ int app_main(){
 		lsmread(&ctx_lsm, &temperature_celsius_gyro, &acc_g, &gyro_dps);
 		lisread(&ctx_lis, &temperature_celsius_mag, &mag);
 
-		switch(state_nrf){
+ 		switch(state_nrf){
 		case STATE_GEN_PACK_1:
 			nrf24_fifo_flush_tx(&nrf24);
-			nrf24_fifo_write(&nrf24, (uint8_t *)&pack1, sizeof(pack1), false);//32
+			nrf24_fifo_write(&nrf24, (uint8_t *)&pack1, 32, false);//32
 			state_nrf = STATE_WAIT;
 			break;
 		case STATE_WAIT:
@@ -214,7 +215,7 @@ int app_main(){
 				nrf24_irq_get(&nrf24, &comp);
 				nrf24_irq_clear(&nrf24, comp);
 				nrf24_fifo_status(&nrf24, &rx_status, &tx_status);
-				if(tx_status == NRF24_FIFO_EMPTY){
+				/*if(tx_status == NRF24_FIFO_EMPTY){
 					counter++;
 					if(counter == 2){
 						state_nrf = STATE_GEN_PACK_2;
@@ -223,7 +224,7 @@ int app_main(){
 					else{
 						state_nrf = STATE_GEN_PACK_1;
 					}
-				}
+				}*/
 			}
 			if (HAL_GetTick()-start_time_nrf >= 100)
 			{
@@ -232,7 +233,7 @@ int app_main(){
 				nrf24_fifo_status(&nrf24, &rx_status, &tx_status);
 				counter++;
 				if(counter == 2){
-					state_nrf = STATE_GEN_PACK_2;
+					state_nrf = STATE_GEN_PACK_1;
 					counter = 0;
 				}
 				else{
