@@ -56,7 +56,7 @@ if __name__ == '__main__':
     filename_f = generate_logfile_name()
     filename_f1 = "./log/knpn_1.csv"
     filename_f2 = "./log/knpn_2.csv"
-    filename_f3 = "./log/knpn_3.csv"
+    # filename_f3 = "./log/knpn_3.csv"
     # f = open(filename_f, 'wb')
     # f.flush()
     f1 = open(filename_f1, 'w')
@@ -87,13 +87,13 @@ if __name__ == '__main__':
             record = biter + packet
 
             try:
-                if data[0] == 0xaa:
+                if data[0] == 170:
                     pass
                     print("==== Пакет тип 1 ====")
-                    unpack_data = struct.unpack("<BIHhIffhbIH", data[:30])
-                    print ("Temperature BME", unpack_data[3]/100)
-                    print ("Pressure", unpack_data[4])
-                    print ("Humidity", unpack_data[5])
+                    unpack_data = struct.unpack("<BIHhIffhbIH", data[:25])
+                    print ("Temperature BME", unpack_data[1]/100)
+                    print ("Pressure", unpack_data[2])
+                    print ("Humidity", unpack_data[3])
                     # print ("Bus voltage", unpack_data[7]/1000)
                     # print ("Current", unpack_data[6]/1000)
                     # print ("Number", unpack_data[2])
@@ -112,16 +112,16 @@ if __name__ == '__main__':
                 elif data[0] == 187:
                     #continue
                     print("==== Пакет тип 2 ====")
-                    unpack_data = struct.unpack("<BIH9hH", data[:27])
-                    print ("Accelerometer x", unpack_data[6]/1000)
-                    print ("Accelerometer y", unpack_data[7]/1000)
-                    print ("Accelerometer z", unpack_data[8]/1000)
-                    print ("Gyroscope x", unpack_data[9]/1000)
-                    print ("Gyroscope y", unpack_data[10]/1000)
-                    print ("Gyroscope z", unpack_data[11]/1000)
-                    print ("Magnetometer x", unpack_data[3]/1000)
-                    print ("Magnetometer y", unpack_data[4]/1000)
-                    print ("Magnetometer z", unpack_data[5]/1000)
+                    unpack_data = struct.unpack("<BIH9hH", data[:19])
+                    print ("Accelerometer x", unpack_data[1]/1000)
+                    print ("Accelerometer y", unpack_data[2]/1000)
+                    print ("Accelerometer z", unpack_data[3]/1000)
+                    print ("Gyroscope x", unpack_data[4]/1000)
+                    print ("Gyroscope y", unpack_data[5]/1000)
+                    print ("Gyroscope z", unpack_data[6]/1000)
+                    print ("Magnetometer x", unpack_data[7]/1000)
+                    print ("Magnetometer y", unpack_data[8]/1000)
+                    print ("Magnetometer z", unpack_data[9]/1000)
                     # print ("Number", unpack_data[2])
                     # print ("Time", unpack_data[1])
 
@@ -161,7 +161,7 @@ if __name__ == '__main__':
             f.write(record)
             f.flush()
         else:
-            #print('got no data')
+            print('got no data')
             pass
 
         #time.sleep(0.1)
