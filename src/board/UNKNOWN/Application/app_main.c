@@ -175,6 +175,7 @@ int app_main(){
 	lis_sr.spi = &hspi1;
 	lis_sr.sr = &shift_reg_r;
 	lisset_sr(&ctx_lis, &lis_sr);
+
 	pack1_t pack1;
 	pack2_t pack2;
 	pack1.flag = 0xBB;
