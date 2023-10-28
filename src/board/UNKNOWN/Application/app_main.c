@@ -45,7 +45,7 @@ int app_main(){
 	FRESULT res_bin = 255;
 	FRESULT megares = 255;
 	const char path1[] = "packet1.csv";
-	const char path2[] = "packet2.csv";
+ 	const char path2[] = "packet2.csv";
 	memset(&fileSystem, 0x00, sizeof(fileSystem));
 	FRESULT is_mount = 0;
 	extern Disk_drvTypeDef disk;
