@@ -212,8 +212,9 @@ int app_main(){
 			state_nrf = STATE_WAIT;
 			break;
 		case STATE_WAIT:
-			if(HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_15)== GPIO_PIN_RESET){
-				nrf24_irq_get(&nrf24, &comp);
+			nrf24_irq_get(&nrf24, &comp);
+			if(comp != 0){///HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_15)== GPIO_PIN_RESET){
+				//nrf24_irq_get(&nrf24, &comp);
 				nrf24_irq_clear(&nrf24, comp);
 				nrf24_fifo_status(&nrf24, &rx_status, &tx_status);
 				/*if(tx_status == NRF24_FIFO_EMPTY){
@@ -227,8 +228,9 @@ int app_main(){
 					}
 				}*/
 			}
-			if (HAL_GetTick()-start_time_nrf >= 100)
+			if (HAL_GetTick()-start_time_nrf >= 1000)
 			{
+				nrf24_irq_get(&nrf24, &comp);
 				nrf24_fifo_status(&nrf24, &rx_status, &tx_status);
 				nrf24_fifo_flush_tx(&nrf24);
 				nrf24_fifo_status(&nrf24, &rx_status, &tx_status);
