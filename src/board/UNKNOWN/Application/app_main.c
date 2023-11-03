@@ -132,7 +132,7 @@ int app_main(){
 	nrf24_rf_config_t nrf_config;
 	nrf_config.data_rate = NRF24_DATARATE_250_KBIT;
 	nrf_config.tx_power = NRF24_TXPOWER_MINUS_18_DBM;
-	nrf_config.rf_channel = 101;
+	nrf_config.rf_channel = 52;
 	nrf24_setup_rf(&nrf24, &nrf_config);
 	nrf24_protocol_config_t nrf_protocol_config;
 	nrf_protocol_config.crc_size = NRF24_CRCSIZE_1BYTE;
@@ -148,14 +148,14 @@ int app_main(){
 	nrf24_pipe_config_t pipe_config;
 	for (int i = 1; i < 6; i++)
 	{
-		pipe_config.address = 0xacacacacac;
+		pipe_config.address = 0xafafafafaf;
 		pipe_config.address = (pipe_config.address & ~((uint64_t)0xff << 32)) | ((uint64_t)(i + 7) << 32);
 		pipe_config.enable_auto_ack = false;
 		pipe_config.payload_size = -1;
 		nrf24_pipe_rx_start(&nrf24, i, &pipe_config);
 	}
 
-	pipe_config.address = 0xafafafaf01;
+	pipe_config.address = 0xafafafafaf;
 	pipe_config.enable_auto_ack = false;
 	pipe_config.payload_size = -1;
 	nrf24_pipe_rx_start(&nrf24, 0, &pipe_config);
@@ -209,6 +209,7 @@ int app_main(){
 		case STATE_GEN_PACK_1:
 			nrf24_fifo_flush_tx(&nrf24);
 			nrf24_fifo_write(&nrf24, (uint8_t *)&pack1, 32, false);//32
+			start_time_nrf = HAL_GetTick();
 			state_nrf = STATE_WAIT;
 			break;
 		case STATE_WAIT:
@@ -228,7 +229,7 @@ int app_main(){
 					}
 				}*/
 			}
-			if (HAL_GetTick()-start_time_nrf >= 1000)
+			if (HAL_GetTick()-start_time_nrf >= 100)
 			{
 				nrf24_irq_get(&nrf24, &comp);
 				nrf24_fifo_status(&nrf24, &rx_status, &tx_status);
