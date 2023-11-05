@@ -20,11 +20,13 @@
 #include <BME280_I2C/its_bme280.h>
 #include <BME280_I2C/bme280_defs.h>
 #include <BME280_I2C/bme280.h>
+#include "ina219/inc/ina219_helper.h"
 
 extern SPI_HandleTypeDef hspi5;
 extern SPI_HandleTypeDef hspi1;
 extern UART_HandleTypeDef huart1;
 extern SPI_HandleTypeDef hspi4;
+extern I2C_HandleTypeDef hi2c1;
 
 typedef enum
 {
@@ -32,6 +34,13 @@ typedef enum
 	STATE_WAIT = 2,
 	STATE_GEN_PACK_2 = 3,
 } state_nrf_t;
+
+typedef struct INA219_DATA{
+	uint16_t power;
+	uint16_t current;
+	uint16_t voltage;
+	uint16_t shunt_voltage;
+}INA219_DATA;
 
 
 int app_main(){
@@ -110,6 +119,14 @@ int app_main(){
 	bme_important_shit_t bme_shit;
 	its_bme280_init(UNKNOWN_BME);
 	its_bme280_read(UNKNOWN_BME, &bme_shit);
+	//ina
+	struct ina219_t ina219;
+	ina219_primary_data_t primary_data;
+	ina219_secondary_data_t secondary_data;
+	ina219_init_default(&ina219,&hi2c1,INA219_I2CADDR_A1_GND_A0_VSP, HAL_MAX_DELAY);
+	int ina_res;
+	float current;
+	float bus_voltage;
 	//стх и структура лcмa
 	stmdev_ctx_t ctx_lsm;
 	struct lsm_spi_intf_sr lsm_sr;
@@ -132,7 +149,7 @@ int app_main(){
 	nrf24_rf_config_t nrf_config;
 	nrf_config.data_rate = NRF24_DATARATE_250_KBIT;
 	nrf_config.tx_power = NRF24_TXPOWER_MINUS_18_DBM;
-	nrf_config.rf_channel = 101;
+	nrf_config.rf_channel = 1337;
 	nrf24_setup_rf(&nrf24, &nrf_config);
 	nrf24_protocol_config_t nrf_protocol_config;
 	nrf_protocol_config.crc_size = NRF24_CRCSIZE_1BYTE;
@@ -183,37 +200,47 @@ int app_main(){
 	//давление на земле
 	//double ground_pressure = bme_data.pressure;
 	while(1){
-		//bme_data = bme_read_data(&bme);
-		//bmp_temp = bme_data.temperature * 100;
-		//bmp_press = bme_data.pressure;
-		//bmp_humidity = bme_data.humidity;
+		//bme280
 		its_bme280_read(UNKNOWN_BME, &bme_shit);
 		bmp_temp = bme_shit.temperature * 100;
 		bmp_press = bme_shit.pressure;
 		bmp_humidity = bme_shit.humidity;
-
+		//сдвиговый регистр
 		shift_reg_write_bit_8(&shift_reg_r, 3, 1);
-
-
+		//gps
 		gps_work();
 		gps_get_coords(&cookie, &lat, &lon, &alt, &fix_);
 		gps_get_time(&cookie, &gps_time_s, &gps_time_us);
-
-
-
-
+		//lsm и lis
 		lsmread(&ctx_lsm, &temperature_celsius_gyro, &acc_g, &gyro_dps);
 		lisread(&ctx_lis, &temperature_celsius_mag, &mag);
+		//ina
+		ina_res = ina219_read_primary(&ina219,&primary_data);
+		if (ina_res == 2)
+		{
+			I2C_ClearBusyFlagErratum(&hi2c1, 20);
+		}
+		ina_res = ina219_read_secondary(&ina219,&secondary_data);
+		if (ina_res == 2)
+		{
+			I2C_ClearBusyFlagErratum(&hi2c1, 20);
+		}
+		//НЕ ЗАБЫТЬ ПОМЕНЯТЬ КОоФИЦЕТ!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		current = ina219_current_convert(&ina219, secondary_data.current)/* * 0.67034*/;
+		bus_voltage = ina219_bus_voltage_convert(&ina219, primary_data.busv)/* * 1.0399*/;
+
 
  		switch(state_nrf){
 		case STATE_GEN_PACK_1:
 			nrf24_fifo_flush_tx(&nrf24);
 			nrf24_fifo_write(&nrf24, (uint8_t *)&pack1, 32, false);//32
+			start_time_nrf = HAL_GetTick();
 			state_nrf = STATE_WAIT;
 			break;
 		case STATE_WAIT:
-			if(HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_15)== GPIO_PIN_RESET){
-				nrf24_irq_get(&nrf24, &comp);
+			nrf24_irq_get(&nrf24, &comp);
+			if(comp != 0){///HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_15)== GPIO_PIN_RESET){
+				//nrf24_irq_get(&nrf24, &comp);
 				nrf24_irq_clear(&nrf24, comp);
 				nrf24_fifo_status(&nrf24, &rx_status, &tx_status);
 				/*if(tx_status == NRF24_FIFO_EMPTY){
@@ -229,6 +256,7 @@ int app_main(){
 			}
 			if (HAL_GetTick()-start_time_nrf >= 100)
 			{
+				nrf24_irq_get(&nrf24, &comp);
 				nrf24_fifo_status(&nrf24, &rx_status, &tx_status);
 				nrf24_fifo_flush_tx(&nrf24);
 				nrf24_fifo_status(&nrf24, &rx_status, &tx_status);
