@@ -149,7 +149,7 @@ int app_main(){
 	nrf24_rf_config_t nrf_config;
 	nrf_config.data_rate = NRF24_DATARATE_250_KBIT;
 	nrf_config.tx_power = NRF24_TXPOWER_MINUS_18_DBM;
-	nrf_config.rf_channel = 1337;
+	nrf_config.rf_channel = 101;
 	nrf24_setup_rf(&nrf24, &nrf_config);
 	nrf24_protocol_config_t nrf_protocol_config;
 	nrf_protocol_config.crc_size = NRF24_CRCSIZE_1BYTE;
