@@ -26,7 +26,7 @@ def generate_logfile_name():
 
 
 if __name__ == '__main__':
-    static_payload_size = None
+    static_payload_size = 32
 
     radio2.begin()
 
@@ -45,8 +45,8 @@ if __name__ == '__main__':
     else:
         radio2.enableDynamicPayloads()
 
-    radio2.enableAckPayload()
-    radio2.enableDynamicAck()
+    #radio2.enableAckPayload()
+    #radio2.enableDynamicAck()
     radio2.setCRCLength(RF24_CRC_8)
  
     radio2.startListening()
@@ -87,7 +87,7 @@ if __name__ == '__main__':
             record = biter + packet
 
             try:
-                if data[0] == 170:
+                if data[0] == 187:
                     pass
                     print("==== Пакет тип 1 ====")
                     unpack_data = struct.unpack("<BIHhIffhbIH", data[:25])
@@ -109,7 +109,7 @@ if __name__ == '__main__':
                         f1.flush()
                     f1.write('\n')
 
-                elif data[0] == 187:
+                elif data[0] == 170:
                     #continue
                     print("==== Пакет тип 2 ====")
                     unpack_data = struct.unpack("<BIH9hH", data[:19])
@@ -161,7 +161,7 @@ if __name__ == '__main__':
             f.write(record)
             f.flush()
         else:
-            print('got no data')
+            # print('got no data')
             pass
 
         #time.sleep(0.1)
