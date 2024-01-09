@@ -1,1 +1,4 @@
-WARNING: Invalid search path file.
+Failed to initialize communications.  Some features are disabled.
+dbg_err_crash() -- continuing from serious error (ORDER_DEBUG).
+dbg_err_crash() -- continuing from serious error (ORDER_DEBUG).
+dbg_err_crash() -- continuing from serious error (ORDER_DEBUG).
