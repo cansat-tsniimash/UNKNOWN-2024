@@ -21,12 +21,15 @@
 #include <BME280_I2C/bme280_defs.h>
 #include <BME280_I2C/bme280.h>
 #include "ina219/inc/ina219_helper.h"
+#include <Photorezistor/photorezistor.h>
+#include "madgwick.h"
 
 extern SPI_HandleTypeDef hspi5;
 extern SPI_HandleTypeDef hspi1;
 extern UART_HandleTypeDef huart1;
 extern SPI_HandleTypeDef hspi4;
 extern I2C_HandleTypeDef hi2c1;
+extern ADC_HandleTypeDef hadc1;
 
 typedef enum
 {
@@ -34,6 +37,16 @@ typedef enum
 	STATE_WAIT = 2,
 	STATE_GEN_PACK_2 = 3,
 } state_nrf_t;
+
+typedef enum
+{
+	STATE_READY = 0,
+	STATE_IN_ROCKET = 1,
+	STATE_AFTER_ROCKET = 2,
+	STATE_STABILZATORS = 3,
+	STATE_DESCENT = 4,
+	STATE_ON_EARTH = 5
+} state_t;
 
 typedef struct INA219_DATA{
 	uint16_t power;
@@ -83,15 +96,24 @@ int app_main(){
 	float gyro_dps[3] = {0};
 	float temperature_celsius_mag = 0.0;
 	float mag[3] = {0};
+	float gyro_m[3] = {0};
+	float acc_m[3] = {0};
 	float lat;
 	float lon;
+
+	uint32_t start_time_par = 0;
+	uint32_t start_time_stab = 0;
+	uint32_t time_now = 0;
+	uint32_t time_before = 1;
 	float alt;
 	int fix_;
+	float limit_lux;
 	int comp = 0;
 	int64_t cookie;
 	uint16_t str_wr;
 	UINT Bytes;
 	char str_buf[300];
+	float seb_quaternion [4] = {0};
 	double bmp_temp;
 	double bmp_press;
 	double bmp_humidity;
@@ -106,6 +128,8 @@ int app_main(){
 	shift_reg_r.value = 0;
 	shift_reg_init(&shift_reg_r);
 	shift_reg_write_8(&shift_reg_r, 0xFF);
+	state_t state_now;
+	state_now = STATE_READY;
 	//работа бме
 	/*struct bme_spi_intf_sr bme_struct;
 	bme_struct.sr_pin = 2;
@@ -119,14 +143,14 @@ int app_main(){
 	bme_important_shit_t bme_shit;
 	its_bme280_init(UNKNOWN_BME);
 	its_bme280_read(UNKNOWN_BME, &bme_shit);
-	//ina
+/*	//ina
 	struct ina219_t ina219;
 	ina219_primary_data_t primary_data;
 	ina219_secondary_data_t secondary_data;
 	ina219_init_default(&ina219,&hi2c1,INA219_I2CADDR_A1_GND_A0_VSP, HAL_MAX_DELAY);
 	int ina_res;
 	float current;
-	float bus_voltage;
+	float bus_voltage;*/
 	//стх и структура лcмa
 	stmdev_ctx_t ctx_lsm;
 	struct lsm_spi_intf_sr lsm_sr;
@@ -135,6 +159,9 @@ int app_main(){
 	lsm_sr.sr = &shift_reg_r;
 	lsmset_sr(&ctx_lsm, &lsm_sr);
 
+	photorezistor_t photrez;
+	photrez.resist = 2200;
+	photrez.hadc = &hadc1;
 
 	//настройка радио
 	nrf24_spi_pins_t nrf_pins;
@@ -198,13 +225,20 @@ int app_main(){
 	pack1.flag = 0xBB;
 	pack2.flag = 0xAA;
 	//давление на земле
-	//double ground_pressure = bme_data.pressure;
+	its_bme280_read(UNKNOWN_BME, &bme_shit);
+	double ground_pressure = bme_shit.pressure;
+	bmp_temp = bme_shit.temperature * 100;
+	bmp_press = bme_shit.pressure;
+	bmp_humidity = bme_shit.humidity;
+	uint32_t height = 44330 * (1 - pow(bmp_press / ground_pressure, 1.0 / 5.255));
+	uint32_t ground_height = 44330 * (1 - pow(bmp_press / ground_pressure, 1.0 / 5.255));
+	ground_height += 30;
 	while(1){
 		//bme280
-		its_bme280_read(UNKNOWN_BME, &bme_shit);
 		bmp_temp = bme_shit.temperature * 100;
 		bmp_press = bme_shit.pressure;
 		bmp_humidity = bme_shit.humidity;
+		height = 44330 * (1 - pow(bmp_press / ground_pressure, 1.0 / 5.255));
 		//сдвиговый регистр
 		shift_reg_write_bit_8(&shift_reg_r, 3, 1);
 		//gps
@@ -214,7 +248,16 @@ int app_main(){
 		//lsm и lis
 		lsmread(&ctx_lsm, &temperature_celsius_gyro, &acc_g, &gyro_dps);
 		lisread(&ctx_lis, &temperature_celsius_mag, &mag);
-		//ina
+		gyro_m[0] = gyro_dps[0] * 3.14 / 180;
+		gyro_m[1] = gyro_dps[1] * 3.14 / 180;
+		gyro_m[2] = gyro_dps[2] * 3.14 / 180;
+		acc_m[0] = acc_g[0] * 9.81;
+		acc_m[1] = acc_g[1] * 9.81;
+		acc_m[2] = acc_g[2] * 9.81;
+		time_now = HAL_GetTick() / 1000.0;
+		MadgwickAHRSupdate(seb_quaternion, gyro_m[0], gyro_m[1], gyro_m[2], acc_m[0], acc_m[1], acc_m[2], -1 * mag[0], -1 * mag[1], -1 * mag[2], time_before-time_now, 0.3);
+		time_before = time_now;
+		/*//ina
 		ina_res = ina219_read_primary(&ina219,&primary_data);
 		if (ina_res == 2)
 		{
@@ -226,9 +269,63 @@ int app_main(){
 			I2C_ClearBusyFlagErratum(&hi2c1, 20);
 		}
 		//НЕ ЗАБЫТЬ ПОМЕНЯТЬ КОоФИЦЕТ!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		current = ina219_current_convert(&ina219, secondary_data.current)/* * 0.67034*/;
-		bus_voltage = ina219_bus_voltage_convert(&ina219, primary_data.busv)/* * 1.0399*/;
+		current = ina219_current_convert(&ina219, secondary_data.current) * 0.67034;
+		bus_voltage = ina219_bus_voltage_convert(&ina219, primary_data.busv) * 1.0399;*/
+		//Photorez
+		float lux = photorezistor_get_lux(photrez);
 
+
+		switch (state_now)
+				{
+				case STATE_READY:
+					HAL_Delay(100);
+					if(0/*HAL_GPIO_ReadPin(GPIOx, GPIO_PIN_x)*/){
+						state_now = STATE_IN_ROCKET;
+						limit_lux = lux * 0.8;
+					}
+					break;
+				case STATE_IN_ROCKET:
+					if(lux >=  limit_lux){
+						state_now = STATE_AFTER_ROCKET;
+						break;
+					}
+
+					break;
+				case STATE_AFTER_ROCKET:
+					start_time_par = HAL_GetTick();
+					if (HAL_GetTick()-start_time_par >= 3228)
+					{
+						state_now = STATE_STABILZATORS;
+						break;
+					}
+				case STATE_STABILZATORS:
+					shift_reg_write_bit_8(&shift_reg_r, 2, 1);
+					start_time_stab = HAL_GetTick();
+					if (HAL_GetTick()-start_time_par >= 1488)
+					{
+						state_now = STATE_DESCENT;
+						break;
+					}
+				case STATE_DESCENT:
+					//наведение
+					if(height <= ground_height){
+						state_now = STATE_ON_EARTH;
+						break;
+					}
+				case STATE_ON_EARTH:
+					//ыкл камеры и вкл пищалки
+					state_now = STATE_ON_EARTH;
+					break;
+				}
+/*		typedef enum
+		{
+			STATE_READY = 0,
+			STATE_IN_ROCKET = 1,
+			STATE_AFTER_ROCKET = 2,
+			STATE_STABILZATORS = 3,
+			STATE_DESCENT = 4,
+			STATE_ON_EARTH = 5
+		} state_t;*/
 
  		switch(state_nrf){
 		case STATE_GEN_PACK_1:
