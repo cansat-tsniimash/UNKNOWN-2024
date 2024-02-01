@@ -1,0 +1,112 @@
+﻿
+Pro/ENGINEER INTERFACE EXPORT LOG FILE
+
+STEP output for Сборка CANSAT.
+
+
+
+Option values used for this export.
+
+export_3d_force_default_naming               NO
+intf3d_out_extend_surface                    YES
+intf3d_out_surface_deviation                 DEFAULT
+intf_out_as_bezier                           NO
+intf3d_out_force_surf_normals                NO
+intf_out_max_bspl_degree                     16
+
+
+Process began at: Fri Feb 02 00:18:23 2024
+
+Process finished at: Fri Feb 02 00:18:24 2024
+
+Total process time: 00:00:01.
+
+
+MODEL:   CANSAT_ASM
+OUTPUT FILE:  KNPN_CansatASM_2024.stp
+
+ADVANCED_BREP_SHAPE_REPRESENTATION                         72
+ADVANCED_FACE                                            6755
+APPLICATION_CONTEXT                                         1
+APPLICATION_PROTOCOL_DEFINITION                             1
+AXIS2_PLACEMENT_3D                                       9600
+BOUNDED_SURFACE                                            32
+B_SPLINE_CURVE_WITH_KNOTS                                 390
+B_SPLINE_SURFACE                                           32
+B_SPLINE_SURFACE_WITH_KNOTS                                62
+CARTESIAN_POINT                                         48684
+CIRCLE                                                   2663
+CLOSED_SHELL                                               79
+COLOUR_RGB                                                155
+CONICAL_SURFACE                                            12
+CONTEXT_DEPENDENT_SHAPE_REPRESENTATION                    102
+CONVERSION_BASED_UNIT                                      87
+CURVE_STYLE                                             11138
+CYLINDRICAL_SURFACE                                      1279
+DERIVED_UNIT                                              318
+DERIVED_UNIT_ELEMENT                                      318
+DIRECTION                                               33412
+DRAUGHTING_PRE_DEFINED_COLOUR                              10
+DRAUGHTING_PRE_DEFINED_CURVE_FONT                           1
+EDGE_CURVE                                              17233
+EDGE_LOOP                                                7642
+FACE_BOUND                                                887
+FACE_OUTER_BOUND                                         6755
+FILE_DESCRIPTION                                            1
+FILE_NAME                                                   1
+FILE_SCHEMA                                                 1
+FILL_AREA_STYLE                                          5043
+FILL_AREA_STYLE_COLOUR                                   5043
+GEOMETRIC_REPRESENTATION_CONTEXT                           87
+GEOMETRIC_REPRESENTATION_ITEM                              32
+GLOBAL_UNCERTAINTY_ASSIGNED_CONTEXT                        87
+GLOBAL_UNIT_ASSIGNED_CONTEXT                               87
+ITEM_DEFINED_TRANSFORMATION                               102
+LENGTH_UNIT                                               405
+LINE                                                    14196
+MANIFOLD_SOLID_BREP                                        79
+MEASURE_REPRESENTATION_ITEM                               318
+MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION     1
+NAMED_UNIT                                                666
+NEXT_ASSEMBLY_USAGE_OCCURRENCE                            102
+ORIENTED_EDGE                                           34466
+OVER_RIDING_STYLED_ITEM                                  1562
+PLANE                                                    5276
+PLANE_ANGLE_MEASURE_WITH_UNIT                              87
+PLANE_ANGLE_UNIT                                          174
+PRESENTATION_STYLE_ASSIGNMENT                           14626
+PRODUCT                                                    87
+PRODUCT_CONTEXT                                            87
+PRODUCT_DEFINITION                                         87
+PRODUCT_DEFINITION_CONTEXT                                 44
+PRODUCT_DEFINITION_FORMATION                               87
+PRODUCT_DEFINITION_SHAPE                                  189
+PRODUCT_RELATED_PRODUCT_CATEGORY                            1
+PROPERTY_DEFINITION                                       651
+PROPERTY_DEFINITION_REPRESENTATION                        579
+RATIONAL_B_SPLINE_SURFACE                                  32
+REPRESENTATION                                            579
+REPRESENTATION_CONTEXT                                     87
+REPRESENTATION_ITEM                                        32
+REPRESENTATION_RELATIONSHIP                               102
+REPRESENTATION_RELATIONSHIP_WITH_TRANSFORMATION           102
+SHAPE_ASPECT                                               72
+SHAPE_DEFINITION_REPRESENTATION                           159
+SHAPE_REPRESENTATION                                       87
+SHAPE_REPRESENTATION_RELATIONSHIP                         102
+SI_UNIT                                                   579
+SOLID_ANGLE_UNIT                                           87
+SPHERICAL_SURFACE                                          45
+STYLED_ITEM                                             13064
+SURFACE                                                    32
+SURFACE_OF_LINEAR_EXTRUSION                                16
+SURFACE_SIDE_STYLE                                       5043
+SURFACE_STYLE_FILL_AREA                                  5043
+SURFACE_STYLE_USAGE                                      5043
+TOROIDAL_SURFACE                                           65
+UNCERTAINTY_MEASURE_WITH_UNIT                              87
+VECTOR                                                  14212
+VERTEX_POINT                                            11161
+
+TOTAL                                                  287805
+
