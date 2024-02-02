@@ -61,13 +61,16 @@ int app_main(){
 	FATFS fileSystem; // переменная типа FATFS
 	FIL File1; // хендлер файла
 	FIL File2;
+	FIL File3;
 	FIL File_bin;
 	FRESULT res1 = 255;
 	FRESULT res2 = 255;
+	FRESULT res3 = 255;
 	FRESULT res_bin = 255;
 	FRESULT megares = 255;
 	const char path1[] = "packet1.csv";
  	const char path2[] = "packet2.csv";
+ 	const char path3[] = "quaternion.csv";
 	memset(&fileSystem, 0x00, sizeof(fileSystem));
 	FRESULT is_mount = 0;
 	extern Disk_drvTypeDef disk;
@@ -82,6 +85,11 @@ int app_main(){
 		res2 = f_open(&File2, (char*)path2, FA_WRITE | FA_CREATE_ALWAYS); // открытие файла, обязательно для работы с ним
 		f_puts("bmp_temp; bmp_press; bmp_humidity\n", &File2);
 		res2 = f_sync(&File2);
+	}
+	if(is_mount == FR_OK) { // монтируете файловую систему по пути SDPath, проверяете, что она смонтировалась, только при этом условии начинаете с ней работать
+		res3 = f_open(&File3, (char*)path3, FA_WRITE | FA_CREATE_ALWAYS); // открытие файла, обязательно для работы с ним
+		f_puts("", &File3);
+		res3 = f_sync(&File3);
 	}
 
 	//переменные
@@ -257,6 +265,11 @@ int app_main(){
 		time_now = HAL_GetTick() / 1000.0;
 		MadgwickAHRSupdate(seb_quaternion, gyro_m[0], gyro_m[1], gyro_m[2], acc_m[0], acc_m[1], acc_m[2], -1 * mag[0], -1 * mag[1], -1 * mag[2], time_before-time_now, 0.3);
 		time_before = time_now;
+		if(res3 == FR_OK){
+			str_wr = sd_parse_to_bytes_quaterneon(str_buf, seb_quaternion);
+			res3 = f_write(&File3, str_buf, str_wr, &Bytes); // отправка на запись в файл
+			res3 = f_sync(&File3);
+		}
 		/*//ina
 		ina_res = ina219_read_primary(&ina219,&primary_data);
 		if (ina_res == 2)

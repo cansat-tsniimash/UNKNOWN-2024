@@ -26,3 +26,12 @@ uint16_t sd_parse_to_bytes_pack2(char *buffer, pack2_t *pack2) {
 			pack2->bmp_temp, pack2->bmp_press, pack2->bmp_humidity);
 	return num_written;
 }
+
+uint16_t sd_parse_to_bytes_quaterneon(char *buffer, float *q) {
+	memset(buffer, 0, 300);
+	uint16_t num_written = snprintf(
+			buffer, 300,
+			"%f	%f	%f 	 %f\n",
+			q[0], q[1], q[2], q[3]);
+	return num_written;
+}
