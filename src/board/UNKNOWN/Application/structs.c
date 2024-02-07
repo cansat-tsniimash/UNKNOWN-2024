@@ -20,4 +20,24 @@ typedef struct{
 	uint32_t bmp_press; //4
 	int16_t bmp_humidity; // 2
 	float bme_height; // 2
+	float lux;
 }pack2_t;
+
+typedef struct{
+	uint8_t flag; // 1
+	float lat;
+	float lon;
+	float alt;
+	uint32_t gps_time_s;
+	uint32_t gps_time_us;
+
+}pack3_t;
+
+typedef struct{
+	uint8_t flag; // 1
+	float times;
+	float q1;
+	float q2;
+	float q3;
+	float q4;
+}packq_t;

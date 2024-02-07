@@ -22,7 +22,25 @@ uint16_t sd_parse_to_bytes_pack2(char *buffer, pack2_t *pack2) {
 	memset(buffer, 0, 300);
 	uint16_t num_written = snprintf(
 			buffer, 300,
-			"%d;%d;%d;\n",
-			pack2->bmp_temp, pack2->bmp_press, pack2->bmp_humidity);
+			"%d;%d;%d;%f;%f;\n",
+			pack2->bmp_temp, pack2->bmp_press, pack2->bmp_humidity, pack2->bme_height, pack2->lux);
+	return num_written;
+}
+
+uint16_t sd_parse_to_bytes_pack3(char *buffer, pack3_t *pack3) {
+	memset(buffer, 0, 300);
+	uint16_t num_written = snprintf(
+			buffer, 300,
+			"%f; %f; %f; %d; %d;\n",
+			pack3->lat, pack3->lon, pack3->alt, pack3->gps_time_s, pack3->gps_time_us);
+	return num_written;
+}
+
+uint16_t sd_parse_to_bytes_quaterneon(char *buffer, packq_t *q) {
+	memset(buffer, 0, 300);
+	uint16_t num_written = snprintf(
+			buffer, 300,
+			"%f	%f	%f	%f	%f\n",
+			q->times, q->q1, q->q3, q->q4);
 	return num_written;
 }

@@ -35,7 +35,8 @@ typedef enum
 {
 	STATE_GEN_PACK_1 = 1,
 	STATE_WAIT = 2,
-	STATE_GEN_PACK_2 = 3,
+	STATE_GEN_PACK_2_Q = 3,
+	STATE_GEN_PACK_3 = 4,
 } state_nrf_t;
 
 typedef enum
@@ -61,13 +62,21 @@ int app_main(){
 	FATFS fileSystem; // переменная типа FATFS
 	FIL File1; // хендлер файла
 	FIL File2;
+	FIL File3;
+	FIL File4;
+	FIL Fileq;
 	FIL File_bin;
 	FRESULT res1 = 255;
 	FRESULT res2 = 255;
+	FRESULT res3 = 255;
+	FRESULT res4 = 255;
+	FRESULT resq = 255;
 	FRESULT res_bin = 255;
 	FRESULT megares = 255;
 	const char path1[] = "packet1.csv";
  	const char path2[] = "packet2.csv";
+ 	const char path3[] = "packet3.csv";
+ 	const char pathq[] = "quaternion.csv";
 	memset(&fileSystem, 0x00, sizeof(fileSystem));
 	FRESULT is_mount = 0;
 	extern Disk_drvTypeDef disk;
@@ -80,8 +89,18 @@ int app_main(){
 	}
 	if(is_mount == FR_OK) { // монтируете файловую систему по пути SDPath, проверяете, что она смонтировалась, только при этом условии начинаете с ней работать
 		res2 = f_open(&File2, (char*)path2, FA_WRITE | FA_CREATE_ALWAYS); // открытие файла, обязательно для работы с ним
-		f_puts("bmp_temp; bmp_press; bmp_humidity\n", &File2);
+		f_puts("bmp_temp; bmp_press; bmp_humidity; bmp_height; photorez\n", &File2);
 		res2 = f_sync(&File2);
+	}
+	if(is_mount == FR_OK) { // монтируете файловую систему по пути SDPath, проверяете, что она смонтировалась, только при этом условии начинаете с ней работать
+		res3 = f_open(&File3, (char*)path3, FA_WRITE | FA_CREATE_ALWAYS); // открытие файла, обязательно для работы с ним
+		f_puts("lat; lon; alt; times; timems\n", &File3);
+		res3 = f_sync(&File3);
+	}
+	if(is_mount == FR_OK) { // монтируете файловую систему по пути SDPath, проверяете, что она смонтировалась, только при этом условии начинаете с ней работать
+		resq = f_open(&Fileq, (char*)pathq, FA_WRITE | FA_CREATE_ALWAYS); // открытие файла, обязательно для работы с ним
+		f_puts("", &Fileq);
+		resq = f_sync(&Fileq);
 	}
 
 	//переменные
@@ -103,8 +122,8 @@ int app_main(){
 
 	uint32_t start_time_par = 0;
 	uint32_t start_time_stab = 0;
-	uint32_t time_now = 0;
-	uint32_t time_before = 1;
+	float time_now = 0;
+	float time_before = 1;
 	float alt;
 	int fix_;
 	float limit_lux;
@@ -158,7 +177,7 @@ int app_main(){
 	lsm_sr.spi = &hspi1;
 	lsm_sr.sr = &shift_reg_r;
 	lsmset_sr(&ctx_lsm, &lsm_sr);
-
+	//photorez
 	photorezistor_t photrez;
 	photrez.resist = 2200;
 	photrez.hadc = &hadc1;
@@ -210,7 +229,7 @@ int app_main(){
 	gps_init();
 	__HAL_UART_ENABLE_IT(&huart1, UART_IT_RXNE);
 	__HAL_UART_ENABLE_IT(&huart1, UART_IT_ERR);
-	uint64_t gps_time_s;
+	uint32_t gps_time_s;
 	uint32_t gps_time_us;
 	//стх и структура лиса
 	stmdev_ctx_t ctx_lis;
@@ -222,8 +241,12 @@ int app_main(){
 
 	pack1_t pack1;
 	pack2_t pack2;
+	pack3_t pack3;
+	packq_t packq;
 	pack1.flag = 0xBB;
 	pack2.flag = 0xAA;
+	pack3.flag = 0xCC;
+	packq.flag = 0xFF;
 	//давление на земле
 	its_bme280_read(UNKNOWN_BME, &bme_shit);
 	double ground_pressure = bme_shit.pressure;
@@ -241,11 +264,13 @@ int app_main(){
 		height = 44330 * (1 - pow(bmp_press / ground_pressure, 1.0 / 5.255));
 		//сдвиговый регистр
 		shift_reg_write_bit_8(&shift_reg_r, 3, 1);
+		float lux = photorezistor_get_lux(photrez);
 		//gps
 		gps_work();
 		gps_get_coords(&cookie, &lat, &lon, &alt, &fix_);
 		gps_get_time(&cookie, &gps_time_s, &gps_time_us);
 		//lsm и lis
+		printf(HAL_GetTick());
 		lsmread(&ctx_lsm, &temperature_celsius_gyro, &acc_g, &gyro_dps);
 		lisread(&ctx_lis, &temperature_celsius_mag, &mag);
 		gyro_m[0] = gyro_dps[0] * 3.14 / 180;
@@ -257,6 +282,18 @@ int app_main(){
 		time_now = HAL_GetTick() / 1000.0;
 		MadgwickAHRSupdate(seb_quaternion, gyro_m[0], gyro_m[1], gyro_m[2], acc_m[0], acc_m[1], acc_m[2], -1 * mag[0], -1 * mag[1], -1 * mag[2], time_before-time_now, 0.3);
 		time_before = time_now;
+		printf(HAL_GetTick());
+		packq.times = time_now;
+		packq.q1 = seb_quaternion[0];
+		packq.q2 = seb_quaternion[1];
+		packq.q3 = seb_quaternion[2];
+		packq.q4 = seb_quaternion[3];
+		if(resq == FR_OK){
+			str_wr = sd_parse_to_bytes_quaterneon(str_buf, &packq);
+			resq = f_write(&Fileq, str_buf, str_wr, &Bytes); // отправка на запись в файл
+			resq = f_sync(&Fileq);
+		}
+		printf(HAL_GetTick());
 		/*//ina
 		ina_res = ina219_read_primary(&ina219,&primary_data);
 		if (ina_res == 2)
@@ -272,13 +309,13 @@ int app_main(){
 		current = ina219_current_convert(&ina219, secondary_data.current) * 0.67034;
 		bus_voltage = ina219_bus_voltage_convert(&ina219, primary_data.busv) * 1.0399;*/
 		//Photorez
-		float lux = photorezistor_get_lux(photrez);
+
 
 
 		switch (state_now)
 				{
 				case STATE_READY:
-					HAL_Delay(100);
+					//HAL_Delay(100);
 					if(0/*HAL_GPIO_ReadPin(GPIOx, GPIO_PIN_x)*/){
 						state_now = STATE_IN_ROCKET;
 						limit_lux = lux * 0.8;
@@ -326,7 +363,7 @@ int app_main(){
 			STATE_DESCENT = 4,
 			STATE_ON_EARTH = 5
 		} state_t;*/
-
+		printf(HAL_GetTick());
  		switch(state_nrf){
 		case STATE_GEN_PACK_1:
 			nrf24_fifo_flush_tx(&nrf24);
@@ -363,19 +400,26 @@ int app_main(){
 					counter = 0;
 				}
 				else{
-					state_nrf = STATE_GEN_PACK_1;
+					state_nrf = STATE_GEN_PACK_2_Q;
 				}
 			}
 			break;
-		case STATE_GEN_PACK_2:
+		case STATE_GEN_PACK_2_Q:
 			nrf24_fifo_flush_tx(&nrf24);
 			nrf24_fifo_write(&nrf24, (uint8_t *)&pack2, sizeof(pack2), false);
 			state_nrf = STATE_WAIT;
 			break;
+		case STATE_GEN_PACK_3:
+
+			state_nrf = STATE_WAIT;
+			break;
 		}
+ 		printf(HAL_GetTick());
 		pack2.bmp_temp = bmp_temp;
 		pack2.bmp_press = bmp_press;
 		pack2.bmp_humidity = bmp_humidity;
+		pack2.bme_height = height;
+		pack2.lux = lux;
 		for (int i = 0; i < 3; i++){
 			pack1.accl[i] = acc_g[i]*1000;
 			pack1.gyro[i] = gyro_dps[i]*1000;
@@ -390,6 +434,11 @@ int app_main(){
 			str_wr = sd_parse_to_bytes_pack2(str_buf, &pack2);
 			res2 = f_write(&File2, str_buf, str_wr, &Bytes); // отправка на запись в файл
 			res2 = f_sync(&File2);
+		}
+		if(res3 == FR_OK){
+			str_wr = sd_parse_to_bytes_pack3(str_buf, &pack3);
+			res3 = f_write(&File3, str_buf, str_wr, &Bytes); // отправка на запись в файл
+			res3 = f_sync(&File3);
 		}
 
 	}
