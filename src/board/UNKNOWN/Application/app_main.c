@@ -31,6 +31,13 @@ extern SPI_HandleTypeDef hspi4;
 extern I2C_HandleTypeDef hi2c1;
 extern ADC_HandleTypeDef hadc1;
 
+
+int _write(int file, char *ptr, int len)
+{
+HAL_UART_Transmit(&huart1, (uint8_t *)ptr, len, 100);
+return 0;
+}
+
 typedef enum
 {
 	STATE_GEN_PACK_1 = 1,
@@ -270,9 +277,11 @@ int app_main(){
 		gps_get_coords(&cookie, &lat, &lon, &alt, &fix_);
 		gps_get_time(&cookie, &gps_time_s, &gps_time_us);
 		//lsm и lis
-		printf(HAL_GetTick());
 		lsmread(&ctx_lsm, &temperature_celsius_gyro, &acc_g, &gyro_dps);
 		lisread(&ctx_lis, &temperature_celsius_mag, &mag);
+		gyro_dps[0] += 0.46;
+		gyro_dps[1] += 4.83;
+		gyro_dps[2] += 3.85;
 		gyro_m[0] = gyro_dps[0] * 3.14 / 180;
 		gyro_m[1] = gyro_dps[1] * 3.14 / 180;
 		gyro_m[2] = gyro_dps[2] * 3.14 / 180;
@@ -280,9 +289,11 @@ int app_main(){
 		acc_m[1] = acc_g[1] * 9.81;
 		acc_m[2] = acc_g[2] * 9.81;
 		time_now = HAL_GetTick() / 1000.0;
-		MadgwickAHRSupdate(seb_quaternion, gyro_m[0], gyro_m[1], gyro_m[2], acc_m[0], acc_m[1], acc_m[2], -1 * mag[0], -1 * mag[1], -1 * mag[2], time_before-time_now, 0.3);
+		MadgwickAHRSupdate(seb_quaternion, gyro_m[0], gyro_m[1], gyro_m[2], acc_m[0], acc_m[1], acc_m[2], mag[0], mag[1], mag[2], time_before-time_now, 0.3);
+		/*MadgwickAHRSupdateIMU(seb_quaternion, gyro_m[0], gyro_m[1], gyro_m[2], acc_m[0], acc_m[1], acc_m[2], time_before-time_now, 0.3);*/
 		time_before = time_now;
-		printf(HAL_GetTick());
+		printf("%f	%f	%f	%f	%f\n", time_now, seb_quaternion[0], seb_quaternion[1], seb_quaternion[2], seb_quaternion[3]);
+		/*printf("%f	%f	%f\n", gyro_dps[0], gyro_dps[1], gyro_dps[2]);*/
 		packq.times = time_now;
 		packq.q1 = seb_quaternion[0];
 		packq.q2 = seb_quaternion[1];
@@ -293,7 +304,7 @@ int app_main(){
 			resq = f_write(&Fileq, str_buf, str_wr, &Bytes); // отправка на запись в файл
 			resq = f_sync(&Fileq);
 		}
-		printf(HAL_GetTick());
+		/*printf("%d\n", HAL_GetTick());*/
 		/*//ina
 		ina_res = ina219_read_primary(&ina219,&primary_data);
 		if (ina_res == 2)
@@ -363,7 +374,7 @@ int app_main(){
 			STATE_DESCENT = 4,
 			STATE_ON_EARTH = 5
 		} state_t;*/
-		printf(HAL_GetTick());
+
  		switch(state_nrf){
 		case STATE_GEN_PACK_1:
 			nrf24_fifo_flush_tx(&nrf24);
@@ -414,7 +425,7 @@ int app_main(){
 			state_nrf = STATE_WAIT;
 			break;
 		}
- 		printf(HAL_GetTick());
+ 		/*printf("%d\n", HAL_GetTick());*/
 		pack2.bmp_temp = bmp_temp;
 		pack2.bmp_press = bmp_press;
 		pack2.bmp_humidity = bmp_humidity;
@@ -425,7 +436,7 @@ int app_main(){
 			pack1.gyro[i] = gyro_dps[i]*1000;
 			pack1.mag[i] = mag[i]*1000;
 		}
-		if(res1 == FR_OK){
+		/*if(res1 == FR_OK){
 			str_wr = sd_parse_to_bytes_pack1(str_buf, &pack1);
 			res1 = f_write(&File1, str_buf, str_wr, &Bytes); // отправка на запись в файл
 			res1 = f_sync(&File1);
@@ -440,6 +451,7 @@ int app_main(){
 			res3 = f_write(&File3, str_buf, str_wr, &Bytes); // отправка на запись в файл
 			res3 = f_sync(&File3);
 		}
+		printf("%d\n", HAL_GetTick());*/
 
 	}
 }
