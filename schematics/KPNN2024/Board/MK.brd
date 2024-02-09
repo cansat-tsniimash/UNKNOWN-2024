@@ -1591,6 +1591,18 @@ design rules under a new name.</description>
 <attribute name="NAME" x="-51.8862" y="-66.1712" size="1.27" layer="25" ratio="10"/>
 <attribute name="VALUE" x="-51.81" y="-72.175" size="1.27" layer="27"/>
 </element>
+<element name="R1" library="rcl" library_urn="urn:adsk.eagle:library:334" package="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="10k" x="-51" y="-76" smashed="yes">
+<attribute name="NAME" x="-51.635" y="-75.365" size="1.27" layer="25"/>
+<attribute name="POPULARITY" value="77" x="-51" y="-76" size="1.778" layer="27" display="off"/>
+<attribute name="SPICEPREFIX" value="R" x="-51" y="-76" size="1.778" layer="27" display="off"/>
+<attribute name="VALUE" x="-51.635" y="-77.905" size="1.27" layer="27"/>
+</element>
+<element name="R2" library="rcl" library_urn="urn:adsk.eagle:library:334" package="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="10k" x="-51" y="-81" smashed="yes">
+<attribute name="NAME" x="-51.635" y="-80.365" size="1.27" layer="25"/>
+<attribute name="POPULARITY" value="77" x="-51" y="-81" size="1.778" layer="27" display="off"/>
+<attribute name="SPICEPREFIX" value="R" x="-51" y="-81" size="1.778" layer="27" display="off"/>
+<attribute name="VALUE" x="-51.635" y="-82.905" size="1.27" layer="27"/>
+</element>
 </elements>
 <signals>
 <signal name="GND">
@@ -1601,8 +1613,8 @@ design rules under a new name.</description>
 <contactref element="U$1" pad="GND1"/>
 <contactref element="U$1" pad="GND3"/>
 <contactref element="MICRO_SD" pad="VSS"/>
-<contactref element="U$2" pad="1"/>
-<wire x1="-48.05" y1="-62" x2="-50.54" y2="-69" width="0" layer="19" extent="1-1"/>
+<contactref element="R1" pad="2"/>
+<wire x1="-48.05" y1="-62" x2="-50.15" y2="-76" width="0" layer="19" extent="1-1"/>
 <wire x1="-39.15" y1="-61" x2="-48.05" y2="-62" width="0" layer="19" extent="1-1"/>
 <wire x1="-23.1" y1="-40.77" x2="-39.15" y2="-61" width="0" layer="19" extent="1-1"/>
 <wire x1="-36.27" y1="-29.67" x2="-23.1" y2="-40.77" width="0" layer="19" extent="1-1"/>
@@ -1638,8 +1650,8 @@ design rules under a new name.</description>
 <contactref element="U$1" pad="3V32"/>
 <contactref element="U$1" pad="3V3"/>
 <contactref element="MICRO_SD" pad="VDD"/>
-<contactref element="U$2" pad="3"/>
-<wire x1="-20.9" y1="-40.77" x2="-45.46" y2="-69" width="0" layer="19" extent="1-1"/>
+<contactref element="R2" pad="2"/>
+<wire x1="-20.9" y1="-40.77" x2="-50.15" y2="-81" width="0" layer="19" extent="1-1"/>
 <wire x1="-38.81" y1="-29.67" x2="-20.9" y2="-40.77" width="0" layer="19" extent="1-1"/>
 <wire x1="-4.05" y1="-20.38" x2="-20.9" y2="-40.77" width="0" layer="19" extent="1-1"/>
 <wire x1="36.59" y1="-31.81" x2="-4.05" y2="-20.38" width="0" layer="19" extent="1-1"/>
@@ -1717,8 +1729,16 @@ design rules under a new name.</description>
 </signal>
 <signal name="SWITCH">
 <contactref element="U$1" pad="B1"/>
-<contactref element="U$2" pad="2"/>
-<wire x1="3.57" y1="-20.38" x2="-48" y2="-69" width="0" layer="19" extent="1-1"/>
+</signal>
+<signal name="N$1">
+<contactref element="R1" pad="1"/>
+<contactref element="U$2" pad="3"/>
+<wire x1="-45.46" y1="-69" x2="-51.85" y2="-76" width="0" layer="19" extent="1-1"/>
+</signal>
+<signal name="N$2">
+<contactref element="R2" pad="1"/>
+<contactref element="U$2" pad="1"/>
+<wire x1="-50.54" y1="-69" x2="-51.85" y2="-81" width="0" layer="19" extent="1-1"/>
 </signal>
 </signals>
 <mfgpreviewcolors>
