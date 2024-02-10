@@ -215,6 +215,16 @@
 <wire x1="1.3" y1="1.3" x2="0.788" y2="1.3" width="0.254" layer="21"/>
 <wire x1="-1.3" y1="1.3" x2="-0.76966875" y2="1.3" width="0.254" layer="21"/>
 </package>
+<package name="CONNECT_3">
+<text x="-3" y="1" size="1.27" layer="25">&gt;NAME</text>
+<smd name="1" x="1" y="0" dx="0.8" dy="0.8" layer="1"/>
+<smd name="2" x="0" y="0" dx="0.8" dy="0.8" layer="1"/>
+<wire x1="-1.6" y1="0.6" x2="1.6" y2="0.6" width="0.127" layer="21"/>
+<wire x1="1.6" y1="0.6" x2="1.6" y2="-0.6" width="0.127" layer="21"/>
+<wire x1="1.6" y1="-0.6" x2="-1.6" y2="-0.6" width="0.127" layer="21"/>
+<wire x1="-1.6" y1="-0.6" x2="-1.6" y2="0.6" width="0.127" layer="21"/>
+<smd name="3" x="-1" y="0" dx="0.8" dy="0.8" layer="1"/>
+</package>
 </packages>
 <symbols>
 <symbol name="GPS-4PINS">
@@ -268,6 +278,16 @@
 <pin name="1" x="0" y="0" length="middle"/>
 <pin name="2" x="20.32" y="0" length="middle" rot="R180"/>
 <pin name="3" x="10.16" y="10.16" length="middle" rot="R270"/>
+</symbol>
+<symbol name="CONNECT_3">
+<pin name="P$1" x="-5.08" y="-2.54" length="middle"/>
+<pin name="PIN" x="-5.08" y="0" length="middle"/>
+<pin name="P$3" x="-5.08" y="2.54" length="middle"/>
+<wire x1="0" y1="5.08" x2="0" y2="-5.08" width="0.254" layer="94"/>
+<wire x1="0" y1="-5.08" x2="10.16" y2="-5.08" width="0.254" layer="94"/>
+<wire x1="10.16" y1="-5.08" x2="10.16" y2="5.08" width="0.254" layer="94"/>
+<wire x1="10.16" y1="5.08" x2="0" y2="5.08" width="0.254" layer="94"/>
+<text x="0" y="7.62" size="1.778" layer="94">&gt;NAME</text>
 </symbol>
 </symbols>
 <devicesets>
@@ -363,6 +383,23 @@ Source: &lt;a href="https://www.hirose.com/product/document?clcode=CL0331-0472-2
 </device>
 </devices>
 </deviceset>
+<deviceset name="CONNECT_3">
+<gates>
+<gate name="G$1" symbol="CONNECT_3" x="0" y="-7.62"/>
+</gates>
+<devices>
+<device name="" package="CONNECT_3">
+<connects>
+<connect gate="G$1" pin="P$1" pad="1"/>
+<connect gate="G$1" pin="P$3" pad="3"/>
+<connect gate="G$1" pin="PIN" pad="2"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+</devices>
+</deviceset>
 </devicesets>
 </library>
 </libraries>
@@ -380,6 +417,8 @@ Source: &lt;a href="https://www.hirose.com/product/document?clcode=CL0331-0472-2
 <part name="U$3" library="UNKNOWN-2024" deviceset="XQ-02A" device=""/>
 <part name="J1" library="UNKNOWN-2024" deviceset="U.FL-R-SMT-1_10_" device=""/>
 <part name="J2" library="UNKNOWN-2024" deviceset="U.FL-R-SMT-1_10_" device=""/>
+<part name="U$4" library="UNKNOWN-2024" deviceset="CONNECT_3" device=""/>
+<part name="U$5" library="UNKNOWN-2024" deviceset="CONNECT_3" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -402,6 +441,12 @@ Source: &lt;a href="https://www.hirose.com/product/document?clcode=CL0331-0472-2
 <instance part="J2" gate="G$1" x="119.38" y="43.18" smashed="yes">
 <attribute name="NAME" x="135.89" y="53.34" size="1.778" layer="95" align="center-left"/>
 <attribute name="VALUE" x="135.89" y="50.8" size="1.778" layer="96" align="center-left"/>
+</instance>
+<instance part="U$4" gate="G$1" x="187.96" y="71.12" smashed="yes">
+<attribute name="NAME" x="187.96" y="78.74" size="1.778" layer="94"/>
+</instance>
+<instance part="U$5" gate="G$1" x="187.96" y="86.36" smashed="yes">
+<attribute name="NAME" x="187.96" y="93.98" size="1.778" layer="94"/>
 </instance>
 </instances>
 <busses>
@@ -443,6 +488,16 @@ Source: &lt;a href="https://www.hirose.com/product/document?clcode=CL0331-0472-2
 <junction x="119.38" y="43.18"/>
 <label x="106.68" y="43.18" size="1.778" layer="95"/>
 </segment>
+<segment>
+<pinref part="U$5" gate="G$1" pin="P$3"/>
+<wire x1="182.88" y1="88.9" x2="170.18" y2="88.9" width="0.1524" layer="91"/>
+<label x="170.18" y="88.9" size="1.778" layer="95"/>
+</segment>
+<segment>
+<pinref part="U$4" gate="G$1" pin="P$3"/>
+<wire x1="182.88" y1="73.66" x2="170.18" y2="73.66" width="0.1524" layer="91"/>
+<label x="170.18" y="73.66" size="1.778" layer="95"/>
+</segment>
 </net>
 <net name="3V3" class="0">
 <segment>
@@ -459,6 +514,16 @@ Source: &lt;a href="https://www.hirose.com/product/document?clcode=CL0331-0472-2
 <pinref part="U$3" gate="G$1" pin="3.3V"/>
 <wire x1="68.58" y1="73.66" x2="50.8" y2="73.66" width="0.1524" layer="91"/>
 <label x="50.8" y="73.66" size="1.778" layer="95"/>
+</segment>
+<segment>
+<pinref part="U$5" gate="G$1" pin="P$1"/>
+<wire x1="182.88" y1="83.82" x2="170.18" y2="83.82" width="0.1524" layer="91"/>
+<label x="170.18" y="83.82" size="1.778" layer="95"/>
+</segment>
+<segment>
+<pinref part="U$4" gate="G$1" pin="P$1"/>
+<wire x1="182.88" y1="68.58" x2="170.18" y2="68.58" width="0.1524" layer="91"/>
+<label x="170.18" y="68.58" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="IRQ" class="0">
@@ -524,23 +589,11 @@ Source: &lt;a href="https://www.hirose.com/product/document?clcode=CL0331-0472-2
 <label x="50.8" y="78.74" size="1.778" layer="95"/>
 </segment>
 </net>
-<net name="N$2" class="0">
-<segment>
-<pinref part="U$3" gate="G$1" pin="LED2"/>
-<wire x1="104.14" y1="83.82" x2="129.54" y2="83.82" width="0.1524" layer="91"/>
-</segment>
-</net>
-<net name="N$3" class="0">
-<segment>
-<pinref part="U$3" gate="G$1" pin="LED1"/>
-<wire x1="104.14" y1="78.74" x2="129.54" y2="78.74" width="0.1524" layer="91"/>
-</segment>
-</net>
 <net name="SW" class="0">
 <segment>
 <pinref part="U$3" gate="G$1" pin="SW"/>
-<wire x1="104.14" y1="73.66" x2="129.54" y2="73.66" width="0.1524" layer="91"/>
-<label x="127" y="73.66" size="1.778" layer="95"/>
+<wire x1="104.14" y1="73.66" x2="121.92" y2="73.66" width="0.1524" layer="91"/>
+<label x="116.84" y="73.66" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="RF-IN" class="0">
@@ -551,8 +604,8 @@ Source: &lt;a href="https://www.hirose.com/product/document?clcode=CL0331-0472-2
 </segment>
 <segment>
 <pinref part="U$3" gate="G$1" pin="RF-IN"/>
-<wire x1="104.14" y1="68.58" x2="129.54" y2="68.58" width="0.1524" layer="91"/>
-<label x="124.46" y="68.58" size="1.778" layer="95"/>
+<wire x1="104.14" y1="68.58" x2="121.92" y2="68.58" width="0.1524" layer="91"/>
+<label x="116.84" y="68.58" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="ATN_RADIO" class="0">
@@ -563,8 +616,32 @@ Source: &lt;a href="https://www.hirose.com/product/document?clcode=CL0331-0472-2
 </segment>
 <segment>
 <pinref part="U$3" gate="G$1" pin="ANT"/>
-<wire x1="104.14" y1="88.9" x2="129.54" y2="88.9" width="0.1524" layer="91"/>
+<wire x1="104.14" y1="88.9" x2="121.92" y2="88.9" width="0.1524" layer="91"/>
 <label x="116.84" y="88.9" size="1.778" layer="95"/>
+</segment>
+</net>
+<net name="LED2" class="0">
+<segment>
+<pinref part="U$3" gate="G$1" pin="LED2"/>
+<wire x1="104.14" y1="83.82" x2="121.92" y2="83.82" width="0.1524" layer="91"/>
+<label x="116.84" y="83.82" size="1.778" layer="95"/>
+</segment>
+<segment>
+<pinref part="U$5" gate="G$1" pin="PIN"/>
+<wire x1="182.88" y1="86.36" x2="170.18" y2="86.36" width="0.1524" layer="91"/>
+<label x="170.18" y="86.36" size="1.778" layer="95"/>
+</segment>
+</net>
+<net name="LED1" class="0">
+<segment>
+<pinref part="U$3" gate="G$1" pin="LED1"/>
+<wire x1="104.14" y1="78.74" x2="121.92" y2="78.74" width="0.1524" layer="91"/>
+<label x="116.84" y="78.74" size="1.778" layer="95"/>
+</segment>
+<segment>
+<pinref part="U$4" gate="G$1" pin="PIN"/>
+<wire x1="182.88" y1="71.12" x2="170.18" y2="71.12" width="0.1524" layer="91"/>
+<label x="170.18" y="71.12" size="1.778" layer="95"/>
 </segment>
 </net>
 </nets>

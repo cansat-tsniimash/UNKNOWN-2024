@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="9.6.2">
+<eagle version="9.6.0">
 <drawing>
 <settings>
 <setting alwaysvectorfont="no"/>
@@ -712,6 +712,42 @@ distributor Buerklin, 11G810</description>
 <wire x1="2.2" y1="15.4" x2="2.2" y2="10.4" width="0.127" layer="21"/>
 <wire x1="-4" y1="15" x2="-0.1" y2="15" width="0.127" layer="21"/>
 </package>
+<package name="VIAS-CONNECT">
+<text x="-3" y="1" size="1.27" layer="27">&gt;VALUE</text>
+<smd name="1" x="-0.5" y="0" dx="0.8" dy="0.8" layer="1"/>
+<smd name="2" x="0.5" y="0" dx="0.8" dy="0.8" layer="1"/>
+<wire x1="-1.1" y1="0.6" x2="-0.7" y2="0.6" width="0.127" layer="21"/>
+<wire x1="-0.7" y1="0.6" x2="0.7" y2="0.6" width="0.127" layer="21"/>
+<wire x1="0.7" y1="0.6" x2="1.1" y2="0.6" width="0.127" layer="21"/>
+<wire x1="1.1" y1="0.6" x2="1.1" y2="-0.6" width="0.127" layer="21"/>
+<wire x1="1.1" y1="-0.6" x2="0.7" y2="-0.6" width="0.127" layer="21"/>
+<wire x1="0.7" y1="-0.6" x2="-0.7" y2="-0.6" width="0.127" layer="21"/>
+<wire x1="-0.7" y1="-0.6" x2="-1.1" y2="-0.6" width="0.127" layer="21"/>
+<wire x1="-1.1" y1="-0.6" x2="-1.1" y2="0.6" width="0.127" layer="21"/>
+<wire x1="-0.7" y1="0.6" x2="0.7" y2="0.6" width="0.127" layer="21" curve="-98.797411"/>
+<wire x1="0.7" y1="-0.6" x2="-0.7" y2="-0.6" width="0.127" layer="21" curve="-98.797411"/>
+</package>
+<package name="SOLDERING-PAD-4A">
+<smd name="P$1" x="1.1" y="0" dx="1.4" dy="2" layer="1" rot="R90"/>
+<smd name="P$2" x="-1.1" y="0" dx="1.4" dy="2" layer="1" rot="R270"/>
+<wire x1="-2.3" y1="0.9" x2="2.3" y2="0.9" width="0.1" layer="21"/>
+<wire x1="2.3" y1="0.9" x2="2.3" y2="-0.9" width="0.1" layer="21"/>
+<wire x1="2.3" y1="-0.9" x2="-2.3" y2="-0.9" width="0.1" layer="21"/>
+<wire x1="-2.3" y1="-0.9" x2="-2.3" y2="0.9" width="0.1" layer="21"/>
+<text x="0" y="1.97" size="1" layer="25" align="bottom-center">&gt;VALUE</text>
+<wire x1="-1.27" y1="0.943" x2="1.27" y2="0.943" width="0.127" layer="21" curve="-90"/>
+<wire x1="1.27" y1="-0.943" x2="-1.27" y2="-0.943" width="0.127" layer="21" curve="-90"/>
+</package>
+<package name="CONNECT_3">
+<text x="-3" y="1" size="1.27" layer="25">&gt;NAME</text>
+<smd name="1" x="1" y="0" dx="0.8" dy="0.8" layer="1"/>
+<smd name="2" x="0" y="0" dx="0.8" dy="0.8" layer="1"/>
+<wire x1="-1.6" y1="0.6" x2="1.6" y2="0.6" width="0.127" layer="21"/>
+<wire x1="1.6" y1="0.6" x2="1.6" y2="-0.6" width="0.127" layer="21"/>
+<wire x1="1.6" y1="-0.6" x2="-1.6" y2="-0.6" width="0.127" layer="21"/>
+<wire x1="-1.6" y1="-0.6" x2="-1.6" y2="0.6" width="0.127" layer="21"/>
+<smd name="3" x="-1" y="0" dx="0.8" dy="0.8" layer="1"/>
+</package>
 </packages>
 <packages3d>
 <package3d name="255SB" urn="urn:adsk.eagle:package:27679/1" type="box">
@@ -1098,6 +1134,22 @@ distributor Buerklin, 11G810</description>
 <pin name="1" x="0" y="0" length="middle"/>
 <pin name="2" x="20.32" y="0" length="middle" rot="R180"/>
 <pin name="3" x="10.16" y="10.16" length="middle" rot="R270"/>
+</symbol>
+<symbol name="VIAS-CONNECT">
+<text x="-3.81" y="3.175" size="1.778" layer="95">&gt;NAME</text>
+<pin name="1" x="-2.54" y="0" visible="pad" length="short" direction="pas" function="dot"/>
+<pin name="2" x="2.54" y="0" visible="pad" length="short" direction="pas" function="dot" rot="R180"/>
+<text x="-3.81" y="-4.445" size="1.778" layer="96">&gt;VALUE</text>
+</symbol>
+<symbol name="CONNECT_3">
+<pin name="P$1" x="-5.08" y="-2.54" length="middle"/>
+<pin name="PIN" x="-5.08" y="0" length="middle"/>
+<pin name="P$3" x="-5.08" y="2.54" length="middle"/>
+<wire x1="0" y1="5.08" x2="0" y2="-5.08" width="0.254" layer="94"/>
+<wire x1="0" y1="-5.08" x2="10.16" y2="-5.08" width="0.254" layer="94"/>
+<wire x1="10.16" y1="-5.08" x2="10.16" y2="5.08" width="0.254" layer="94"/>
+<wire x1="10.16" y1="5.08" x2="0" y2="5.08" width="0.254" layer="94"/>
+<text x="0" y="7.62" size="1.778" layer="94">&gt;NAME</text>
 </symbol>
 </symbols>
 <devicesets>
@@ -1679,6 +1731,48 @@ Source: &lt;a href="https://www.hirose.com/product/document?clcode=CL0331-0472-2
 <attribute name="MOUSER_TESTING_PART_NUMBER" value="" constant="no"/>
 <attribute name="MOUSER_TESTING_PRICE-STOCK" value="" constant="no"/>
 </technology>
+</technologies>
+</device>
+</devices>
+</deviceset>
+<deviceset name="VIAS-CONNECT" uservalue="yes">
+<gates>
+<gate name="G$1" symbol="VIAS-CONNECT" x="0" y="0"/>
+</gates>
+<devices>
+<device name="" package="VIAS-CONNECT">
+<connects>
+<connect gate="G$1" pin="1" pad="1"/>
+<connect gate="G$1" pin="2" pad="2"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="W1.4MM" package="SOLDERING-PAD-4A">
+<connects>
+<connect gate="G$1" pin="1" pad="P$1"/>
+<connect gate="G$1" pin="2" pad="P$2"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+</devices>
+</deviceset>
+<deviceset name="CONNECT_3">
+<gates>
+<gate name="G$1" symbol="CONNECT_3" x="0" y="-7.62"/>
+</gates>
+<devices>
+<device name="" package="CONNECT_3">
+<connects>
+<connect gate="G$1" pin="P$1" pad="1"/>
+<connect gate="G$1" pin="P$3" pad="3"/>
+<connect gate="G$1" pin="PIN" pad="2"/>
+</connects>
+<technologies>
+<technology name=""/>
 </technologies>
 </device>
 </devices>
