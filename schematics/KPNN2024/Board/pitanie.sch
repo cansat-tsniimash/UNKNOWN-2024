@@ -6,7 +6,7 @@
 <setting alwaysvectorfont="no"/>
 <setting verticaltext="up"/>
 </settings>
-<grid distance="0.1" unitdist="inch" unit="inch" style="lines" multiple="1" display="no" altdistance="0.01" altunitdist="inch" altunit="inch"/>
+<grid distance="1" unitdist="mm" unit="mm" style="lines" multiple="1" display="no" altdistance="0.05" altunitdist="mm" altunit="mm"/>
 <layers>
 <layer number="1" name="Top" color="4" fill="1" visible="no" active="no"/>
 <layer number="16" name="Bottom" color="1" fill="1" visible="no" active="no"/>
@@ -428,6 +428,30 @@ distributor Buerklin, 11G810</description>
 <pad name="P$11" x="2.54" y="5" drill="1.016" shape="octagon"/>
 <pad name="P$12" x="5.08" y="5" drill="1.016" shape="octagon"/>
 </package>
+<package name="DRIVER_TMC2209">
+<wire x1="0" y1="0" x2="0" y2="20.4" width="0.127" layer="21"/>
+<wire x1="0" y1="20.4" x2="15.2" y2="20.4" width="0.127" layer="21"/>
+<wire x1="15.2" y1="20.4" x2="15.2" y2="0" width="0.127" layer="21"/>
+<wire x1="15.2" y1="0" x2="0" y2="0" width="0.127" layer="21"/>
+<pad name="P$1" x="1" y="1.3" drill="0.6"/>
+<pad name="P$2" x="1" y="3.84" drill="0.6"/>
+<pad name="P$3" x="1" y="6.38" drill="0.6"/>
+<pad name="P$4" x="1" y="8.92" drill="0.6"/>
+<pad name="P$5" x="1" y="11.46" drill="0.6"/>
+<pad name="P$6" x="1" y="14" drill="0.6"/>
+<pad name="P$7" x="1" y="16.54" drill="0.6"/>
+<pad name="P$10" x="1" y="19.08" drill="0.6"/>
+<pad name="P$8" x="14" y="1.3" drill="0.6"/>
+<pad name="P$9" x="14" y="3.84" drill="0.6"/>
+<pad name="P$11" x="14" y="6.38" drill="0.6"/>
+<pad name="P$12" x="14" y="8.92" drill="0.6"/>
+<pad name="P$13" x="14" y="11.46" drill="0.6"/>
+<pad name="P$14" x="14" y="14" drill="0.6"/>
+<pad name="P$15" x="14" y="16.54" drill="0.6"/>
+<pad name="P$16" x="14" y="19.08" drill="0.6"/>
+<pad name="P$17" x="3.54" y="19.08" drill="0.6"/>
+<pad name="P$18" x="6.08" y="19.08" drill="0.6"/>
+</package>
 </packages>
 <packages3d>
 <package3d name="255SB" urn="urn:adsk.eagle:package:27679/1" type="box">
@@ -516,6 +540,30 @@ distributor Buerklin, 11G810</description>
 <text x="-7.62" y="17.78" size="1.778" layer="95">&gt;NAME</text>
 <pin name="SDX" x="-15.24" y="-10.16" length="middle"/>
 <pin name="DCS" x="-15.24" y="10.16" length="middle"/>
+</symbol>
+<symbol name="DRIVER_TMC2209">
+<wire x1="0" y1="0" x2="0" y2="20.4" width="0.254" layer="94"/>
+<wire x1="0" y1="20.4" x2="15.2" y2="20.4" width="0.254" layer="94"/>
+<wire x1="15.2" y1="20.4" x2="15.2" y2="0" width="0.254" layer="94"/>
+<wire x1="15.2" y1="0" x2="0" y2="0" width="0.254" layer="94"/>
+<pin name="P$1" x="-5" y="18.6" length="middle"/>
+<pin name="P$2" x="-5" y="16.15" length="middle"/>
+<pin name="P$3" x="-5" y="13.7" length="middle"/>
+<pin name="P$4" x="-5" y="11.25" length="middle"/>
+<pin name="P$5" x="-5" y="8.8" length="middle"/>
+<pin name="P$6" x="-5" y="6.35" length="middle"/>
+<pin name="P$7" x="-5" y="3.9" length="middle"/>
+<pin name="P$8" x="-5" y="1.45" length="middle"/>
+<pin name="P$9" x="20.4" y="1.4" length="middle" rot="R180"/>
+<pin name="P$10" x="20.4" y="3.85" length="middle" rot="R180"/>
+<pin name="P$11" x="20.4" y="6.3" length="middle" rot="R180"/>
+<pin name="P$12" x="20.4" y="8.75" length="middle" rot="R180"/>
+<pin name="P$13" x="20.4" y="11.2" length="middle" rot="R180"/>
+<pin name="P$14" x="20.4" y="13.65" length="middle" rot="R180"/>
+<pin name="P$15" x="20.4" y="16.1" length="middle" rot="R180"/>
+<pin name="P$16" x="20.4" y="18.55" length="middle" rot="R180"/>
+<pin name="P$17" x="4" y="25.6" length="middle" rot="R270"/>
+<pin name="P$18" x="7" y="25.6" length="middle" rot="R270"/>
 </symbol>
 </symbols>
 <devicesets>
@@ -622,6 +670,38 @@ Distributor Buerklin, 11G810</description>
 <connect gate="G$1" pin="SDA" pad="P$3"/>
 <connect gate="G$1" pin="SDX" pad="P$8"/>
 <connect gate="G$1" pin="VIN" pad="P$7"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+</devices>
+</deviceset>
+<deviceset name="DRIVER_TMC2209">
+<gates>
+<gate name="G$1" symbol="DRIVER_TMC2209" x="-12.7" y="-7.62"/>
+</gates>
+<devices>
+<device name="" package="DRIVER_TMC2209">
+<connects>
+<connect gate="G$1" pin="P$1" pad="P$10"/>
+<connect gate="G$1" pin="P$10" pad="P$9"/>
+<connect gate="G$1" pin="P$11" pad="P$11"/>
+<connect gate="G$1" pin="P$12" pad="P$12"/>
+<connect gate="G$1" pin="P$13" pad="P$13"/>
+<connect gate="G$1" pin="P$14" pad="P$14"/>
+<connect gate="G$1" pin="P$15" pad="P$15"/>
+<connect gate="G$1" pin="P$16" pad="P$16"/>
+<connect gate="G$1" pin="P$17" pad="P$17"/>
+<connect gate="G$1" pin="P$18" pad="P$18"/>
+<connect gate="G$1" pin="P$2" pad="P$7"/>
+<connect gate="G$1" pin="P$3" pad="P$6"/>
+<connect gate="G$1" pin="P$4" pad="P$5"/>
+<connect gate="G$1" pin="P$5" pad="P$4"/>
+<connect gate="G$1" pin="P$6" pad="P$3"/>
+<connect gate="G$1" pin="P$7" pad="P$2"/>
+<connect gate="G$1" pin="P$8" pad="P$1"/>
+<connect gate="G$1" pin="P$9" pad="P$8"/>
 </connects>
 <technologies>
 <technology name=""/>
@@ -8530,6 +8610,8 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <part name="LSM" library="UNKNOWN-2024" deviceset="LSM6DS3-GY" device=""/>
 <part name="LIS" library="CanCubeSat" deviceset="LIS3MDL-GY" device=""/>
 <part name="R7" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="2k"/>
+<part name="TMC" library="UNKNOWN-2024" deviceset="DRIVER_TMC2209" device=""/>
+<part name="R8" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="1k"/>
 </parts>
 <sheets>
 <sheet>
@@ -8650,6 +8732,11 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <instance part="R7" gate="G$1" x="119.38" y="88.9" smashed="yes" rot="R90">
 <attribute name="NAME" x="117.8814" y="85.09" size="1.778" layer="95" rot="R90"/>
 <attribute name="VALUE" x="122.682" y="85.09" size="1.778" layer="96" rot="R90"/>
+</instance>
+<instance part="TMC" gate="G$1" x="362" y="78" smashed="yes"/>
+<instance part="R8" gate="G$1" x="345.22" y="94.94" smashed="yes" rot="R90">
+<attribute name="NAME" x="343.7214" y="91.13" size="1.778" layer="95" rot="R90"/>
+<attribute name="VALUE" x="348.522" y="91.13" size="1.778" layer="96" rot="R90"/>
 </instance>
 </instances>
 <busses>
@@ -8973,6 +9060,18 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <wire x1="208.28" y1="121.92" x2="218.44" y2="121.92" width="0.1524" layer="91"/>
 <label x="213.36" y="121.92" size="1.778" layer="95"/>
 </segment>
+<segment>
+<pinref part="TMC" gate="G$1" pin="P$9"/>
+<wire x1="382.4" y1="79.4" x2="398.244984375" y2="79.4" width="0.1524" layer="91"/>
+<wire x1="398.244984375" y1="79.4" x2="398.244984375" y2="79.3966125" width="0.1524" layer="91"/>
+<label x="393.112159375" y="79.48539375" size="1.778" layer="95"/>
+</segment>
+<segment>
+<pinref part="TMC" gate="G$1" pin="P$15"/>
+<wire x1="382.4" y1="94.1" x2="398" y2="94.1" width="0.1524" layer="91"/>
+<wire x1="398" y1="94.1" x2="398" y2="94" width="0.1524" layer="91"/>
+<label x="393" y="94" size="1.778" layer="95"/>
+</segment>
 </net>
 <net name="8V" class="0">
 <segment>
@@ -9076,6 +9175,34 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <pinref part="U$7" gate="G$1" pin="Q7"/>
 <wire x1="53.34" y1="144.78" x2="40.64" y2="144.78" width="0.1524" layer="91"/>
 <label x="40.64" y="144.78" size="1.778" layer="95"/>
+</segment>
+</net>
+<net name="A3" class="0">
+<segment>
+<pinref part="TMC" gate="G$1" pin="P$4"/>
+<wire x1="357" y1="89.25" x2="345" y2="89.25" width="0.1524" layer="91"/>
+<wire x1="345" y1="89.25" x2="345" y2="89" width="0.1524" layer="91"/>
+<wire x1="345" y1="89" x2="333" y2="89" width="0.1524" layer="91"/>
+<pinref part="R8" gate="G$1" pin="1"/>
+<wire x1="345" y1="89.25" x2="345" y2="89.86" width="0.1524" layer="91"/>
+<wire x1="345" y1="89.86" x2="345.22" y2="89.86" width="0.1524" layer="91"/>
+<label x="333" y="89" size="1.778" layer="95"/>
+</segment>
+</net>
+<net name="A2" class="0">
+<segment>
+<pinref part="R8" gate="G$1" pin="2"/>
+<wire x1="345.22" y1="100.02" x2="334" y2="100.02" width="0.1524" layer="91"/>
+<wire x1="334" y1="100.02" x2="334" y2="100" width="0.1524" layer="91"/>
+<label x="334" y="100" size="1.778" layer="95"/>
+</segment>
+</net>
+<net name="5V" class="0">
+<segment>
+<pinref part="TMC" gate="G$1" pin="P$16"/>
+<wire x1="382.4" y1="96.55" x2="397.958121875" y2="96.55" width="0.1524" layer="91"/>
+<wire x1="397.958121875" y1="96.55" x2="397.958121875" y2="96.542290625" width="0.1524" layer="91"/>
+<label x="395.55" y="96.6" size="1.778" layer="95"/>
 </segment>
 </net>
 </nets>
