@@ -21,6 +21,7 @@ typedef struct{
 	int16_t bmp_humidity; // 2
 	float bme_height; // 2
 	float lux;
+	uint8_t state;
 }pack2_t;
 
 typedef struct{

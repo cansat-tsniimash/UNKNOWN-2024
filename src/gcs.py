@@ -90,10 +90,13 @@ if __name__ == '__main__':
                 if data[0] == 187:
                     pass
                     print("==== Пакет тип 1 ====")
-                    unpack_data = struct.unpack("<BIHhIffhbIH", data[:25])
+                    unpack_data = struct.unpack("<BiIiffI", data[:25])
                     print ("Temperature BME", unpack_data[1]/100)
                     print ("Pressure", unpack_data[2])
                     print ("Humidity", unpack_data[3])
+                    print ("Height", unpack_data[4])
+                    print ("Lux", unpack_data[5])
+                    print ("State", unpack_data[6])
                     # print ("Bus voltage", unpack_data[7]/1000)
                     # print ("Current", unpack_data[6]/1000)
                     # print ("Number", unpack_data[2])
@@ -112,7 +115,7 @@ if __name__ == '__main__':
                 elif data[0] == 170:
                     #continue
                     print("==== Пакет тип 2 ====")
-                    unpack_data = struct.unpack("<BIH9hH", data[:19])
+                    unpack_data = struct.unpack("<Biii", data[:19])
                     print ("Accelerometer x", unpack_data[1]/1000)
                     print ("Accelerometer y", unpack_data[2]/1000)
                     print ("Accelerometer z", unpack_data[3]/1000)
@@ -133,27 +136,44 @@ if __name__ == '__main__':
                         f2.flush()
                     f2.write('\n')
 
-                # elif data[0] == 204: 
-                #     #continue
-                #     print("==== Пакет тип 3 ====")
-                #     unpack_data = struct.unpack("<BIHh3f2IbH", data[:32])
-                #     print ("Latitude", unpack_data[4])
-                #     print ("Longitude", unpack_data[5])
-                #     print ("Height", unpack_data[6])
-                #     print ("Time, s", unpack_data[7]) 
-                #     print ("Time, mks", unpack_data[8])
-                #     print ("Fix", unpack_data[9])
-                #     print ("Number", unpack_data[2])
-                #     print ("Time", unpack_data[1])
-                #     print ("Temperature DS", unpack_data[3])
+                elif data[0] == 204:
+                     continue
+                     print("==== Пакет тип 3 ====")
+                     unpack_data = struct.unpack("<BIfffII", data[:32])
+                     print ("Latitude", unpack_data[1])
+                     print ("Longitude", unpack_data[2])
+                     print ("Height", unpack_data[3])
+                     print ("Time, s", unpack_data[4])
+                     print ("Time, mks", unpack_data[5])
+                     #print ("Fix", unpack_data[9])
+                     #print ("Number", unpack_data[2])
+                     #print ("Time", unpack_data[1])
 
-                #     print ('\n')
+                     print ('\n')
 
-                #     for i in range(1,10):
-                #         f3.write(str(unpack_data[i]))
-                #         f3.write(";")
-                #         f3.flush()
-                #     f3.write('\n')
+                     for i in range(1,10):
+                         f3.write(str(unpack_data[i]))
+                         f3.write(";")
+                         f3.flush()
+                     f3.write('\n')
+
+                elif data[0] == 300:
+                     continue
+                     print("==== Пакет тип 4 ====")
+                     unpack_data = struct.unpack("<Bfffff", data[:32])
+                     print ("Q1", unpack_data[2])
+                     print ("Q2", unpack_data[3])
+                     print ("Q3", unpack_data[4])
+                     print ("Q4", unpack_data[5])
+                     print ("Time", unpack_data[1])
+
+                     print ('\n')
+
+                     for i in range(1,10):
+                         f3.write(str(unpack_data[i]))
+                         f3.write(";")
+                         f3.flush()
+                     f3.write('\n')
                 else:
                     print('unknown flag ', data[0])
             except Exception as e:
