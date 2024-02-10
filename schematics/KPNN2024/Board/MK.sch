@@ -5260,6 +5260,10 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <wire x1="20.32" y1="71.12" x2="5.08" y2="71.12" width="0.1524" layer="91"/>
 <label x="5.08" y="71.12" size="1.778" layer="95"/>
 </segment>
+<segment>
+<wire x1="304.8" y1="38.1" x2="342.9" y2="38.1" width="0.1524" layer="91"/>
+<label x="340.36" y="38.1" size="1.778" layer="95"/>
+</segment>
 </net>
 <net name="SDA" class="0">
 <segment>
@@ -5271,6 +5275,10 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <pinref part="U$1" gate="G$1" pin="PB9"/>
 <wire x1="20.32" y1="55.88" x2="5.08" y2="55.88" width="0.1524" layer="91"/>
 <label x="5.08" y="55.88" size="1.778" layer="95"/>
+</segment>
+<segment>
+<wire x1="304.8" y1="43.18" x2="342.9" y2="43.18" width="0.1524" layer="91"/>
+<label x="340.36" y="43.18" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="CMD" class="0">
@@ -5310,12 +5318,20 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <wire x1="20.32" y1="50.8" x2="0" y2="50.8" width="0.1524" layer="91"/>
 <label x="0" y="50.8" size="1.778" layer="95"/>
 </segment>
+<segment>
+<wire x1="304.8" y1="12.7" x2="342.9" y2="12.7" width="0.1524" layer="91"/>
+<label x="340.36" y="12.7" size="1.778" layer="95"/>
+</segment>
 </net>
 <net name="LATCH_SR" class="0">
 <segment>
 <pinref part="U$1" gate="G$1" pin="PB2"/>
 <wire x1="20.32" y1="91.44" x2="0" y2="91.44" width="0.1524" layer="91"/>
 <label x="0" y="91.44" size="1.778" layer="95"/>
+</segment>
+<segment>
+<wire x1="304.8" y1="17.78" x2="342.9" y2="17.78" width="0.1524" layer="91"/>
+<label x="340.36" y="17.78" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="MOSI_SR" class="0">
@@ -5324,12 +5340,20 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <wire x1="60.96" y1="60.96" x2="83.82" y2="60.96" width="0.1524" layer="91"/>
 <label x="73.66" y="60.96" size="1.778" layer="95"/>
 </segment>
+<segment>
+<wire x1="304.8" y1="33.02" x2="342.9" y2="33.02" width="0.1524" layer="91"/>
+<label x="340.36" y="33.02" size="1.778" layer="95"/>
+</segment>
 </net>
 <net name="SCK_SR" class="0">
 <segment>
 <pinref part="U$1" gate="G$1" pin="PA5"/>
 <wire x1="60.96" y1="71.12" x2="83.82" y2="71.12" width="0.1524" layer="91"/>
 <label x="73.66" y="71.12" size="1.778" layer="95"/>
+</segment>
+<segment>
+<wire x1="304.8" y1="27.94" x2="342.9" y2="27.94" width="0.1524" layer="91"/>
+<label x="340.36" y="27.94" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="MOSI_RADIO" class="0">
@@ -5366,6 +5390,10 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <pinref part="U$1" gate="G$1" pin="PB4"/>
 <wire x1="20.32" y1="81.28" x2="0" y2="81.28" width="0.1524" layer="91"/>
 <label x="0" y="81.28" size="1.778" layer="95"/>
+</segment>
+<segment>
+<wire x1="304.8" y1="22.86" x2="342.9" y2="22.86" width="0.1524" layer="91"/>
+<label x="340.36" y="22.86" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="RX_UART" class="0">
@@ -5434,12 +5462,6 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <label x="340.36" y="53.34" size="1.778" layer="95"/>
 </segment>
 </net>
-<net name="SDA_BME" class="0">
-<segment>
-<wire x1="304.8" y1="43.18" x2="342.9" y2="43.18" width="0.1524" layer="91"/>
-<label x="340.36" y="43.18" size="1.778" layer="95"/>
-</segment>
-</net>
 <net name="D0_SD" class="0">
 <segment>
 <pinref part="U$1" gate="G$1" pin="PB7"/>
@@ -5452,6 +5474,11 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <pinref part="U$1" gate="G$1" pin="PB1"/>
 <wire x1="20.32" y1="96.52" x2="0" y2="96.52" width="0.1524" layer="91"/>
 <label x="0" y="96.52" size="1.778" layer="95"/>
+</segment>
+<segment>
+<pinref part="U$2" gate="G$1" pin="P"/>
+<wire x1="149.86" y1="58.42" x2="170.18" y2="58.42" width="0.1524" layer="91"/>
+<label x="162.56" y="58.42" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="N$1" class="0">
@@ -5468,24 +5495,38 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <wire x1="139.7" y1="53.34" x2="139.7" y2="55.88" width="0.1524" layer="91"/>
 </segment>
 </net>
-<net name="N$7" class="0">
+<net name="TX2_UART" class="0">
 <segment>
-<wire x1="304.8" y1="38.1" x2="342.9" y2="38.1" width="0.1524" layer="91"/>
+<pinref part="U$1" gate="G$1" pin="PA2"/>
+<wire x1="60.96" y1="86.36" x2="83.82" y2="86.36" width="0.1524" layer="91"/>
+<label x="81.28" y="86.36" size="1.778" layer="95"/>
+</segment>
+<segment>
+<wire x1="304.8" y1="7.62" x2="342.9" y2="7.62" width="0.1524" layer="91"/>
+<label x="340.36" y="7.62" size="1.778" layer="95"/>
 </segment>
 </net>
-<net name="N$8" class="0">
+<net name="RX2_UART" class="0">
 <segment>
-<wire x1="304.8" y1="33.02" x2="342.9" y2="33.02" width="0.1524" layer="91"/>
+<pinref part="U$1" gate="G$1" pin="PA3"/>
+<wire x1="60.96" y1="81.28" x2="83.82" y2="81.28" width="0.1524" layer="91"/>
+<label x="78.74" y="81.28" size="1.778" layer="95"/>
+</segment>
+<segment>
+<wire x1="304.8" y1="2.54" x2="342.9" y2="2.54" width="0.1524" layer="91"/>
+<label x="340.36" y="2.54" size="1.778" layer="95"/>
 </segment>
 </net>
-<net name="N$9" class="0">
+<net name="RX6_UART" class="0">
 <segment>
-<wire x1="304.8" y1="27.94" x2="342.9" y2="27.94" width="0.1524" layer="91"/>
+<wire x1="304.8" y1="-2.54" x2="342.9" y2="-2.54" width="0.1524" layer="91"/>
+<label x="340.36" y="-2.54" size="1.778" layer="95"/>
 </segment>
 </net>
-<net name="N$11" class="0">
+<net name="TX6_UART" class="0">
 <segment>
-<wire x1="304.8" y1="22.86" x2="342.9" y2="22.86" width="0.1524" layer="91"/>
+<wire x1="304.8" y1="-7.62" x2="342.9" y2="-7.62" width="0.1524" layer="91"/>
+<label x="340.36" y="-7.62" size="1.778" layer="95"/>
 </segment>
 </net>
 </nets>
