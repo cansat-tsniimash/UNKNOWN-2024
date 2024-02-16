@@ -8595,14 +8595,14 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <part name="U$5" library="UNKNOWN-2024" deviceset="MP2225" device=""/>
 <part name="C8" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="C-US" device="C0603" package3d_urn="urn:adsk.eagle:package:23616/2"/>
 <part name="R4" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:23555/3"/>
-<part name="C9" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="C-US" device="C0603" package3d_urn="urn:adsk.eagle:package:23616/2"/>
+<part name="C9" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="C-US" device="C1206" package3d_urn="urn:adsk.eagle:package:23618/2"/>
 <part name="C10" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="C-US" device="C0603" package3d_urn="urn:adsk.eagle:package:23616/2"/>
 <part name="C11" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="C-US" device="C0603" package3d_urn="urn:adsk.eagle:package:23616/2"/>
 <part name="R5" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:23555/3"/>
 <part name="R6" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:23555/3"/>
 <part name="C12" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="C-US" device="C0603" package3d_urn="urn:adsk.eagle:package:23616/2"/>
-<part name="C13" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="C-US" device="C0603" package3d_urn="urn:adsk.eagle:package:23616/2"/>
-<part name="C14" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="C-US" device="C0603" package3d_urn="urn:adsk.eagle:package:23616/2"/>
+<part name="C13" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="C-US" device="C1206" package3d_urn="urn:adsk.eagle:package:23618/2"/>
+<part name="C14" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="C-US" device="C1206" package3d_urn="urn:adsk.eagle:package:23618/2"/>
 <part name="U$6" library="CanCubeSat" deviceset="L_3.3MKH_5X5" device=""/>
 <part name="U$7" library="UNKNOWN-2024" deviceset="74HC595" device=""/>
 <part name="S1" library="UNKNOWN-2024" deviceset="UNICS-SWITCH" device="SS_12D11"/>
@@ -8784,6 +8784,23 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <pinref part="U$3" gate="G$1" pin="1"/>
 <junction x="-2.54" y="10.16"/>
 <label x="27.94" y="30.48" size="1.778" layer="95"/>
+</segment>
+<segment>
+<pinref part="R6" gate="G$1" pin="2"/>
+<wire x1="236.22" y1="33.02" x2="228.6" y2="33.02" width="0.1524" layer="91"/>
+<pinref part="C12" gate="G$1" pin="1"/>
+<wire x1="228.6" y1="33.02" x2="154.94" y2="33.02" width="0.1524" layer="91"/>
+<wire x1="228.6" y1="30.48" x2="228.6" y2="33.02" width="0.1524" layer="91"/>
+<junction x="228.6" y="33.02"/>
+<wire x1="154.94" y1="33.02" x2="154.94" y2="12.7" width="0.1524" layer="91"/>
+<wire x1="154.94" y1="12.7" x2="154.94" y2="5.08" width="0.1524" layer="91"/>
+<wire x1="154.94" y1="5.08" x2="162.56" y2="5.08" width="0.1524" layer="91"/>
+<pinref part="C13" gate="G$1" pin="2"/>
+<junction x="154.94" y="5.08"/>
+<pinref part="C14" gate="G$1" pin="2"/>
+<pinref part="U$6" gate="G$1" pin="1"/>
+<junction x="154.94" y="12.7"/>
+<label x="198.12" y="33.02" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="BUS+" class="0">
@@ -9018,24 +9035,6 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <junction x="236.22" y="22.86"/>
 <pinref part="C12" gate="G$1" pin="2"/>
 <junction x="228.6" y="22.86"/>
-</segment>
-</net>
-<net name="N$12" class="0">
-<segment>
-<pinref part="R6" gate="G$1" pin="2"/>
-<wire x1="236.22" y1="33.02" x2="228.6" y2="33.02" width="0.1524" layer="91"/>
-<pinref part="C12" gate="G$1" pin="1"/>
-<wire x1="228.6" y1="33.02" x2="154.94" y2="33.02" width="0.1524" layer="91"/>
-<wire x1="228.6" y1="30.48" x2="228.6" y2="33.02" width="0.1524" layer="91"/>
-<junction x="228.6" y="33.02"/>
-<wire x1="154.94" y1="33.02" x2="154.94" y2="12.7" width="0.1524" layer="91"/>
-<wire x1="154.94" y1="12.7" x2="154.94" y2="5.08" width="0.1524" layer="91"/>
-<wire x1="154.94" y1="5.08" x2="162.56" y2="5.08" width="0.1524" layer="91"/>
-<pinref part="C13" gate="G$1" pin="2"/>
-<junction x="154.94" y="5.08"/>
-<pinref part="C14" gate="G$1" pin="2"/>
-<pinref part="U$6" gate="G$1" pin="1"/>
-<junction x="154.94" y="12.7"/>
 </segment>
 </net>
 <net name="GND" class="0">
