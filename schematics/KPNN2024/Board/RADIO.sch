@@ -147,20 +147,19 @@
 <library name="UNKNOWN-2024">
 <packages>
 <package name="GPS-NEO7M">
-<wire x1="-13.2" y1="18" x2="-13.2" y2="-18" width="0.127" layer="21"/>
-<wire x1="-13.2" y1="-18" x2="13.2" y2="-18" width="0.127" layer="21"/>
-<wire x1="13.2" y1="-18" x2="13.2" y2="18" width="0.127" layer="21"/>
-<wire x1="13.2" y1="18" x2="-13.2" y2="18" width="0.127" layer="21"/>
-<hole x="-10.35" y="15.45" drill="3"/>
-<hole x="9.85" y="15.45" drill="3"/>
-<hole x="-10.35" y="-15.15" drill="3"/>
-<hole x="9.85" y="-15.15" drill="3"/>
-<hole x="-1.2" y="-15" drill="4"/>
+<wire x1="-12.8" y1="18" x2="-12.8" y2="-18" width="0.127" layer="21"/>
+<wire x1="-12.8" y1="-18" x2="12.8" y2="-18" width="0.127" layer="21"/>
+<wire x1="12.8" y1="-18" x2="12.8" y2="18" width="0.127" layer="21"/>
+<wire x1="12.8" y1="18" x2="-12.8" y2="18" width="0.127" layer="21"/>
+<hole x="-10.7" y="15.7" drill="3"/>
+<hole x="10.7" y="15.7" drill="3"/>
+<hole x="10.7" y="-15.7" drill="3"/>
 <pad name="P$1" x="-3.81" y="16" drill="1.016" shape="square"/>
 <pad name="P$2" x="-1.27" y="16" drill="1.016" shape="octagon"/>
 <pad name="P$3" x="1.27" y="16" drill="1.016" shape="octagon"/>
 <pad name="P$4" x="3.81" y="16" drill="1.016" shape="octagon"/>
 <text x="-3" y="19" size="1.27" layer="21">&gt;NAME</text>
+<hole x="-10.7" y="-15.7" drill="3"/>
 </package>
 <package name="NRF24L01_ML01SP4">
 <smd name="P$1" x="-9" y="4.445" dx="0.8" dy="1.5" layer="1" rot="R90"/>
