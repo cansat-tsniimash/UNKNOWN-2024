@@ -5180,6 +5180,10 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <wire x1="304.8" y1="88.9" x2="342.9" y2="88.9" width="0.1524" layer="91"/>
 <label x="340.36" y="88.9" size="1.778" layer="95"/>
 </segment>
+<segment>
+<wire x1="373.38" y1="88.9" x2="411.48" y2="88.9" width="0.1524" layer="91"/>
+<label x="408.94" y="88.9" size="1.778" layer="95"/>
+</segment>
 </net>
 <net name="N$13" class="0">
 <segment>
@@ -5205,6 +5209,11 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <wire x1="231.14" y1="40.64" x2="231.14" y2="35.56" width="0.1524" layer="91"/>
 <label x="231.14" y="27.94" size="1.778" layer="95" rot="R90"/>
 </segment>
+<segment>
+<pinref part="U$1" gate="G$1" pin="PA4"/>
+<wire x1="60.96" y1="76.2" x2="83.82" y2="76.2" width="0.1524" layer="91"/>
+<label x="76.2" y="76.2" size="1.778" layer="95"/>
+</segment>
 </net>
 <net name="5V" class="0">
 <segment>
@@ -5220,6 +5229,10 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <segment>
 <wire x1="304.8" y1="99.06" x2="342.9" y2="99.06" width="0.1524" layer="91"/>
 <label x="340.36" y="99.06" size="1.778" layer="95"/>
+</segment>
+<segment>
+<wire x1="373.38" y1="99.06" x2="411.48" y2="99.06" width="0.1524" layer="91"/>
+<label x="408.94" y="99.06" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="3V3" class="0">
@@ -5248,6 +5261,10 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <wire x1="304.8" y1="93.98" x2="342.9" y2="93.98" width="0.1524" layer="91"/>
 <label x="340.36" y="93.98" size="1.778" layer="95"/>
 </segment>
+<segment>
+<wire x1="373.38" y1="93.98" x2="411.48" y2="93.98" width="0.1524" layer="91"/>
+<label x="408.94" y="93.98" size="1.778" layer="95"/>
+</segment>
 </net>
 <net name="SCL" class="0">
 <segment>
@@ -5256,13 +5273,13 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <label x="236.22" y="99.06" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="U$1" gate="G$1" pin="PB6"/>
-<wire x1="20.32" y1="71.12" x2="5.08" y2="71.12" width="0.1524" layer="91"/>
-<label x="5.08" y="71.12" size="1.778" layer="95"/>
-</segment>
-<segment>
 <wire x1="304.8" y1="38.1" x2="342.9" y2="38.1" width="0.1524" layer="91"/>
 <label x="340.36" y="38.1" size="1.778" layer="95"/>
+</segment>
+<segment>
+<wire x1="20.32" y1="60.96" x2="5.08" y2="60.96" width="0.1524" layer="91"/>
+<label x="5.08" y="60.96" size="1.778" layer="95"/>
+<pinref part="U$1" gate="G$1" pin="PB8"/>
 </segment>
 </net>
 <net name="SDA" class="0">
@@ -5322,6 +5339,10 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <wire x1="304.8" y1="12.7" x2="342.9" y2="12.7" width="0.1524" layer="91"/>
 <label x="340.36" y="12.7" size="1.778" layer="95"/>
 </segment>
+<segment>
+<wire x1="373.38" y1="53.34" x2="411.48" y2="53.34" width="0.1524" layer="91"/>
+<label x="408.94" y="53.34" size="1.778" layer="95"/>
+</segment>
 </net>
 <net name="LATCH_SR" class="0">
 <segment>
@@ -5332,6 +5353,10 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <segment>
 <wire x1="304.8" y1="17.78" x2="342.9" y2="17.78" width="0.1524" layer="91"/>
 <label x="340.36" y="17.78" size="1.778" layer="95"/>
+</segment>
+<segment>
+<wire x1="373.38" y1="58.42" x2="411.48" y2="58.42" width="0.1524" layer="91"/>
+<label x="408.94" y="58.42" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="MOSI_SR" class="0">
@@ -5344,6 +5369,14 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <wire x1="304.8" y1="33.02" x2="342.9" y2="33.02" width="0.1524" layer="91"/>
 <label x="340.36" y="33.02" size="1.778" layer="95"/>
 </segment>
+<segment>
+<wire x1="373.38" y1="68.58" x2="411.48" y2="68.58" width="0.1524" layer="91"/>
+<label x="408.94" y="68.58" size="1.778" layer="95"/>
+</segment>
+<segment>
+<pinref part="U$1" gate="G$1" pin="PB5"/>
+<wire x1="20.32" y1="76.2" x2="0" y2="76.2" width="0.1524" layer="91"/>
+</segment>
 </net>
 <net name="SCK_SR" class="0">
 <segment>
@@ -5354,6 +5387,10 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <segment>
 <wire x1="304.8" y1="27.94" x2="342.9" y2="27.94" width="0.1524" layer="91"/>
 <label x="340.36" y="27.94" size="1.778" layer="95"/>
+</segment>
+<segment>
+<wire x1="373.38" y1="63.5" x2="411.48" y2="63.5" width="0.1524" layer="91"/>
+<label x="408.94" y="63.5" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="MOSI_RADIO" class="0">
@@ -5378,13 +5415,6 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <label x="340.36" y="48.26" size="1.778" layer="95"/>
 </segment>
 </net>
-<net name="IRQ_RADIO" class="0">
-<segment>
-<pinref part="U$1" gate="G$1" pin="PB8"/>
-<wire x1="20.32" y1="60.96" x2="0" y2="60.96" width="0.1524" layer="91"/>
-<label x="0" y="60.96" size="1.778" layer="95"/>
-</segment>
-</net>
 <net name="MISO_SR" class="0">
 <segment>
 <pinref part="U$1" gate="G$1" pin="PB4"/>
@@ -5406,6 +5436,10 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <wire x1="304.8" y1="78.74" x2="342.9" y2="78.74" width="0.1524" layer="91"/>
 <label x="340.36" y="78.74" size="1.778" layer="95"/>
 </segment>
+<segment>
+<wire x1="373.38" y1="78.74" x2="411.48" y2="78.74" width="0.1524" layer="91"/>
+<label x="408.94" y="78.74" size="1.778" layer="95"/>
+</segment>
 </net>
 <net name="TX_UART" class="0">
 <segment>
@@ -5416,6 +5450,10 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <segment>
 <wire x1="304.8" y1="73.66" x2="342.9" y2="73.66" width="0.1524" layer="91"/>
 <label x="340.36" y="73.66" size="1.778" layer="95"/>
+</segment>
+<segment>
+<wire x1="373.38" y1="73.66" x2="411.48" y2="73.66" width="0.1524" layer="91"/>
+<label x="408.94" y="73.66" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="MISO_RADIO" class="0">
@@ -5449,6 +5487,10 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <segment>
 <wire x1="304.8" y1="83.82" x2="342.9" y2="83.82" width="0.1524" layer="91"/>
 <label x="340.36" y="83.82" size="1.778" layer="95"/>
+</segment>
+<segment>
+<wire x1="373.38" y1="83.82" x2="411.48" y2="83.82" width="0.1524" layer="91"/>
+<label x="408.94" y="83.82" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="CE_RADIO" class="0">
@@ -5505,6 +5547,10 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <wire x1="304.8" y1="7.62" x2="342.9" y2="7.62" width="0.1524" layer="91"/>
 <label x="340.36" y="7.62" size="1.778" layer="95"/>
 </segment>
+<segment>
+<wire x1="373.38" y1="48.26" x2="411.48" y2="48.26" width="0.1524" layer="91"/>
+<label x="408.94" y="48.26" size="1.778" layer="95"/>
+</segment>
 </net>
 <net name="RX2_UART" class="0">
 <segment>
@@ -5515,6 +5561,10 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <segment>
 <wire x1="304.8" y1="2.54" x2="342.9" y2="2.54" width="0.1524" layer="91"/>
 <label x="340.36" y="2.54" size="1.778" layer="95"/>
+</segment>
+<segment>
+<wire x1="373.38" y1="43.18" x2="411.48" y2="43.18" width="0.1524" layer="91"/>
+<label x="408.94" y="43.18" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="RX6_UART" class="0">
@@ -5527,6 +5577,18 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <segment>
 <wire x1="304.8" y1="-7.62" x2="342.9" y2="-7.62" width="0.1524" layer="91"/>
 <label x="340.36" y="-7.62" size="1.778" layer="95"/>
+</segment>
+</net>
+<net name="N$3" class="0">
+<segment>
+<wire x1="198.12" y1="68.58" x2="198.12" y2="71.12" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="IRQ_RADIO" class="0">
+<segment>
+<pinref part="U$1" gate="G$1" pin="PC15"/>
+<wire x1="20.32" y1="15.24" x2="0" y2="15.24" width="0.1524" layer="91"/>
+<label x="0" y="15.24" size="1.778" layer="95"/>
 </segment>
 </net>
 </nets>
