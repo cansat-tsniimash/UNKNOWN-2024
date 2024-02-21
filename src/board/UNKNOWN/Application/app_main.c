@@ -250,8 +250,8 @@ int app_main(){
 	pack2_t pack2;
 	pack3_t pack3;
 	packq_t packq;
-	pack1.flag = 0xBB;
-	pack2.flag = 0xAA;
+	pack1.flag = 0xAA;
+	pack2.flag = 0xBB;
 	pack3.flag = 0xCC;
 	packq.flag = 0xFF;
 	//давление на земле
@@ -378,7 +378,7 @@ int app_main(){
  		switch(state_nrf){
 		case STATE_GEN_PACK_1:
 			nrf24_fifo_flush_tx(&nrf24);
-			nrf24_fifo_write(&nrf24, (uint8_t *)&pack1, 32, false);//32
+			nrf24_fifo_write(&nrf24, (uint8_t *)&pack1, sizeof(pack1), false);//32
 			start_time_nrf = HAL_GetTick();
 			state_nrf = STATE_WAIT;
 			break;
@@ -426,6 +426,7 @@ int app_main(){
 			nrf24_fifo_write(&nrf24, (uint8_t *)&pack3, sizeof(pack3), false);
 			state_nrf = STATE_WAIT;
 			break;
+ 		}
  		/*printf("%d\n", HAL_GetTick());*/
 		pack2.bmp_temp = bmp_temp;
 		pack2.bmp_press = bmp_press;
@@ -456,3 +457,4 @@ int app_main(){
 
 	}
 }
+

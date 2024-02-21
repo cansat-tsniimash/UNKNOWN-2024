@@ -90,7 +90,7 @@ if __name__ == '__main__':
                 if data[0] == 187:
                     pass
                     print("==== Пакет тип 1 ====")
-                    unpack_data = struct.unpack("<BiIiffI", data[:25])
+                    unpack_data = struct.unpack("<BlQlffB", data[:25])
                     print ("Temperature BME", unpack_data[1]/100)
                     print ("Pressure", unpack_data[2])
                     print ("Humidity", unpack_data[3])
@@ -115,7 +115,7 @@ if __name__ == '__main__':
                 elif data[0] == 170:
                     #continue
                     print("==== Пакет тип 2 ====")
-                    unpack_data = struct.unpack("<Biii", data[:19])
+                    unpack_data = struct.unpack("<Blll", data[:19])
                     print ("Accelerometer x", unpack_data[1]/1000)
                     print ("Accelerometer y", unpack_data[2]/1000)
                     print ("Accelerometer z", unpack_data[3]/1000)
@@ -139,7 +139,7 @@ if __name__ == '__main__':
                 elif data[0] == 204:
                      continue
                      print("==== Пакет тип 3 ====")
-                     unpack_data = struct.unpack("<BIfffII", data[:32])
+                     unpack_data = struct.unpack("<BfffQQ", data[:32])
                      print ("Latitude", unpack_data[1])
                      print ("Longitude", unpack_data[2])
                      print ("Height", unpack_data[3])
@@ -157,7 +157,7 @@ if __name__ == '__main__':
                          f3.flush()
                      f3.write('\n')
 
-                elif data[0] == 300:
+                elif data[0] == 255:
                      continue
                      print("==== Пакет тип 4 ====")
                      unpack_data = struct.unpack("<Bfffff", data[:32])
