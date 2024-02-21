@@ -12,16 +12,19 @@ class CentralWidget(QtWidgets.QWidget):
 	def __init__(self):
 		super(CentralWidget, self).__init__()
 		self.textEdit = QtWidgets.QTextEdit()
+		self.textEdit2 = QtWidgets.QTextEdit()
+		self.textEdit3 = QtWidgets.QTextEdit()
+		self.textEdit4 = QtWidgets.QTextEdit()
 		self.button = QtWidgets.QPushButton()
 		self.layoutube = QtWidgets.QHBoxLayout()
 		self.setLayout(self.layoutube)
 		self.layoutube.addWidget(self.textEdit)
 		self.layoutube2 = QtWidgets.QVBoxLayout()
 		self.layoutube.addLayout(self.layoutube2)
-		self.layoutube.addWidget(self.textEdit)
+		self.layoutube.addWidget(self.textEdit2)
 
-		self.layoutube2.addWidget(self.textEdit)
-		self.layoutube2.addWidget(self.textEdit)
+		self.layoutube2.addWidget(self.textEdit3)
+		self.layoutube2.addWidget(self.textEdit4)
 
 
 
