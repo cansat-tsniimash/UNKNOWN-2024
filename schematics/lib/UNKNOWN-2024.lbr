@@ -1852,10 +1852,10 @@ distributor Buerklin, 11G810</description>
 </device>
 <device name="BME280-PINS-ONLY" package="BME280-PINS-ONLY">
 <connects>
-<connect gate="G$1" pin="GND" pad="P$2"/>
-<connect gate="G$1" pin="SCL" pad="P$3"/>
-<connect gate="G$1" pin="SDA" pad="P$4"/>
-<connect gate="G$1" pin="VIN" pad="P$1"/>
+<connect gate="G$1" pin="GND" pad="P$3"/>
+<connect gate="G$1" pin="SCL" pad="P$2"/>
+<connect gate="G$1" pin="SDA" pad="P$1"/>
+<connect gate="G$1" pin="VIN" pad="P$4"/>
 </connects>
 <technologies>
 <technology name=""/>
