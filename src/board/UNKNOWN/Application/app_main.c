@@ -63,6 +63,7 @@ typedef struct INA219_DATA{
 	uint16_t shunt_voltage;
 }INA219_DATA;
 
+void nrf_dump_regs(nrf24_lower_api_config_t * lower);
 
 int app_main(){
 	//файлы
@@ -198,6 +199,9 @@ int app_main(){
 	nrf24_lower_api_config_t nrf24;
 	nrf24_spi_init(&nrf24, &hspi4, &nrf_pins);
 
+	printf("before setup\n");
+	nrf_dump_regs(&nrf24);
+
 	nrf24_mode_power_down(&nrf24);
 	nrf24_rf_config_t nrf_config;
 	nrf_config.data_rate = NRF24_DATARATE_250_KBIT;
@@ -207,7 +211,7 @@ int app_main(){
 	nrf24_protocol_config_t nrf_protocol_config;
 	nrf_protocol_config.crc_size = NRF24_CRCSIZE_1BYTE;
 	nrf_protocol_config.address_width = NRF24_ADDRES_WIDTH_5_BYTES;
-	nrf_protocol_config.en_dyn_payload_size = false;
+	nrf_protocol_config.en_dyn_payload_size = true;
 	nrf_protocol_config.en_ack_payload = false;
 	nrf_protocol_config.en_dyn_ack = false;
 	nrf_protocol_config.auto_retransmit_count = 0;
@@ -231,7 +235,13 @@ int app_main(){
 	nrf24_pipe_rx_start(&nrf24, 0, &pipe_config);
 
 	nrf24_mode_standby(&nrf24);
+	printf("\n\n");
+	printf("after setup\n");
+	nrf_dump_regs(&nrf24);
+	printf("\n\n");
 	nrf24_mode_tx(&nrf24);
+
+
 	//gps
 	gps_init();
 	__HAL_UART_ENABLE_IT(&huart1, UART_IT_RXNE);
@@ -378,7 +388,8 @@ int app_main(){
  		switch(state_nrf){
 		case STATE_GEN_PACK_1:
 			nrf24_fifo_flush_tx(&nrf24);
-			nrf24_fifo_write(&nrf24, (uint8_t *)&pack1, sizeof(pack1), false);//32
+			nrf24_fifo_status(&nrf24, &rx_status, &tx_status);
+			nrf24_fifo_write(&nrf24, (uint8_t *)&pack1, sizeof(pack1), true);//32
 			start_time_nrf = HAL_GetTick();
 			state_nrf = STATE_WAIT;
 			break;
