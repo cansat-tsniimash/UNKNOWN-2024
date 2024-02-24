@@ -8869,13 +8869,13 @@ Source: AVX .. aphvc.pdf</description>
 <parts>
 <part name="MICRO_SD" library="UNKNOWN-2024" deviceset="SD" device=""/>
 <part name="BUZZER" library="CanCubeSat" deviceset="BUZZER" device="S8R6"/>
-<part name="U$20" library="CanCubeSat" deviceset="SI2302CDS" device=""/>
+<part name="SI2302CDS" library="CanCubeSat" deviceset="SI2302CDS" device=""/>
 <part name="R9" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="10k"/>
 <part name="R10" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="100R"/>
 <part name="U$2" library="UNKNOWN-2024" deviceset="SWITCH_MSS" device=""/>
 <part name="R1" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="10k"/>
 <part name="R2" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="10k"/>
-<part name="U$5" library="UNKNOWN-2024" deviceset="STM32F411_BOARD" device=""/>
+<part name="STM" library="UNKNOWN-2024" deviceset="STM32F411_BOARD" device=""/>
 <part name="BME280" library="UNKNOWN-2024" deviceset="BME280" device="BME280-PINS-ONLY"/>
 <part name="U$4" library="UNKNOWN-2024" deviceset="PBS_SMD_X13" device=""/>
 <part name="U$6" library="UNKNOWN-2024" deviceset="PBS_SMD_X9" device=""/>
@@ -8896,7 +8896,7 @@ Source: AVX .. aphvc.pdf</description>
 <instance part="BUZZER" gate="G$1" x="198.12" y="63.5" smashed="yes">
 <attribute name="NAME" x="190.5" y="68.58" size="2.54" layer="95"/>
 </instance>
-<instance part="U$20" gate="G$1" x="231.14" y="63.5" smashed="yes" rot="R180"/>
+<instance part="SI2302CDS" gate="G$1" x="231.14" y="63.5" smashed="yes" rot="R180"/>
 <instance part="R9" gate="G$1" x="241.3" y="58.42" smashed="yes" rot="R90">
 <attribute name="NAME" x="239.8014" y="54.61" size="1.778" layer="95" rot="R90"/>
 <attribute name="VALUE" x="244.602" y="54.61" size="1.778" layer="96" rot="R90"/>
@@ -8917,7 +8917,7 @@ Source: AVX .. aphvc.pdf</description>
 <attribute name="NAME" x="138.43" y="51.8414" size="1.778" layer="95" rot="R180"/>
 <attribute name="VALUE" x="138.43" y="56.642" size="1.778" layer="96" rot="R180"/>
 </instance>
-<instance part="U$5" gate="G$1" x="-53.34" y="63.5" smashed="yes">
+<instance part="STM" gate="G$1" x="-53.34" y="63.5" smashed="yes">
 <attribute name="NAME" x="-60.96" y="91.44" size="1.778" layer="95"/>
 </instance>
 <instance part="BME280" gate="G$1" x="213.36" y="101.6" smashed="yes">
@@ -8957,7 +8957,7 @@ Source: AVX .. aphvc.pdf</description>
 <nets>
 <net name="GND" class="0">
 <segment>
-<pinref part="U$20" gate="G$1" pin="S"/>
+<pinref part="SI2302CDS" gate="G$1" pin="S"/>
 <wire x1="241.3" y1="63.5" x2="251.46" y2="63.5" width="0.1524" layer="91"/>
 <label x="246.38" y="63.5" size="1.778" layer="95"/>
 <pinref part="R9" gate="G$1" pin="2"/>
@@ -8978,7 +8978,7 @@ Source: AVX .. aphvc.pdf</description>
 <label x="121.92" y="60.96" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="U$5" gate="G$1" pin="GND"/>
+<pinref part="STM" gate="G$1" pin="GND"/>
 <wire x1="-68.58" y1="40.64" x2="-88.9" y2="40.64" width="0.1524" layer="91"/>
 <label x="-88.9" y="40.64" size="1.778" layer="95"/>
 </segment>
@@ -8995,14 +8995,14 @@ Source: AVX .. aphvc.pdf</description>
 </net>
 <net name="N$13" class="0">
 <segment>
-<pinref part="U$20" gate="G$1" pin="D"/>
+<pinref part="SI2302CDS" gate="G$1" pin="D"/>
 <wire x1="220.98" y1="63.5" x2="210.82" y2="63.5" width="0.1524" layer="91"/>
 <pinref part="BUZZER" gate="G$1" pin="GND"/>
 </segment>
 </net>
 <net name="N$14" class="0">
 <segment>
-<pinref part="U$20" gate="G$1" pin="G"/>
+<pinref part="SI2302CDS" gate="G$1" pin="G"/>
 <wire x1="231.14" y1="55.88" x2="231.14" y2="53.34" width="0.1524" layer="91"/>
 <pinref part="R10" gate="G$1" pin="2"/>
 <pinref part="R9" gate="G$1" pin="1"/>
@@ -9020,7 +9020,7 @@ Source: AVX .. aphvc.pdf</description>
 <segment>
 <wire x1="-38.1" y1="71.12" x2="-17.78" y2="71.12" width="0.1524" layer="91"/>
 <label x="-30.48" y="71.12" size="1.778" layer="95"/>
-<pinref part="U$5" gate="G$1" pin="PB0"/>
+<pinref part="STM" gate="G$1" pin="PB0"/>
 </segment>
 </net>
 <net name="5V" class="0">
@@ -9030,7 +9030,7 @@ Source: AVX .. aphvc.pdf</description>
 <label x="177.8" y="63.5" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="U$5" gate="G$1" pin="5V"/>
+<pinref part="STM" gate="G$1" pin="5V"/>
 <wire x1="-68.58" y1="43.18" x2="-88.9" y2="43.18" width="0.1524" layer="91"/>
 <label x="-88.9" y="43.18" size="1.778" layer="95"/>
 </segment>
@@ -9054,7 +9054,7 @@ Source: AVX .. aphvc.pdf</description>
 <label x="121.92" y="55.88" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="U$5" gate="G$1" pin="3V3"/>
+<pinref part="STM" gate="G$1" pin="3V3"/>
 <wire x1="-68.58" y1="38.1" x2="-99.06" y2="38.1" width="0.1524" layer="91"/>
 <label x="-88.9" y="38.1" size="1.778" layer="95"/>
 <pinref part="R3" gate="G$1" pin="2"/>
@@ -9064,7 +9064,7 @@ Source: AVX .. aphvc.pdf</description>
 <junction x="-99.06" y="45.72"/>
 </segment>
 <segment>
-<pinref part="U$5" gate="G$1" pin="VBAT"/>
+<pinref part="STM" gate="G$1" pin="VBAT"/>
 <wire x1="-38.1" y1="38.1" x2="-17.78" y2="38.1" width="0.1524" layer="91"/>
 <label x="-30.48" y="38.1" size="1.778" layer="95"/>
 </segment>
@@ -9087,7 +9087,7 @@ Source: AVX .. aphvc.pdf</description>
 <segment>
 <wire x1="-68.58" y1="48.26" x2="-88.9" y2="48.26" width="0.1524" layer="91"/>
 <label x="-88.9" y="48.26" size="1.778" layer="95"/>
-<pinref part="U$5" gate="G$1" pin="PB8"/>
+<pinref part="STM" gate="G$1" pin="PB8"/>
 <pinref part="R4" gate="G$1" pin="1"/>
 </segment>
 <segment>
@@ -9100,7 +9100,7 @@ Source: AVX .. aphvc.pdf</description>
 <segment>
 <wire x1="-68.58" y1="45.72" x2="-88.9" y2="45.72" width="0.1524" layer="91"/>
 <label x="-88.9" y="45.72" size="1.778" layer="95"/>
-<pinref part="U$5" gate="G$1" pin="PB9"/>
+<pinref part="STM" gate="G$1" pin="PB9"/>
 <pinref part="R3" gate="G$1" pin="1"/>
 </segment>
 <segment>
@@ -9119,7 +9119,7 @@ Source: AVX .. aphvc.pdf</description>
 <segment>
 <wire x1="-38.1" y1="66.04" x2="-17.78" y2="66.04" width="0.1524" layer="91"/>
 <label x="-30.48" y="66.04" size="1.778" layer="95"/>
-<pinref part="U$5" gate="G$1" pin="PA6"/>
+<pinref part="STM" gate="G$1" pin="PA6"/>
 </segment>
 </net>
 <net name="SD_CK" class="0">
@@ -9131,14 +9131,14 @@ Source: AVX .. aphvc.pdf</description>
 <segment>
 <wire x1="-68.58" y1="78.74" x2="-88.9" y2="78.74" width="0.1524" layer="91"/>
 <label x="-88.9" y="78.74" size="1.778" layer="95"/>
-<pinref part="U$5" gate="G$1" pin="PB15"/>
+<pinref part="STM" gate="G$1" pin="PB15"/>
 </segment>
 </net>
 <net name="OE_SR" class="0">
 <segment>
 <wire x1="-68.58" y1="76.2" x2="-88.9" y2="76.2" width="0.1524" layer="91"/>
 <label x="-88.9" y="76.2" size="1.778" layer="95"/>
-<pinref part="U$5" gate="G$1" pin="PA8"/>
+<pinref part="STM" gate="G$1" pin="PA8"/>
 </segment>
 <segment>
 <wire x1="76.2" y1="88.9" x2="53.34" y2="88.9" width="0.1524" layer="91"/>
@@ -9150,7 +9150,7 @@ Source: AVX .. aphvc.pdf</description>
 <segment>
 <wire x1="-68.58" y1="81.28" x2="-88.9" y2="81.28" width="0.1524" layer="91"/>
 <label x="-88.9" y="81.28" size="1.778" layer="95"/>
-<pinref part="U$5" gate="G$1" pin="PB14"/>
+<pinref part="STM" gate="G$1" pin="PB14"/>
 </segment>
 <segment>
 <wire x1="76.2" y1="86.36" x2="53.34" y2="86.36" width="0.1524" layer="91"/>
@@ -9162,7 +9162,7 @@ Source: AVX .. aphvc.pdf</description>
 <segment>
 <wire x1="-68.58" y1="55.88" x2="-88.9" y2="55.88" width="0.1524" layer="91"/>
 <label x="-88.9" y="55.88" size="1.778" layer="95"/>
-<pinref part="U$5" gate="G$1" pin="PB5"/>
+<pinref part="STM" gate="G$1" pin="PB5"/>
 </segment>
 <segment>
 <wire x1="76.2" y1="96.52" x2="53.34" y2="96.52" width="0.1524" layer="91"/>
@@ -9174,7 +9174,7 @@ Source: AVX .. aphvc.pdf</description>
 <segment>
 <wire x1="-38.1" y1="63.5" x2="-17.78" y2="63.5" width="0.1524" layer="91"/>
 <label x="-30.48" y="63.5" size="1.778" layer="95"/>
-<pinref part="U$5" gate="G$1" pin="PA5"/>
+<pinref part="STM" gate="G$1" pin="PA5"/>
 </segment>
 <segment>
 <wire x1="76.2" y1="91.44" x2="53.34" y2="91.44" width="0.1524" layer="91"/>
@@ -9186,7 +9186,7 @@ Source: AVX .. aphvc.pdf</description>
 <segment>
 <wire x1="-38.1" y1="53.34" x2="-17.78" y2="53.34" width="0.1524" layer="91"/>
 <label x="-30.48" y="53.34" size="1.778" layer="95"/>
-<pinref part="U$5" gate="G$1" pin="PA1"/>
+<pinref part="STM" gate="G$1" pin="PA1"/>
 </segment>
 <segment>
 <wire x1="76.2" y1="38.1" x2="53.34" y2="38.1" width="0.1524" layer="91"/>
@@ -9198,7 +9198,7 @@ Source: AVX .. aphvc.pdf</description>
 <segment>
 <wire x1="-17.78" y1="43.18" x2="-38.1" y2="43.18" width="0.1524" layer="91"/>
 <label x="-30.48" y="43.18" size="1.778" layer="95"/>
-<pinref part="U$5" gate="G$1" pin="PC14"/>
+<pinref part="STM" gate="G$1" pin="PC14"/>
 </segment>
 <segment>
 <wire x1="76.2" y1="33.02" x2="53.34" y2="33.02" width="0.1524" layer="91"/>
@@ -9210,7 +9210,7 @@ Source: AVX .. aphvc.pdf</description>
 <segment>
 <wire x1="-68.58" y1="58.42" x2="-88.9" y2="58.42" width="0.1524" layer="91"/>
 <label x="-88.9" y="58.42" size="1.778" layer="95"/>
-<pinref part="U$5" gate="G$1" pin="PB4"/>
+<pinref part="STM" gate="G$1" pin="PB4"/>
 </segment>
 <segment>
 <wire x1="76.2" y1="93.98" x2="53.34" y2="93.98" width="0.1524" layer="91"/>
@@ -9222,7 +9222,7 @@ Source: AVX .. aphvc.pdf</description>
 <segment>
 <wire x1="-88.9" y1="68.58" x2="-68.58" y2="68.58" width="0.1524" layer="91"/>
 <label x="-88.9" y="68.58" size="1.778" layer="95"/>
-<pinref part="U$5" gate="G$1" pin="PA11"/>
+<pinref part="STM" gate="G$1" pin="PA11"/>
 </segment>
 <segment>
 <wire x1="76.2" y1="40.64" x2="53.34" y2="40.64" width="0.1524" layer="91"/>
@@ -9234,7 +9234,7 @@ Source: AVX .. aphvc.pdf</description>
 <segment>
 <wire x1="-68.58" y1="83.82" x2="-88.9" y2="83.82" width="0.1524" layer="91"/>
 <label x="-88.9" y="83.82" size="1.778" layer="95"/>
-<pinref part="U$5" gate="G$1" pin="PB13"/>
+<pinref part="STM" gate="G$1" pin="PB13"/>
 </segment>
 <segment>
 <wire x1="76.2" y1="43.18" x2="53.34" y2="43.18" width="0.1524" layer="91"/>
@@ -9246,7 +9246,7 @@ Source: AVX .. aphvc.pdf</description>
 <segment>
 <wire x1="-38.1" y1="50.8" x2="-17.78" y2="50.8" width="0.1524" layer="91"/>
 <label x="-30.48" y="50.8" size="1.778" layer="95"/>
-<pinref part="U$5" gate="G$1" pin="PA0"/>
+<pinref part="STM" gate="G$1" pin="PA0"/>
 </segment>
 <segment>
 <wire x1="76.2" y1="99.06" x2="53.34" y2="99.06" width="0.1524" layer="91"/>
@@ -9258,7 +9258,7 @@ Source: AVX .. aphvc.pdf</description>
 <segment>
 <wire x1="-17.78" y1="40.64" x2="-38.1" y2="40.64" width="0.1524" layer="91"/>
 <label x="-30.48" y="40.64" size="1.778" layer="95"/>
-<pinref part="U$5" gate="G$1" pin="PC13"/>
+<pinref part="STM" gate="G$1" pin="PC13"/>
 </segment>
 <segment>
 <wire x1="76.2" y1="30.48" x2="53.34" y2="30.48" width="0.1524" layer="91"/>
@@ -9270,7 +9270,7 @@ Source: AVX .. aphvc.pdf</description>
 <segment>
 <wire x1="-68.58" y1="50.8" x2="-88.9" y2="50.8" width="0.1524" layer="91"/>
 <label x="-88.9" y="50.8" size="1.778" layer="95"/>
-<pinref part="U$5" gate="G$1" pin="PB7"/>
+<pinref part="STM" gate="G$1" pin="PB7"/>
 </segment>
 <segment>
 <pinref part="MICRO_SD" gate="G$1" pin="DAT0"/>
@@ -9290,7 +9290,7 @@ Source: AVX .. aphvc.pdf</description>
 <segment>
 <wire x1="-68.58" y1="86.36" x2="-88.9" y2="86.36" width="0.1524" layer="91"/>
 <label x="-88.9" y="86.36" size="1.778" layer="95"/>
-<pinref part="U$5" gate="G$1" pin="PB12"/>
+<pinref part="STM" gate="G$1" pin="PB12"/>
 </segment>
 </net>
 <net name="N$1" class="0">
@@ -9316,7 +9316,7 @@ Source: AVX .. aphvc.pdf</description>
 <segment>
 <wire x1="-17.78" y1="45.72" x2="-38.1" y2="45.72" width="0.1524" layer="91"/>
 <label x="-30.48" y="45.72" size="1.778" layer="95"/>
-<pinref part="U$5" gate="G$1" pin="PC15"/>
+<pinref part="STM" gate="G$1" pin="PC15"/>
 </segment>
 <segment>
 <wire x1="76.2" y1="35.56" x2="53.34" y2="35.56" width="0.1524" layer="91"/>
@@ -9328,7 +9328,7 @@ Source: AVX .. aphvc.pdf</description>
 <segment>
 <wire x1="-88.9" y1="73.66" x2="-68.58" y2="73.66" width="0.1524" layer="91"/>
 <label x="-88.9" y="73.66" size="1.778" layer="95"/>
-<pinref part="U$5" gate="G$1" pin="PA9"/>
+<pinref part="STM" gate="G$1" pin="PA9"/>
 </segment>
 <segment>
 <wire x1="76.2" y1="76.2" x2="53.34" y2="76.2" width="0.1524" layer="91"/>
@@ -9340,7 +9340,7 @@ Source: AVX .. aphvc.pdf</description>
 <segment>
 <wire x1="-88.9" y1="71.12" x2="-68.58" y2="71.12" width="0.1524" layer="91"/>
 <label x="-88.9" y="71.12" size="1.778" layer="95"/>
-<pinref part="U$5" gate="G$1" pin="PA10"/>
+<pinref part="STM" gate="G$1" pin="PA10"/>
 </segment>
 <segment>
 <wire x1="76.2" y1="78.74" x2="53.34" y2="78.74" width="0.1524" layer="91"/>
@@ -9352,7 +9352,7 @@ Source: AVX .. aphvc.pdf</description>
 <segment>
 <wire x1="-17.78" y1="60.96" x2="-38.1" y2="60.96" width="0.1524" layer="91"/>
 <label x="-30.48" y="60.96" size="1.778" layer="95"/>
-<pinref part="U$5" gate="G$1" pin="PA4"/>
+<pinref part="STM" gate="G$1" pin="PA4"/>
 </segment>
 <segment>
 <wire x1="53.34" y1="50.8" x2="76.2" y2="50.8" width="0.1524" layer="91"/>
@@ -9364,7 +9364,7 @@ Source: AVX .. aphvc.pdf</description>
 <segment>
 <wire x1="-68.58" y1="60.96" x2="-88.9" y2="60.96" width="0.1524" layer="91"/>
 <label x="-88.9" y="60.96" size="1.778" layer="95"/>
-<pinref part="U$5" gate="G$1" pin="PB3"/>
+<pinref part="STM" gate="G$1" pin="PB3"/>
 </segment>
 <segment>
 <wire x1="76.2" y1="83.82" x2="53.34" y2="83.82" width="0.1524" layer="91"/>
@@ -9376,7 +9376,7 @@ Source: AVX .. aphvc.pdf</description>
 <segment>
 <wire x1="-38.1" y1="58.42" x2="-17.78" y2="58.42" width="0.1524" layer="91"/>
 <label x="-30.48" y="58.42" size="1.778" layer="95"/>
-<pinref part="U$5" gate="G$1" pin="PA3"/>
+<pinref part="STM" gate="G$1" pin="PA3"/>
 </segment>
 <segment>
 <wire x1="76.2" y1="48.26" x2="53.34" y2="48.26" width="0.1524" layer="91"/>
@@ -9388,7 +9388,7 @@ Source: AVX .. aphvc.pdf</description>
 <segment>
 <wire x1="-38.1" y1="55.88" x2="-17.78" y2="55.88" width="0.1524" layer="91"/>
 <label x="-30.48" y="55.88" size="1.778" layer="95"/>
-<pinref part="U$5" gate="G$1" pin="PA2"/>
+<pinref part="STM" gate="G$1" pin="PA2"/>
 </segment>
 <segment>
 <wire x1="76.2" y1="45.72" x2="53.34" y2="45.72" width="0.1524" layer="91"/>
@@ -9400,7 +9400,7 @@ Source: AVX .. aphvc.pdf</description>
 <segment>
 <wire x1="-88.9" y1="63.5" x2="-68.58" y2="63.5" width="0.1524" layer="91"/>
 <label x="-88.9" y="63.5" size="1.778" layer="95"/>
-<pinref part="U$5" gate="G$1" pin="PA15"/>
+<pinref part="STM" gate="G$1" pin="PA15"/>
 </segment>
 <segment>
 <wire x1="76.2" y1="81.28" x2="53.34" y2="81.28" width="0.1524" layer="91"/>

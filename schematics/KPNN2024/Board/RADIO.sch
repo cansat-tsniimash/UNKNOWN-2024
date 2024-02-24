@@ -189,7 +189,7 @@
 <smd name="GND3" x="-18.2" y="-11" dx="2.2" dy="1.3" layer="1"/>
 <smd name="SW" x="18.2" y="11" dx="2.2" dy="1.3" layer="1"/>
 <smd name="GND5" x="18.2" y="-10" dx="2.2" dy="1.3" layer="1"/>
-<smd name="ATN" x="18.2" y="-8" dx="2.2" dy="1.3" layer="1" roundness="100"/>
+<smd name="ANT" x="18.2" y="-8" dx="2.2" dy="1.3" layer="1" roundness="100"/>
 <smd name="GND4" x="18.2" y="-6" dx="2.2" dy="1.3" layer="1"/>
 <smd name="LED2" x="18.2" y="-2" dx="2.2" dy="1.3" layer="1"/>
 <smd name="GND2" x="-18.2" y="-6.5" dx="2.2" dy="1.3" layer="1"/>
@@ -411,7 +411,7 @@
 <connects>
 <connect gate="G$1" pin="3.3V" pad="3.3V"/>
 <connect gate="G$1" pin="5V" pad="5V"/>
-<connect gate="G$1" pin="ANT" pad="ATN"/>
+<connect gate="G$1" pin="ANT" pad="ANT"/>
 <connect gate="G$1" pin="GND" pad="GND GND1 GND2 GND3 GND4 GND5"/>
 <connect gate="G$1" pin="LED1" pad="LED1"/>
 <connect gate="G$1" pin="LED2" pad="LED2"/>
@@ -10486,35 +10486,35 @@ Source: AVX .. aphvc.pdf</description>
 </class>
 </classes>
 <parts>
-<part name="U$1" library="UNKNOWN-2024" deviceset="GPS-NEO7M" device=""/>
-<part name="U$2" library="UNKNOWN-2024" deviceset="NRF24L01_ML01SP4" device=""/>
-<part name="U$3" library="UNKNOWN-2024" deviceset="XQ-02A" device=""/>
-<part name="J1" library="UNKNOWN-2024" deviceset="U.FL-R-SMT-1_10_" device=""/>
-<part name="J2" library="UNKNOWN-2024" deviceset="U.FL-R-SMT-1_10_" device=""/>
-<part name="U$4" library="UNKNOWN-2024" deviceset="CONNECT_3" device=""/>
-<part name="U$5" library="UNKNOWN-2024" deviceset="CONNECT_3" device=""/>
+<part name="GPS-NEO7M" library="UNKNOWN-2024" deviceset="GPS-NEO7M" device=""/>
+<part name="NRF24LO1" library="UNKNOWN-2024" deviceset="NRF24L01_ML01SP4" device=""/>
+<part name="XQ-02A" library="UNKNOWN-2024" deviceset="XQ-02A" device=""/>
+<part name="J1" library="UNKNOWN-2024" deviceset="U.FL-R-SMT-1_10_" device="" value="IPX-RADIO"/>
+<part name="J2" library="UNKNOWN-2024" deviceset="U.FL-R-SMT-1_10_" device="" value="IPX-ANT"/>
+<part name="ROTATE1" library="UNKNOWN-2024" deviceset="CONNECT_3" device=""/>
+<part name="ROTATE2" library="UNKNOWN-2024" deviceset="CONNECT_3" device=""/>
 <part name="U$6" library="UNKNOWN-2024" deviceset="PBS_SMD_X13" device=""/>
 <part name="U$7" library="UNKNOWN-2024" deviceset="PBS_SMD_X9" device=""/>
 <part name="U$8" library="UNKNOWN-2024" deviceset="PBS_SMD_X13" device=""/>
-<part name="LED1" library="led" library_urn="urn:adsk.eagle:library:259" deviceset="LED" device="CHIPLED_0603" package3d_urn="urn:adsk.eagle:package:15822/2"/>
-<part name="LED2" library="led" library_urn="urn:adsk.eagle:library:259" deviceset="LED" device="CHIPLED_0603" package3d_urn="urn:adsk.eagle:package:15822/2"/>
-<part name="R1" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:23555/3"/>
-<part name="R2" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:23555/3"/>
-<part name="C1" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="C-EU" device="C0603" package3d_urn="urn:adsk.eagle:package:23616/2"/>
-<part name="C2" library="CanCubeSat" deviceset="ECAP" device="ECAP220"/>
+<part name="LED1" library="led" library_urn="urn:adsk.eagle:library:259" deviceset="LED" device="CHIPLED_0603" package3d_urn="urn:adsk.eagle:package:15822/2" value="AMP1"/>
+<part name="LED2" library="led" library_urn="urn:adsk.eagle:library:259" deviceset="LED" device="CHIPLED_0603" package3d_urn="urn:adsk.eagle:package:15822/2" value="AMP2"/>
+<part name="R1" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="2k"/>
+<part name="R2" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="2k"/>
+<part name="C1" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="C-EU" device="C0603" package3d_urn="urn:adsk.eagle:package:23616/2" value="100nF"/>
+<part name="C2" library="CanCubeSat" deviceset="ECAP" device="ECAP220" value="220uF"/>
 </parts>
 <sheets>
 <sheet>
 <plain>
 </plain>
 <instances>
-<instance part="U$1" gate="G$1" x="7.62" y="78.74" smashed="yes">
+<instance part="GPS-NEO7M" gate="G$1" x="7.62" y="78.74" smashed="yes">
 <attribute name="NAME" x="0" y="89.662" size="1.778" layer="95"/>
 </instance>
-<instance part="U$2" gate="G$1" x="7.62" y="53.34" smashed="yes" rot="R180">
+<instance part="NRF24LO1" gate="G$1" x="7.62" y="53.34" smashed="yes" rot="R180">
 <attribute name="NAME" x="17.78" y="40.64" size="2.032" layer="95" rot="R180"/>
 </instance>
-<instance part="U$3" gate="G$1" x="86.36" y="78.74" smashed="yes">
+<instance part="XQ-02A" gate="G$1" x="86.36" y="78.74" smashed="yes">
 <attribute name="NAME" x="73.66" y="93.98" size="2.54" layer="94"/>
 </instance>
 <instance part="J1" gate="G$1" x="71.12" y="33.02" smashed="yes">
@@ -10525,10 +10525,10 @@ Source: AVX .. aphvc.pdf</description>
 <attribute name="NAME" x="135.89" y="53.34" size="1.778" layer="95" align="center-left"/>
 <attribute name="VALUE" x="135.89" y="50.8" size="1.778" layer="96" align="center-left"/>
 </instance>
-<instance part="U$4" gate="G$1" x="187.96" y="71.12" smashed="yes">
+<instance part="ROTATE1" gate="G$1" x="187.96" y="71.12" smashed="yes">
 <attribute name="NAME" x="187.96" y="78.74" size="1.778" layer="94"/>
 </instance>
-<instance part="U$5" gate="G$1" x="187.96" y="86.36" smashed="yes">
+<instance part="ROTATE2" gate="G$1" x="187.96" y="86.36" smashed="yes">
 <attribute name="NAME" x="187.96" y="93.98" size="1.778" layer="94"/>
 </instance>
 <instance part="U$6" gate="G$1" x="43.18" y="116.84" smashed="yes">
@@ -10573,17 +10573,17 @@ Source: AVX .. aphvc.pdf</description>
 <nets>
 <net name="GND" class="0">
 <segment>
-<pinref part="U$2" gate="G$1" pin="GND"/>
+<pinref part="NRF24LO1" gate="G$1" pin="GND"/>
 <wire x1="20.32" y1="60.96" x2="38.1" y2="60.96" width="0.1524" layer="91"/>
 <label x="33.02" y="60.96" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="U$1" gate="G$1" pin="GND"/>
+<pinref part="GPS-NEO7M" gate="G$1" pin="GND"/>
 <wire x1="20.32" y1="81.28" x2="27.94" y2="81.28" width="0.1524" layer="91"/>
 <label x="25.4" y="81.28" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="U$3" gate="G$1" pin="GND"/>
+<pinref part="XQ-02A" gate="G$1" pin="GND"/>
 <wire x1="68.58" y1="83.82" x2="60.96" y2="83.82" width="0.1524" layer="91"/>
 <label x="55.88" y="86.36" size="1.778" layer="95"/>
 <pinref part="C1" gate="G$1" pin="1"/>
@@ -10614,12 +10614,12 @@ Source: AVX .. aphvc.pdf</description>
 <label x="106.68" y="43.18" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="U$5" gate="G$1" pin="P$3"/>
+<pinref part="ROTATE2" gate="G$1" pin="P$3"/>
 <wire x1="182.88" y1="88.9" x2="170.18" y2="88.9" width="0.1524" layer="91"/>
 <label x="170.18" y="88.9" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="U$4" gate="G$1" pin="P$3"/>
+<pinref part="ROTATE1" gate="G$1" pin="P$3"/>
 <wire x1="182.88" y1="73.66" x2="170.18" y2="73.66" width="0.1524" layer="91"/>
 <label x="170.18" y="73.66" size="1.778" layer="95"/>
 </segment>
@@ -10636,22 +10636,22 @@ Source: AVX .. aphvc.pdf</description>
 </net>
 <net name="3V3" class="0">
 <segment>
-<pinref part="U$2" gate="G$1" pin="VCC"/>
+<pinref part="NRF24LO1" gate="G$1" pin="VCC"/>
 <wire x1="20.32" y1="43.18" x2="38.1" y2="43.18" width="0.1524" layer="91"/>
 <label x="33.02" y="43.18" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="U$1" gate="G$1" pin="UCC"/>
+<pinref part="GPS-NEO7M" gate="G$1" pin="UCC"/>
 <wire x1="20.32" y1="83.82" x2="27.94" y2="83.82" width="0.1524" layer="91"/>
 <label x="25.4" y="83.82" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="U$5" gate="G$1" pin="P$1"/>
+<pinref part="ROTATE2" gate="G$1" pin="P$1"/>
 <wire x1="182.88" y1="83.82" x2="170.18" y2="83.82" width="0.1524" layer="91"/>
 <label x="170.18" y="83.82" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="U$4" gate="G$1" pin="P$1"/>
+<pinref part="ROTATE1" gate="G$1" pin="P$1"/>
 <wire x1="182.88" y1="68.58" x2="170.18" y2="68.58" width="0.1524" layer="91"/>
 <label x="170.18" y="68.58" size="1.778" layer="95"/>
 </segment>
@@ -10668,7 +10668,7 @@ Source: AVX .. aphvc.pdf</description>
 </net>
 <net name="5V" class="0">
 <segment>
-<pinref part="U$3" gate="G$1" pin="5V"/>
+<pinref part="XQ-02A" gate="G$1" pin="5V"/>
 <wire x1="68.58" y1="78.74" x2="53.34" y2="78.74" width="0.1524" layer="91"/>
 <label x="55.88" y="78.74" size="1.778" layer="95"/>
 <pinref part="C1" gate="G$1" pin="2"/>
@@ -10694,19 +10694,19 @@ Source: AVX .. aphvc.pdf</description>
 <label x="68.58" y="43.18" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="U$3" gate="G$1" pin="RF-IN"/>
+<pinref part="XQ-02A" gate="G$1" pin="RF-IN"/>
 <wire x1="104.14" y1="68.58" x2="121.92" y2="68.58" width="0.1524" layer="91"/>
 <label x="116.84" y="68.58" size="1.778" layer="95"/>
 </segment>
 </net>
-<net name="ATN_RADIO" class="0">
+<net name="ANT_RADIO" class="0">
 <segment>
 <pinref part="J2" gate="G$1" pin="3"/>
 <wire x1="129.54" y1="53.34" x2="111.76" y2="53.34" width="0.1524" layer="91"/>
 <label x="111.76" y="53.34" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="U$3" gate="G$1" pin="ANT"/>
+<pinref part="XQ-02A" gate="G$1" pin="ANT"/>
 <wire x1="104.14" y1="88.9" x2="121.92" y2="88.9" width="0.1524" layer="91"/>
 <label x="116.84" y="88.9" size="1.778" layer="95"/>
 </segment>
@@ -10838,7 +10838,7 @@ Source: AVX .. aphvc.pdf</description>
 <label x="55.88" y="132.08" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="U$2" gate="G$1" pin="CE"/>
+<pinref part="NRF24LO1" gate="G$1" pin="CE"/>
 <wire x1="20.32" y1="45.72" x2="38.1" y2="45.72" width="0.1524" layer="91"/>
 <label x="33.02" y="45.72" size="1.778" layer="95"/>
 </segment>
@@ -10850,7 +10850,7 @@ Source: AVX .. aphvc.pdf</description>
 <label x="55.88" y="129.54" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="U$2" gate="G$1" pin="CSN"/>
+<pinref part="NRF24LO1" gate="G$1" pin="CSN"/>
 <wire x1="20.32" y1="48.26" x2="38.1" y2="48.26" width="0.1524" layer="91"/>
 <label x="33.02" y="48.26" size="1.778" layer="95"/>
 </segment>
@@ -10862,7 +10862,7 @@ Source: AVX .. aphvc.pdf</description>
 <label x="55.88" y="127" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="U$2" gate="G$1" pin="IRQ"/>
+<pinref part="NRF24LO1" gate="G$1" pin="IRQ"/>
 <wire x1="20.32" y1="58.42" x2="38.1" y2="58.42" width="0.1524" layer="91"/>
 <label x="33.02" y="58.42" size="1.778" layer="95"/>
 </segment>
@@ -10874,7 +10874,7 @@ Source: AVX .. aphvc.pdf</description>
 <label x="55.88" y="124.46" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="U$2" gate="G$1" pin="MOSI"/>
+<pinref part="NRF24LO1" gate="G$1" pin="MOSI"/>
 <wire x1="20.32" y1="53.34" x2="38.1" y2="53.34" width="0.1524" layer="91"/>
 <label x="33.02" y="53.34" size="1.778" layer="95"/>
 </segment>
@@ -10886,7 +10886,7 @@ Source: AVX .. aphvc.pdf</description>
 <label x="55.88" y="121.92" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="U$2" gate="G$1" pin="MISO"/>
+<pinref part="NRF24LO1" gate="G$1" pin="MISO"/>
 <wire x1="20.32" y1="55.88" x2="38.1" y2="55.88" width="0.1524" layer="91"/>
 <label x="33.02" y="55.88" size="1.778" layer="95"/>
 </segment>
@@ -10898,7 +10898,7 @@ Source: AVX .. aphvc.pdf</description>
 <label x="55.88" y="119.38" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="U$2" gate="G$1" pin="SCK"/>
+<pinref part="NRF24LO1" gate="G$1" pin="SCK"/>
 <wire x1="20.32" y1="50.8" x2="38.1" y2="50.8" width="0.1524" layer="91"/>
 <label x="33.02" y="50.8" size="1.778" layer="95"/>
 </segment>
@@ -10910,7 +10910,7 @@ Source: AVX .. aphvc.pdf</description>
 <label x="55.88" y="116.84" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="U$1" gate="G$1" pin="TX"/>
+<pinref part="GPS-NEO7M" gate="G$1" pin="TX"/>
 <wire x1="20.32" y1="78.74" x2="27.94" y2="78.74" width="0.1524" layer="91"/>
 <label x="25.4" y="78.74" size="1.778" layer="95"/>
 </segment>
@@ -10922,7 +10922,7 @@ Source: AVX .. aphvc.pdf</description>
 <label x="55.88" y="114.3" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="U$1" gate="G$1" pin="RX"/>
+<pinref part="GPS-NEO7M" gate="G$1" pin="RX"/>
 <wire x1="20.32" y1="76.2" x2="27.94" y2="76.2" width="0.1524" layer="91"/>
 <label x="25.4" y="76.2" size="1.778" layer="95"/>
 </segment>
@@ -10934,7 +10934,7 @@ Source: AVX .. aphvc.pdf</description>
 <label x="55.88" y="111.76" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="U$3" gate="G$1" pin="SW"/>
+<pinref part="XQ-02A" gate="G$1" pin="SW"/>
 <wire x1="104.14" y1="73.66" x2="121.92" y2="73.66" width="0.1524" layer="91"/>
 <label x="116.84" y="73.66" size="1.778" layer="95"/>
 </segment>
@@ -10955,21 +10955,21 @@ Source: AVX .. aphvc.pdf</description>
 </net>
 <net name="N$3" class="0">
 <segment>
-<pinref part="U$4" gate="G$1" pin="PIN"/>
+<pinref part="ROTATE1" gate="G$1" pin="PIN"/>
 <pinref part="LED1" gate="G$1" pin="A"/>
 <wire x1="165.1" y1="71.12" x2="182.88" y2="71.12" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$4" class="0">
 <segment>
-<pinref part="U$5" gate="G$1" pin="PIN"/>
+<pinref part="ROTATE2" gate="G$1" pin="PIN"/>
 <pinref part="LED2" gate="G$1" pin="A"/>
 <wire x1="165.1" y1="86.36" x2="182.88" y2="86.36" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$5" class="0">
 <segment>
-<pinref part="U$3" gate="G$1" pin="LED2"/>
+<pinref part="XQ-02A" gate="G$1" pin="LED2"/>
 <pinref part="R2" gate="G$1" pin="1"/>
 <wire x1="104.14" y1="83.82" x2="142.24" y2="83.82" width="0.1524" layer="91"/>
 <wire x1="142.24" y1="83.82" x2="142.24" y2="86.36" width="0.1524" layer="91"/>
@@ -10977,7 +10977,7 @@ Source: AVX .. aphvc.pdf</description>
 </net>
 <net name="N$6" class="0">
 <segment>
-<pinref part="U$3" gate="G$1" pin="LED1"/>
+<pinref part="XQ-02A" gate="G$1" pin="LED1"/>
 <pinref part="R1" gate="G$1" pin="1"/>
 <wire x1="104.14" y1="78.74" x2="142.24" y2="78.74" width="0.1524" layer="91"/>
 <wire x1="142.24" y1="78.74" x2="142.24" y2="71.12" width="0.1524" layer="91"/>
