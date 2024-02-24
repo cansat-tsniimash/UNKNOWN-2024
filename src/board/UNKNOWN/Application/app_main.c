@@ -31,11 +31,24 @@ extern SPI_HandleTypeDef hspi4;
 extern I2C_HandleTypeDef hi2c1;
 extern ADC_HandleTypeDef hadc1;
 
+void rotate_sm(double angle, bool side){
+	double steps = angle/0.225;
+	if(steps>4000){
+		steps = 4000;
+	}
+
+	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_9, side);
+	for(int i = 0; i<steps; i++){
+		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_10, true);
+		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_10, false);
+	}
+
+}
 
 int _write(int file, char *ptr, int len)
 {
-HAL_UART_Transmit(&huart1, (uint8_t *)ptr, len, 100);
-return 0;
+	HAL_UART_Transmit(&huart1, (uint8_t *)ptr, len, 100);
+	return 0;
 }
 
 typedef enum
@@ -278,6 +291,7 @@ int app_main(){
 		bmp_temp = bme_shit.temperature * 100;
 		bmp_press = bme_shit.pressure;
 		bmp_humidity = bme_shit.humidity;
+
 		height = 44330 * (1 - pow(bmp_press / ground_pressure, 1.0 / 5.255));
 		//сдвиговый регистр
 		shift_reg_write_bit_8(&shift_reg_r, 3, 1);

@@ -61,12 +61,12 @@ void Error_Handler(void);
 #define ce_GPIO_Port GPIOC
 #define cs_Pin GPIO_PIN_14
 #define cs_GPIO_Port GPIOC
+#define irq_Pin GPIO_PIN_15
+#define irq_GPIO_Port GPIOC
 #define latch_Pin GPIO_PIN_2
 #define latch_GPIO_Port GPIOB
 #define oe_Pin GPIO_PIN_10
 #define oe_GPIO_Port GPIOB
-#define irq_Pin GPIO_PIN_8
-#define irq_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
