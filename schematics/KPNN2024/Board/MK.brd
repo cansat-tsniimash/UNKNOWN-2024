@@ -2066,7 +2066,7 @@ design rules under a new name.</description>
 <attribute name="SPICEPREFIX" value="R" x="26.6" y="29.4" size="1.778" layer="27" rot="R135" display="off"/>
 <attribute name="VALUE" x="28.396053125" y="30.298025" size="1.27" layer="27" rot="R135"/>
 </element>
-<element name="C1" library="rcl" library_urn="urn:adsk.eagle:library:334" package="C0603" package3d_urn="urn:adsk.eagle:package:23616/2" value="" x="26.2" y="26.6" smashed="yes" rot="R135">
+<element name="C1" library="rcl" library_urn="urn:adsk.eagle:library:334" package="C0603" package3d_urn="urn:adsk.eagle:package:23616/2" value="100nF" x="26.2" y="26.6" smashed="yes" rot="R135">
 <attribute name="NAME" x="22.8" y="29.298028125" size="1.27" layer="25" rot="R315"/>
 <attribute name="POPULARITY" value="73" x="26.2" y="26.6" size="1.778" layer="27" rot="R135" display="off"/>
 <attribute name="SPICEPREFIX" value="C" x="26.2" y="26.6" size="1.778" layer="27" rot="R135" display="off"/>
@@ -2138,14 +2138,14 @@ design rules under a new name.</description>
 <vertex x="5.4" y="56"/>
 </polygon>
 <polygon width="0.3" layer="1">
-<vertex x="5.9" y="82.1"/>
-<vertex x="78.6" y="82.1"/>
-<vertex x="78.6" y="1.5"/>
-<vertex x="4" y="1.5"/>
-<vertex x="3.4" y="2.1"/>
-<vertex x="3.4" y="81.8"/>
-<vertex x="3.6" y="82"/>
-<vertex x="5.8" y="82"/>
+<vertex x="4.7" y="56.1"/>
+<vertex x="24.9" y="76.3"/>
+<vertex x="56.8" y="76.3"/>
+<vertex x="77.1" y="56"/>
+<vertex x="77.1" y="16.9"/>
+<vertex x="64.5" y="4.3"/>
+<vertex x="18.2" y="4.3"/>
+<vertex x="4.7" y="17.8"/>
 </polygon>
 </signal>
 <signal name="N$13">

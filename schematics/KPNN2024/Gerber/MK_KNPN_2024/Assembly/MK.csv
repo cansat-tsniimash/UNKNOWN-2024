@@ -1,0 +1,13 @@
+"Qty";"Value";"Device";"Package";"Parts";"Description";"POPULARITY";"SPICEPREFIX";
+"1";"";"C-EUC0603";"C0603";"C1";"CAPACITOR, European symbol";"73";"C";
+"1";"100R";"R-US_R0603";"R0603";"R10";"RESISTOR, American symbol";"77";"R";
+"5";"10k";"R-US_R0603";"R0603";"R1, R2, R5, R6, R9";"RESISTOR, American symbol";"77";"R";
+"2";"5k1";"R-US_R0603";"R0603";"R3, R4";"RESISTOR, American symbol";"77";"R";
+"1";"BME280BME280-PINS-ONLY";"BME280BME280-PINS-ONLY";"BME280-PINS-ONLY";"BME280";"";"";"";
+"1";"BUZZERS8R6";"BUZZERS8R6";"BUZZER-S8R12";"BUZZER";"";"";"";
+"1";"PBS_SMD_X13";"PBS_SMD_X13";"PBD_SMD_X13";"U$4";"";"";"";
+"1";"PBS_SMD_X9";"PBS_SMD_X9";"PBS_SMD_X9";"U$6";"";"";"";
+"1";"SD";"SD";"SD";"MICRO_SD";"";"";"";
+"1";"SI2302CDS";"SI2302CDS";"SOT23-3";"U$20";"";"";"";
+"1";"STM32F411_BOARD";"STM32F411_BOARD";"STM32F411_BOARD";"U$5";"";"";"";
+"1";"SWITCH_MSS";"SWITCH_MSS";"SWITCH_MSS";"U$2";"";"";"";

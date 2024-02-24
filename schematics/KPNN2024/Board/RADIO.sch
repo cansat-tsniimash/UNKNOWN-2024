@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="9.6.0">
+<eagle version="9.6.2">
 <drawing>
 <settings>
 <setting alwaysvectorfont="no"/>
@@ -10556,6 +10556,7 @@ Source: AVX .. aphvc.pdf</description>
 <attribute name="VALUE" x="143.51" y="67.818" size="1.778" layer="96"/>
 </instance>
 <instance part="R2" gate="G$1" x="147.32" y="86.36" smashed="yes">
+<attribute name="NAME" x="143.51" y="87.8586" size="1.778" layer="95"/>
 <attribute name="VALUE" x="143.51" y="83.058" size="1.778" layer="96"/>
 </instance>
 <instance part="C1" gate="G$1" x="53.34" y="83.82" smashed="yes">

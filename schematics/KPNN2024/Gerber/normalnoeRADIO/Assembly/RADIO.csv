@@ -1,0 +1,12 @@
+"Qty";"Value";"Device";"Package";"Parts";"Description";"ARROW_PART_NUMBER";"ARROW_PRICE-STOCK";"DESCRIPTION";"HEIGHT";"MANUFACTURER_NAME";"MANUFACTURER_PART_NUMBER";"MOUSER_PART_NUMBER";"MOUSER_PRICE-STOCK";"MOUSER_TESTING_PART_NUMBER";"MOUSER_TESTING_PRICE-STOCK";"POPULARITY";"SPICEPREFIX";
+"1";"";"C-EUC0603";"C0603";"C1";"CAPACITOR, European symbol";"";"";"";"";"";"";"";"";"";"";"73";"C";
+"2";"";"LEDCHIPLED_0603";"CHIPLED_0603";"LED1, LED2";"LED";"";"";"";"";"";"";"";"";"";"";"28";"";
+"2";"";"R-US_R0603";"R0603";"R1, R2";"RESISTOR, American symbol";"";"";"";"";"";"";"";"";"";"";"77";"R";
+"2";"CONNECT_3";"CONNECT_3";"CONNECT_3";"U$4, U$5";"";"";"";"";"";"";"";"";"";"";"";"";"";
+"1";"ECAPECAP220";"ECAPECAP220";"ECAP220-CMD";"C2";"";"";"";"";"";"";"";"";"";"";"";"";"";
+"1";"GPS-NEO7M";"GPS-NEO7M";"GPS-NEO7M";"U$1";"";"";"";"";"";"";"";"";"";"";"";"";"";
+"1";"NRF24L01_ML01SP4";"NRF24L01_ML01SP4";"NRF24L01_ML01SP4";"U$2";"";"";"";"";"";"";"";"";"";"";"";"";"";
+"2";"PBS_SMD_X13";"PBS_SMD_X13";"PBD_SMD_X13";"U$6, U$8";"";"";"";"";"";"";"";"";"";"";"";"";"";
+"1";"PBS_SMD_X9";"PBS_SMD_X9";"PBS_SMD_X9";"U$7";"";"";"";"";"";"";"";"";"";"";"";"";"";
+"2";"U.FL-R-SMT-1_10_";"U.FL-R-SMT-1_10_";"U.FL-R-SMT-1(10)";"J1, J2";"UFL SMT PCB receptable,DC-6GHz Hirose Straight 50 Surface Mount UFL Connector, Receptacle, Solder Termination Coaxial";"U.FL-R-SMT-1(10)";"https://www.arrow.com/en/products/u.fl-r-smt-1-10/hirose-electric";"UFL SMT PCB receptable,DC-6GHz Hirose Straight 50 Surface Mount UFL Connector, Receptacle, Solder Termination Coaxial";"mm";"Hirose";"U.FL-R-SMT-1(10)";"798-U.FL-R-SMT-110";"https://www.mouser.co.uk/ProductDetail/Hirose-Connector/U.FL-R-SMT-110?qs=kL1ClTr6oBoOdtqlGQpQrQ%3D%3D";"";"";"";"";
+"1";"XQ-02A";"XQ-02A";"XQ-02A";"U$3";"";"";"";"";"";"";"";"";"";"";"";"";"";
