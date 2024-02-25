@@ -400,18 +400,16 @@ distributor Buerklin, 11G810</description>
 </package>
 <package name="LIS3MDL">
 <description>lsm</description>
-<hole x="2.5" y="8" drill="3"/>
-<hole x="2.5" y="-8" drill="3"/>
 <text x="-5.08" y="10.16" size="1.27" layer="25">&gt;NAME</text>
 <text x="-5.08" y="-11.43" size="1.27" layer="27">&gt;VALUE</text>
-<pad name="SDO" x="-5.08" y="-1.27" drill="0.8" shape="square"/>
-<pad name="SDA" x="-5.08" y="1.27" drill="0.8" shape="square"/>
-<pad name="SCL" x="-5.08" y="3.81" drill="0.8" shape="square"/>
-<pad name="GND" x="-5.08" y="6.35" drill="0.8" shape="square"/>
-<pad name="UCC" x="-5.08" y="8.89" drill="0.8" shape="square"/>
-<pad name="CS" x="-5.08" y="-3.81" drill="0.8" shape="square"/>
-<pad name="INT" x="-5.08" y="-6.35" drill="0.8" shape="square"/>
-<pad name="DRDY" x="-5.08" y="-8.89" drill="0.8" shape="square"/>
+<pad name="SDO" x="-5.08" y="-1.27" drill="1.016" shape="octagon"/>
+<pad name="SDA" x="-5.08" y="1.27" drill="1.016" shape="octagon"/>
+<pad name="SCL" x="-5.08" y="3.81" drill="1.016" shape="octagon"/>
+<pad name="GND" x="-5.08" y="6.35" drill="1.016" shape="octagon"/>
+<pad name="UCC" x="-5.08" y="8.89" drill="1.016" shape="octagon"/>
+<pad name="CS" x="-5.08" y="-3.81" drill="1.016" shape="octagon"/>
+<pad name="INT" x="-5.08" y="-6.35" drill="1.016" shape="octagon"/>
+<pad name="DRDY" x="-5.08" y="-8.89" drill="1.016" shape="octagon"/>
 <wire x1="-6.5" y1="10" x2="-6.5" y2="-10" width="0.127" layer="21"/>
 <wire x1="-6.5" y1="-10" x2="5" y2="-10" width="0.127" layer="21"/>
 <wire x1="5" y1="-10" x2="5" y2="10" width="0.127" layer="21"/>
@@ -9370,8 +9368,8 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 </segment>
 <segment>
 <pinref part="U$7" gate="G$1" pin="GND"/>
-<wire x1="53.34" y1="142.24" x2="40.64" y2="142.24" width="0.1524" layer="91"/>
-<label x="40.64" y="142.24" size="1.778" layer="95"/>
+<wire x1="53.34" y1="142.24" x2="38.1" y2="142.24" width="0.1524" layer="91"/>
+<label x="38.1" y="142.24" size="1.778" layer="95"/>
 </segment>
 <segment>
 <pinref part="U$10" gate="G$1" pin="12"/>
@@ -9531,35 +9529,16 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <label x="365.76" y="25.4" size="1.778" layer="95"/>
 </segment>
 </net>
-<net name="Q1" class="0">
+<net name="PERE" class="0">
 <segment>
 <pinref part="U$7" gate="G$1" pin="Q1"/>
-<wire x1="53.34" y1="160.02" x2="40.64" y2="160.02" width="0.1524" layer="91"/>
-<label x="40.64" y="160.02" size="1.778" layer="95"/>
+<wire x1="53.34" y1="160.02" x2="38.1" y2="160.02" width="0.1524" layer="91"/>
+<label x="38.1" y="160.02" size="1.778" layer="95"/>
 </segment>
 <segment>
-<label x="228.6" y="101.6" size="1.778" layer="95"/>
-<pinref part="U$11" gate="G$1" pin="CS"/>
-<wire x1="241.3" y1="101.6" x2="228.6" y2="101.6" width="0.1524" layer="91"/>
-</segment>
-</net>
-<net name="Q4" class="0">
-<segment>
-<pinref part="U$7" gate="G$1" pin="Q4"/>
-<wire x1="53.34" y1="152.4" x2="40.64" y2="152.4" width="0.1524" layer="91"/>
-<label x="40.64" y="152.4" size="1.778" layer="95"/>
-</segment>
-<segment>
-<pinref part="LSM" gate="G$1" pin="CS"/>
-<wire x1="208.28" y1="157.48" x2="223.52" y2="157.48" width="0.1524" layer="91"/>
-<label x="215.9" y="157.48" size="1.778" layer="95"/>
-</segment>
-</net>
-<net name="BUZZER" class="0">
-<segment>
-<pinref part="U$7" gate="G$1" pin="Q7"/>
-<wire x1="53.34" y1="144.78" x2="40.64" y2="144.78" width="0.1524" layer="91"/>
-<label x="40.64" y="144.78" size="1.778" layer="95"/>
+<pinref part="R9" gate="G$1" pin="2"/>
+<wire x1="38.1" y1="124.46" x2="38.1" y2="132.08" width="0.1524" layer="91"/>
+<label x="38.1" y="127" size="1.778" layer="95" rot="R90"/>
 </segment>
 </net>
 <net name="5V" class="0">
@@ -9594,6 +9573,11 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <pinref part="U$13" gate="G$1" pin="VM"/>
 <wire x1="396.24" y1="96.52" x2="414.02" y2="96.52" width="0.1524" layer="91"/>
 <label x="408.94" y="96.52" size="1.778" layer="95"/>
+</segment>
+<segment>
+<pinref part="U$14" gate="G$1" pin="1"/>
+<wire x1="447.04" y1="45.72" x2="462.28" y2="45.72" width="0.1524" layer="91"/>
+<label x="454.66" y="45.72" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="LATCH_SR" class="0">
@@ -9693,11 +9677,16 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <label x="365.76" y="20.32" size="1.778" layer="95"/>
 </segment>
 </net>
-<net name="Q2" class="0">
+<net name="CS_LIS" class="0">
 <segment>
-<pinref part="R9" gate="G$1" pin="2"/>
-<wire x1="38.1" y1="124.46" x2="38.1" y2="132.08" width="0.1524" layer="91"/>
-<label x="38.1" y="129.54" size="1.778" layer="95" rot="R90"/>
+<pinref part="U$7" gate="G$1" pin="Q2"/>
+<wire x1="53.34" y1="157.48" x2="38.1" y2="157.48" width="0.1524" layer="91"/>
+<label x="38.1" y="157.48" size="1.778" layer="95"/>
+</segment>
+<segment>
+<label x="228.6" y="101.6" size="1.778" layer="95"/>
+<pinref part="U$11" gate="G$1" pin="CS"/>
+<wire x1="241.3" y1="101.6" x2="228.6" y2="101.6" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="PERE_G" class="0">
@@ -9762,6 +9751,11 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <wire x1="365.76" y1="96.52" x2="342.9" y2="96.52" width="0.1524" layer="91"/>
 <label x="342.9" y="96.52" size="1.778" layer="95"/>
 </segment>
+<segment>
+<pinref part="U$7" gate="G$1" pin="Q7"/>
+<wire x1="53.34" y1="144.78" x2="38.1" y2="144.78" width="0.1524" layer="91"/>
+<label x="38.1" y="144.78" size="1.778" layer="95"/>
+</segment>
 </net>
 <net name="TX1_BLE" class="0">
 <segment>
@@ -9787,13 +9781,6 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <label x="365.76" y="30.48" size="1.778" layer="95"/>
 </segment>
 </net>
-<net name="VCC" class="0">
-<segment>
-<pinref part="U$14" gate="G$1" pin="1"/>
-<wire x1="447.04" y1="45.72" x2="462.28" y2="45.72" width="0.1524" layer="91"/>
-<label x="454.66" y="45.72" size="1.778" layer="95"/>
-</segment>
-</net>
 <net name="BUS+_OUT" class="0">
 <segment>
 <pinref part="X2" gate="G$1" pin="2"/>
@@ -9814,6 +9801,18 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <pinref part="U$12" gate="G$1" pin="G2"/>
 <wire x1="38.1" y1="111.76" x2="38.1" y2="109.22" width="0.1524" layer="91"/>
 <junction x="38.1" y="111.76"/>
+</segment>
+</net>
+<net name="CS_LSM" class="0">
+<segment>
+<pinref part="U$7" gate="G$1" pin="Q6"/>
+<wire x1="53.34" y1="147.32" x2="38.1" y2="147.32" width="0.1524" layer="91"/>
+<label x="38.1" y="147.32" size="1.778" layer="95"/>
+</segment>
+<segment>
+<pinref part="LSM" gate="G$1" pin="CS"/>
+<wire x1="208.28" y1="157.48" x2="223.52" y2="157.48" width="0.1524" layer="91"/>
+<label x="215.9" y="157.48" size="1.778" layer="95"/>
 </segment>
 </net>
 </nets>

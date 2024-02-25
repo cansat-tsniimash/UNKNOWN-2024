@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="9.6.2">
+<eagle version="9.4.2">
 <drawing>
 <settings>
-<setting alwaysvectorfont="no"/>
+<setting alwaysvectorfont="yes"/>
 <setting verticaltext="up"/>
 </settings>
 <grid distance="0.1" unitdist="inch" unit="inch" style="lines" multiple="1" display="no" altdistance="0.01" altunitdist="inch" altunit="inch"/>
@@ -179,9 +179,9 @@
 <smd name="P$12" x="0.645" y="-6.65" dx="1.4" dy="1.29" layer="1" rot="R90"/>
 <smd name="P$13" x="14.25" y="-0.85" dx="1.5" dy="1.7" layer="1"/>
 <smd name="P$14" x="12.45" y="-15.7" dx="1.5" dy="1.7" layer="1" rot="R90"/>
-<wire x1="1.5" y1="0" x2="1.5" y2="-1.29" width="0.127" layer="20"/>
-<wire x1="1.5" y1="-1.29" x2="12.96" y2="-1.29" width="0.127" layer="20"/>
-<wire x1="12.96" y1="-1.29" x2="12.96" y2="0" width="0.127" layer="20"/>
+<wire x1="1.5" y1="0" x2="1.5" y2="-1.29" width="0.127" layer="51"/>
+<wire x1="1.5" y1="-1.29" x2="12.96" y2="-1.29" width="0.127" layer="51"/>
+<wire x1="12.96" y1="-1.29" x2="12.96" y2="0" width="0.127" layer="51"/>
 <text x="4" y="-3" size="1.27" layer="25">&gt;NAME</text>
 </package>
 <package name="BME280">
