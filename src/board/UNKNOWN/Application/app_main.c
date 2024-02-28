@@ -40,7 +40,9 @@ void rotate_sm(double angle, bool side){
 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_9, side);
 	for(int i = 0; i<steps; i++){
 		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_10, true);
+		dwt_delay_ms(1);
 		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_10, false);
+		dwt_delay_ms(1);
 	}
 
 }
@@ -345,7 +347,7 @@ int app_main(){
 		bus_voltage = ina219_bus_voltage_convert(&ina219, primary_data.busv) * 1.0399;*/
 		//Photorez
 
-
+		rotate_sm(360, 0);
 
 		switch (state_now)
 				{
