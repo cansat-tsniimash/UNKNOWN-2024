@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="9.6.2">
+<eagle version="9.4.2">
 <drawing>
 <settings>
-<setting alwaysvectorfont="no"/>
+<setting alwaysvectorfont="yes"/>
 <setting verticaltext="up"/>
 </settings>
 <grid distance="0.1" unitdist="inch" unit="inch" style="lines" multiple="1" display="no" altdistance="0.01" altunitdist="inch" altunit="inch"/>
@@ -10713,18 +10713,6 @@ Source: AVX .. aphvc.pdf</description>
 </net>
 <net name="DIR_DRIVER" class="0">
 <segment>
-<pinref part="U$6" gate="G$1" pin="1"/>
-<wire x1="40.64" y1="132.08" x2="10.16" y2="132.08" width="0.1524" layer="91"/>
-<label x="10.16" y="132.08" size="1.778" layer="95"/>
-</segment>
-<segment>
-<wire x1="144.78" y1="132.08" x2="114.3" y2="132.08" width="0.1524" layer="91"/>
-<label x="129.54" y="132.08" size="1.778" layer="95"/>
-<pinref part="U$8" gate="G$1" pin="13"/>
-</segment>
-</net>
-<net name="STEP_DRIVER" class="0">
-<segment>
 <pinref part="U$6" gate="G$1" pin="2"/>
 <wire x1="40.64" y1="129.54" x2="10.16" y2="129.54" width="0.1524" layer="91"/>
 <label x="10.16" y="129.54" size="1.778" layer="95"/>
@@ -10733,6 +10721,18 @@ Source: AVX .. aphvc.pdf</description>
 <wire x1="144.78" y1="129.54" x2="114.3" y2="129.54" width="0.1524" layer="91"/>
 <label x="129.54" y="129.54" size="1.778" layer="95"/>
 <pinref part="U$8" gate="G$1" pin="12"/>
+</segment>
+</net>
+<net name="STEP_DRIVER" class="0">
+<segment>
+<pinref part="U$6" gate="G$1" pin="1"/>
+<wire x1="40.64" y1="132.08" x2="10.16" y2="132.08" width="0.1524" layer="91"/>
+<label x="10.16" y="132.08" size="1.778" layer="95"/>
+</segment>
+<segment>
+<wire x1="144.78" y1="132.08" x2="114.3" y2="132.08" width="0.1524" layer="91"/>
+<label x="129.54" y="132.08" size="1.778" layer="95"/>
+<pinref part="U$8" gate="G$1" pin="13"/>
 </segment>
 </net>
 <net name="TX1_BLE" class="0">

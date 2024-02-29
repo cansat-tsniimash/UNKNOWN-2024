@@ -6,7 +6,7 @@
 <setting alwaysvectorfont="no"/>
 <setting verticaltext="up"/>
 </settings>
-<grid distance="50" unitdist="mil" unit="mil" style="lines" multiple="1" display="yes" altdistance="5" altunitdist="mil" altunit="mil"/>
+<grid distance="25" unitdist="mil" unit="mil" style="lines" multiple="1" display="yes" altdistance="5" altunitdist="mil" altunit="mil"/>
 <layers>
 <layer number="1" name="Top" color="4" fill="1" visible="yes" active="yes"/>
 <layer number="2" name="Route2" color="16" fill="1" visible="no" active="yes"/>
@@ -372,7 +372,8 @@
 <wire x1="-1.5" y1="-0.8" x2="1.5" y2="-0.8" width="0.127" layer="21"/>
 <wire x1="1.5" y1="-0.8" x2="1.5" y2="0.8" width="0.127" layer="21"/>
 <wire x1="1.5" y1="0.8" x2="-1.5" y2="0.8" width="0.127" layer="21"/>
-<text x="-2" y="-2" size="1.016" layer="21" rot="R90">&gt;NAME</text>
+<text x="-2" y="-2" size="1.016" layer="25" rot="R90">&gt;NAME</text>
+<text x="3.08" y="-2" size="1.016" layer="27" rot="R90">&gt;VALUE</text>
 </package>
 <package name="SD">
 <wire x1="0" y1="0" x2="15" y2="0" width="0.127" layer="21"/>
@@ -695,8 +696,8 @@ distributor Buerklin, 11G810</description>
 <pad name="1" x="-4.7" y="0" drill="1.6" diameter="3" shape="octagon" rot="R90"/>
 <pad name="2" x="0" y="0" drill="1.6" diameter="3" shape="octagon" rot="R90"/>
 <pad name="3" x="4.7" y="0" drill="1.6" diameter="3" shape="octagon" rot="R90"/>
-<text x="-6.351" y="1.92" size="1.27" layer="21" ratio="10">ON</text>
-<text x="3.176" y="1.92" size="1.27" layer="21" ratio="10">OFF</text>
+<text x="4.444" y="1.92" size="1.27" layer="21" ratio="10">ON</text>
+<text x="-6.349" y="1.92" size="1.27" layer="21" ratio="10">OFF</text>
 <text x="-6.478" y="10.556" size="1.27" layer="25" ratio="10">&gt;NAME</text>
 <text x="0" y="10.556" size="1.27" layer="27" ratio="10">&gt;VALUE</text>
 <wire x1="-4" y1="10.4" x2="-4" y2="15" width="0.127" layer="21"/>
