@@ -9,6 +9,20 @@
 <grid distance="0.1" unitdist="inch" unit="inch" style="lines" multiple="1" display="no" altdistance="0.01" altunitdist="inch" altunit="inch"/>
 <layers>
 <layer number="1" name="Top" color="4" fill="1" visible="no" active="no"/>
+<layer number="2" name="Route2" color="16" fill="1" visible="no" active="no"/>
+<layer number="3" name="Route3" color="17" fill="1" visible="no" active="no"/>
+<layer number="4" name="Route4" color="18" fill="1" visible="no" active="no"/>
+<layer number="5" name="Route5" color="19" fill="1" visible="no" active="no"/>
+<layer number="6" name="Route6" color="25" fill="1" visible="no" active="no"/>
+<layer number="7" name="Route7" color="26" fill="1" visible="no" active="no"/>
+<layer number="8" name="Route8" color="27" fill="1" visible="no" active="no"/>
+<layer number="9" name="Route9" color="28" fill="1" visible="no" active="no"/>
+<layer number="10" name="Route10" color="29" fill="1" visible="no" active="no"/>
+<layer number="11" name="Route11" color="30" fill="1" visible="no" active="no"/>
+<layer number="12" name="Route12" color="20" fill="1" visible="no" active="no"/>
+<layer number="13" name="Route13" color="21" fill="1" visible="no" active="no"/>
+<layer number="14" name="Route14" color="22" fill="1" visible="no" active="no"/>
+<layer number="15" name="Route15" color="23" fill="1" visible="no" active="no"/>
 <layer number="16" name="Bottom" color="1" fill="1" visible="no" active="no"/>
 <layer number="17" name="Pads" color="2" fill="1" visible="no" active="no"/>
 <layer number="18" name="Vias" color="2" fill="1" visible="no" active="no"/>
@@ -223,6 +237,8 @@
 <wire x1="1.6" y1="-0.6" x2="-1.6" y2="-0.6" width="0.127" layer="21"/>
 <wire x1="-1.6" y1="-0.6" x2="-1.6" y2="0.6" width="0.127" layer="21"/>
 <smd name="3" x="-1" y="0" dx="0.8" dy="0.8" layer="1"/>
+<text x="-2.54" y="-0.7" size="1" layer="21" font="vector" ratio="15">0</text>
+<text x="1.94" y="-0.7" size="1" layer="21" font="vector" ratio="15">1</text>
 </package>
 <package name="PBD_SMD_X13">
 <smd name="3" x="-10.16" y="1.35" dx="1.02" dy="2.7" layer="1"/>
@@ -10910,9 +10926,9 @@ Source: AVX .. aphvc.pdf</description>
 <label x="55.88" y="116.84" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="GPS-NEO7M" gate="G$1" pin="TX"/>
-<wire x1="20.32" y1="78.74" x2="27.94" y2="78.74" width="0.1524" layer="91"/>
-<label x="25.4" y="78.74" size="1.778" layer="95"/>
+<pinref part="GPS-NEO7M" gate="G$1" pin="RX"/>
+<wire x1="20.32" y1="76.2" x2="27.94" y2="76.2" width="0.1524" layer="91"/>
+<label x="25.4" y="76.2" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="RX2_GPS" class="0">
@@ -10922,9 +10938,9 @@ Source: AVX .. aphvc.pdf</description>
 <label x="55.88" y="114.3" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="GPS-NEO7M" gate="G$1" pin="RX"/>
-<wire x1="20.32" y1="76.2" x2="27.94" y2="76.2" width="0.1524" layer="91"/>
-<label x="25.4" y="76.2" size="1.778" layer="95"/>
+<pinref part="GPS-NEO7M" gate="G$1" pin="TX"/>
+<wire x1="20.32" y1="78.74" x2="27.94" y2="78.74" width="0.1524" layer="91"/>
+<label x="25.4" y="78.74" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="SW_WMP" class="0">
