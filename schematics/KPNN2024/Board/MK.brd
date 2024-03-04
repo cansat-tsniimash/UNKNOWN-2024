@@ -706,6 +706,11 @@
 <pad name="P$4" x="3.81" y="5.33" drill="1.016" shape="octagon"/>
 <text x="-3.81" y="7.62" size="1.27" layer="25">&gt;NAME</text>
 </package>
+<package name="LOGO">
+<text x="0.5" y="0.5" size="1.5" layer="21" font="vector" ratio="15">КНПН 2024</text>
+<wire x1="0" y1="0" x2="12.3" y2="0" width="0.1" layer="21"/>
+<text x="0.5" y="-1.5" size="1" layer="21" font="vector" ratio="15">&gt;VALUE</text>
+</package>
 </packages>
 </library>
 <library name="CanCubeSat">
@@ -2127,6 +2132,9 @@ design rules under a new name.</description>
 <attribute name="NAME" x="67.852959375" y="12.0509875" size="1" layer="25" ratio="15" rot="R45"/>
 <attribute name="POPULARITY" value="28" x="71.1707125" y="9.599640625" size="1" layer="27" font="vector" ratio="15" rot="R135" display="off"/>
 <attribute name="VALUE" x="70.6509875" y="18.8450625" size="1.27" layer="27" rot="R225"/>
+</element>
+<element name="U$1" library="UNKNOWN-2024" package="LOGO" value="Плата МК" x="25.6" y="13.7" smashed="yes">
+<attribute name="VALUE" x="26.1" y="12.2" size="1" layer="21" font="vector" ratio="15"/>
 </element>
 </elements>
 <signals>

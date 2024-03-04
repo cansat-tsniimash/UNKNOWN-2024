@@ -654,6 +654,11 @@
 <pad name="P$4" x="3.81" y="5.33" drill="1.016" shape="octagon"/>
 <text x="-3.81" y="7.62" size="1.27" layer="25">&gt;NAME</text>
 </package>
+<package name="LOGO">
+<text x="0.5" y="0.5" size="1.5" layer="21" font="vector" ratio="15">КНПН 2024</text>
+<wire x1="0" y1="0" x2="12.3" y2="0" width="0.1" layer="21"/>
+<text x="0.5" y="-1.5" size="1" layer="21" font="vector" ratio="15">&gt;VALUE</text>
+</package>
 </packages>
 <symbols>
 <symbol name="SD">
@@ -784,6 +789,10 @@
 <pin name="7" x="-2.54" y="-5.08" visible="pad" length="short" direction="pas" function="dot"/>
 <pin name="8" x="-2.54" y="-7.62" visible="pad" length="short" direction="pas" function="dot"/>
 <pin name="9" x="-2.54" y="-10.16" visible="pad" length="short" direction="pas" function="dot"/>
+</symbol>
+<symbol name="LOGO">
+<text x="0" y="0" size="12.7" layer="90" ratio="11">КНПН 2024 - </text>
+<text x="104.14" y="0" size="12.7" layer="96">&gt;VALUE</text>
 </symbol>
 </symbols>
 <devicesets>
@@ -950,6 +959,18 @@
 <connect gate="G$1" pin="8" pad="8"/>
 <connect gate="G$1" pin="9" pad="9"/>
 </connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+</devices>
+</deviceset>
+<deviceset name="LOGO">
+<gates>
+<gate name="G$1" symbol="LOGO" x="0" y="0"/>
+</gates>
+<devices>
+<device name="PCB-&quot;&quot;" package="LOGO">
 <technologies>
 <technology name=""/>
 </technologies>
@@ -10871,6 +10892,7 @@ Source: www.kingbright.com</description>
 <part name="R6" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="10k"/>
 <part name="C1" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="C-EU" device="C0603" package3d_urn="urn:adsk.eagle:package:23616/2" value="100nF"/>
 <part name="STATE" library="led" library_urn="urn:adsk.eagle:library:259" deviceset="LED" device="CHIPLED_0603" package3d_urn="urn:adsk.eagle:package:15822/2"/>
+<part name="U$1" library="UNKNOWN-2024" deviceset="LOGO" device="PCB-&quot;&quot;" value="Плата МК"/>
 </parts>
 <sheets>
 <sheet>
@@ -10941,6 +10963,9 @@ Source: www.kingbright.com</description>
 <instance part="STATE" gate="G$1" x="149.86" y="50.8" smashed="yes">
 <attribute name="NAME" x="153.416" y="46.228" size="1.778" layer="95" rot="R90"/>
 <attribute name="VALUE" x="155.575" y="46.228" size="1.778" layer="96" rot="R90"/>
+</instance>
+<instance part="U$1" gate="G$1" x="-25.4" y="134.62" smashed="yes">
+<attribute name="VALUE" x="78.74" y="134.62" size="12.7" layer="96"/>
 </instance>
 </instances>
 <busses>

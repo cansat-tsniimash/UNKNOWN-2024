@@ -274,6 +274,87 @@
 <wire x1="11.43" y1="1.25" x2="11.43" y2="-1.25" width="0.127" layer="21"/>
 <wire x1="-11.43" y1="1.25" x2="-11.43" y2="-1.25" width="0.127" layer="21"/>
 </package>
+<package name="LOGO">
+<text x="0.5" y="0.5" size="1.5" layer="21" font="vector" ratio="15">КНПН 2024</text>
+<wire x1="0" y1="0" x2="12.3" y2="0" width="0.1" layer="21"/>
+<text x="0.5" y="-1.5" size="1" layer="21" font="vector" ratio="15">&gt;VALUE</text>
+</package>
+<package name="ECAP220-CMD">
+<smd name="P$1" x="0" y="2.85" dx="3.5" dy="1.2" layer="1" rot="R90"/>
+<smd name="P$2" x="0" y="-2.85" dx="3.5" dy="1.2" layer="1" rot="R90"/>
+<wire x1="3.3" y1="-3.3" x2="3.3" y2="2.35" width="0.127" layer="21"/>
+<wire x1="3.3" y1="2.35" x2="2.35" y2="3.3" width="0.127" layer="21"/>
+<wire x1="2.35" y1="3.3" x2="-2.35" y2="3.3" width="0.127" layer="21"/>
+<wire x1="-2.35" y1="3.3" x2="-3.3" y2="2.35" width="0.127" layer="21"/>
+<wire x1="-3.3" y1="2.35" x2="-3.3" y2="-3.3" width="0.127" layer="21"/>
+<wire x1="-3.3" y1="-3.3" x2="3.3" y2="-3.3" width="0.127" layer="21"/>
+<text x="-3.5" y="0" size="0.8" layer="25" rot="R90" align="bottom-center">&gt;NAME</text>
+<text x="-1.5" y="0" size="0.8" layer="21" ratio="15" rot="R90" align="bottom-center">&gt;VALUE</text>
+</package>
+<package name="ECAP150-CMD">
+<smd name="P$1" x="0" y="2.85" dx="3.5" dy="1.2" layer="1" rot="R90"/>
+<smd name="P$2" x="0" y="-2.85" dx="3.5" dy="1.2" layer="1" rot="R90"/>
+<wire x1="-3.15" y1="3.15" x2="-3.15" y2="-3.15" width="0.127" layer="21"/>
+<wire x1="-3.15" y1="-3.15" x2="3.15" y2="-3.15" width="0.127" layer="21"/>
+<wire x1="3.15" y1="-3.15" x2="3.15" y2="3.15" width="0.127" layer="21"/>
+<wire x1="3.15" y1="3.15" x2="-3.15" y2="3.15" width="0.127" layer="21"/>
+<text x="-3.429" y="-3.048" size="1.27" layer="25" rot="R90">&gt;NAME</text>
+<text x="4.699" y="-3.302" size="1.27" layer="27" rot="R90">&gt;VALUE</text>
+</package>
+<package name="ECAP100-CMD">
+<smd name="P$1" x="0" y="2.85" dx="3.5" dy="1.2" layer="1" rot="R90"/>
+<smd name="P$2" x="0" y="-2.85" dx="3.5" dy="1.2" layer="1" rot="R90"/>
+<wire x1="3.15" y1="-3.15" x2="3.15" y2="2.35" width="0.127" layer="21"/>
+<wire x1="3.15" y1="2.35" x2="2.35" y2="3.15" width="0.127" layer="21"/>
+<wire x1="2.35" y1="3.15" x2="-2.35" y2="3.15" width="0.127" layer="21"/>
+<wire x1="-2.35" y1="3.15" x2="-3.15" y2="2.35" width="0.127" layer="21"/>
+<wire x1="-3.15" y1="2.35" x2="-3.15" y2="-3.15" width="0.127" layer="21"/>
+<wire x1="-3.15" y1="-3.15" x2="3.15" y2="-3.15" width="0.127" layer="21"/>
+<text x="-3.5" y="0" size="0.8" layer="25" ratio="15" rot="R90" align="bottom-center">&gt;NAME</text>
+<text x="-1.5" y="0" size="0.8" layer="21" ratio="15" rot="R90" align="bottom-center">&gt;VALUE</text>
+</package>
+<package name="ECAP1MK">
+<pad name="P$1" x="-1" y="0" drill="0.8" diameter="1.5"/>
+<pad name="P$2" x="1" y="0" drill="0.8" diameter="1.5"/>
+<circle x="0" y="0" radius="2.5" width="0.127" layer="21"/>
+<polygon width="0.127" layer="21">
+<vertex x="1.27" y="2.159"/>
+<vertex x="1.27" y="-2.159"/>
+<vertex x="1.778" y="-1.651"/>
+<vertex x="2.159" y="-1.143"/>
+<vertex x="2.413" y="-0.508"/>
+<vertex x="2.413" y="0"/>
+<vertex x="2.413" y="0.508"/>
+<vertex x="2.159" y="1.143"/>
+<vertex x="1.778" y="1.651"/>
+</polygon>
+<text x="0" y="2.8" size="0.8" layer="21" ratio="15" align="bottom-center">&gt;NAME</text>
+<text x="-0.5" y="1" size="0.8" layer="21" ratio="15" align="bottom-center">&gt;VALUE</text>
+</package>
+<package name="ECAP-SMD-D4">
+<wire x1="-1.7" y1="2.2" x2="1.7" y2="2.2" width="0.1" layer="21"/>
+<wire x1="1.7" y1="2.2" x2="2.2" y2="1.7" width="0.1" layer="21"/>
+<wire x1="2.2" y1="1.7" x2="2.2" y2="-2.2" width="0.1" layer="21"/>
+<wire x1="2.2" y1="-2.2" x2="-2.2" y2="-2.2" width="0.1" layer="21"/>
+<wire x1="-2.2" y1="-2.2" x2="-2.2" y2="1.7" width="0.1" layer="21"/>
+<wire x1="-2.2" y1="1.7" x2="-1.7" y2="2.2" width="0.1" layer="21"/>
+<smd name="P+" x="0" y="1.6" dx="2.4" dy="0.6" layer="1" roundness="50" rot="R90"/>
+<smd name="P-" x="0" y="-1.6" dx="2.4" dy="0.6" layer="1" roundness="50" rot="R90"/>
+<text x="-2.5" y="-2" size="0.8" layer="21" rot="R90">&gt;NAME</text>
+<text x="-1" y="-2" size="0.8" layer="21" rot="R90">&gt;VALUE</text>
+</package>
+<package name="ECAP1000-CMD">
+<smd name="P$1" x="0" y="4" dx="3.5" dy="1.5" layer="1" rot="R90"/>
+<smd name="P$2" x="0" y="-4" dx="3.5" dy="1.5" layer="1" rot="R90"/>
+<wire x1="5.15" y1="-5.15" x2="5.15" y2="2.35" width="0.127" layer="21"/>
+<wire x1="5.15" y1="2.35" x2="2.35" y2="5.15" width="0.127" layer="21"/>
+<wire x1="2.35" y1="5.15" x2="-2.35" y2="5.15" width="0.127" layer="21"/>
+<wire x1="-2.35" y1="5.15" x2="-5.15" y2="2.35" width="0.127" layer="21"/>
+<wire x1="-5.15" y1="2.35" x2="-5.15" y2="-5.15" width="0.127" layer="21"/>
+<wire x1="-5.15" y1="-5.15" x2="5.15" y2="-5.15" width="0.127" layer="21"/>
+<text x="-3.5" y="0" size="0.8" layer="25" rot="R90" align="bottom-center">&gt;NAME</text>
+<text x="-1.5" y="0" size="0.8" layer="21" ratio="15" rot="R90" align="bottom-center">&gt;VALUE</text>
+</package>
 </packages>
 <symbols>
 <symbol name="GPS-4PINS">
@@ -336,7 +417,7 @@
 <wire x1="0" y1="-5.08" x2="10.16" y2="-5.08" width="0.254" layer="94"/>
 <wire x1="10.16" y1="-5.08" x2="10.16" y2="5.08" width="0.254" layer="94"/>
 <wire x1="10.16" y1="5.08" x2="0" y2="5.08" width="0.254" layer="94"/>
-<text x="0" y="7.62" size="1.778" layer="94">&gt;NAME</text>
+<text x="0" y="7.62" size="1.778" layer="95">&gt;NAME</text>
 </symbol>
 <symbol name="PINHD13">
 <wire x1="-6.35" y1="-17.78" x2="1.27" y2="-17.78" width="0.4064" layer="94"/>
@@ -375,6 +456,20 @@
 <pin name="7" x="-2.54" y="-5.08" visible="pad" length="short" direction="pas" function="dot"/>
 <pin name="8" x="-2.54" y="-7.62" visible="pad" length="short" direction="pas" function="dot"/>
 <pin name="9" x="-2.54" y="-10.16" visible="pad" length="short" direction="pas" function="dot"/>
+</symbol>
+<symbol name="LOGO">
+<text x="0" y="0" size="12.7" layer="90" ratio="11">КНПН 2024 - </text>
+<text x="104.14" y="0" size="12.7" layer="96">&gt;VALUE</text>
+</symbol>
+<symbol name="C-US">
+<wire x1="-2.54" y1="0" x2="2.54" y2="0" width="0.254" layer="94"/>
+<wire x1="0" y1="-1.016" x2="0" y2="-2.54" width="0.1524" layer="94"/>
+<wire x1="0" y1="-1" x2="2.4892" y2="-1.8542" width="0.254" layer="94" curve="-37.878202"/>
+<wire x1="-2.4668" y1="-1.8504" x2="0" y2="-1.0161" width="0.254" layer="94" curve="-37.373024"/>
+<text x="1.016" y="0.635" size="1.778" layer="95">&gt;NAME</text>
+<text x="1.016" y="-4.191" size="1.778" layer="96">&gt;VALUE</text>
+<pin name="1" x="0" y="2.54" visible="off" length="short" direction="pas" swaplevel="1" rot="R270"/>
+<pin name="2" x="0" y="-5.08" visible="off" length="short" direction="pas" swaplevel="1" rot="R90"/>
 </symbol>
 </symbols>
 <devicesets>
@@ -530,6 +625,79 @@ Source: &lt;a href="https://www.hirose.com/product/document?clcode=CL0331-0472-2
 <connect gate="G$1" pin="7" pad="7"/>
 <connect gate="G$1" pin="8" pad="8"/>
 <connect gate="G$1" pin="9" pad="9"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+</devices>
+</deviceset>
+<deviceset name="LOGO">
+<gates>
+<gate name="G$1" symbol="LOGO" x="0" y="0"/>
+</gates>
+<devices>
+<device name="PCB-&quot;&quot;" package="LOGO">
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+</devices>
+</deviceset>
+<deviceset name="ECAP" prefix="C">
+<gates>
+<gate name="G$1" symbol="C-US" x="0" y="0"/>
+</gates>
+<devices>
+<device name="ECAP150" package="ECAP150-CMD">
+<connects>
+<connect gate="G$1" pin="1" pad="P$1"/>
+<connect gate="G$1" pin="2" pad="P$2"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="ECAP220" package="ECAP220-CMD">
+<connects>
+<connect gate="G$1" pin="1" pad="P$1"/>
+<connect gate="G$1" pin="2" pad="P$2"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="ECAP100" package="ECAP100-CMD">
+<connects>
+<connect gate="G$1" pin="1" pad="P$1"/>
+<connect gate="G$1" pin="2" pad="P$2"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="" package="ECAP1MK">
+<connects>
+<connect gate="G$1" pin="1" pad="P$1"/>
+<connect gate="G$1" pin="2" pad="P$2"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="1UF" package="ECAP-SMD-D4">
+<connects>
+<connect gate="G$1" pin="1" pad="P+"/>
+<connect gate="G$1" pin="2" pad="P-"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="ECAP1000" package="ECAP1000-CMD">
+<connects>
+<connect gate="G$1" pin="1" pad="P$1"/>
+<connect gate="G$1" pin="2" pad="P$2"/>
 </connects>
 <technologies>
 <technology name=""/>
@@ -10337,161 +10505,6 @@ Source: AVX .. aphvc.pdf</description>
 </deviceset>
 </devicesets>
 </library>
-<library name="CanCubeSat">
-<packages>
-<package name="ECAP150-CMD">
-<smd name="P$1" x="0" y="2.85" dx="3.5" dy="1.2" layer="1" rot="R90"/>
-<smd name="P$2" x="0" y="-2.85" dx="3.5" dy="1.2" layer="1" rot="R90"/>
-<wire x1="-3.15" y1="3.15" x2="-3.15" y2="-3.15" width="0.127" layer="21"/>
-<wire x1="-3.15" y1="-3.15" x2="3.15" y2="-3.15" width="0.127" layer="21"/>
-<wire x1="3.15" y1="-3.15" x2="3.15" y2="3.15" width="0.127" layer="21"/>
-<wire x1="3.15" y1="3.15" x2="-3.15" y2="3.15" width="0.127" layer="21"/>
-<text x="-3.429" y="-3.048" size="1.27" layer="25" rot="R90">&gt;NAME</text>
-<text x="4.699" y="-3.302" size="1.27" layer="27" rot="R90">&gt;VALUE</text>
-</package>
-<package name="ECAP220-CMD">
-<smd name="P$1" x="0" y="2.85" dx="3.5" dy="1.2" layer="1" rot="R90"/>
-<smd name="P$2" x="0" y="-2.85" dx="3.5" dy="1.2" layer="1" rot="R90"/>
-<wire x1="3.15" y1="-3.15" x2="3.15" y2="2.35" width="0.127" layer="21"/>
-<wire x1="3.15" y1="2.35" x2="2.35" y2="3.15" width="0.127" layer="21"/>
-<wire x1="2.35" y1="3.15" x2="-2.35" y2="3.15" width="0.127" layer="21"/>
-<wire x1="-2.35" y1="3.15" x2="-3.15" y2="2.35" width="0.127" layer="21"/>
-<wire x1="-3.15" y1="2.35" x2="-3.15" y2="-3.15" width="0.127" layer="21"/>
-<wire x1="-3.15" y1="-3.15" x2="3.15" y2="-3.15" width="0.127" layer="21"/>
-<text x="-3.5" y="0" size="0.8" layer="25" rot="R90" align="bottom-center">&gt;NAME</text>
-<text x="-1.5" y="0" size="0.8" layer="21" ratio="15" rot="R90" align="bottom-center">&gt;VALUE</text>
-</package>
-<package name="ECAP100-CMD">
-<smd name="P$1" x="0" y="2.85" dx="3.5" dy="1.2" layer="1" rot="R90"/>
-<smd name="P$2" x="0" y="-2.85" dx="3.5" dy="1.2" layer="1" rot="R90"/>
-<wire x1="3.15" y1="-3.15" x2="3.15" y2="2.35" width="0.127" layer="21"/>
-<wire x1="3.15" y1="2.35" x2="2.35" y2="3.15" width="0.127" layer="21"/>
-<wire x1="2.35" y1="3.15" x2="-2.35" y2="3.15" width="0.127" layer="21"/>
-<wire x1="-2.35" y1="3.15" x2="-3.15" y2="2.35" width="0.127" layer="21"/>
-<wire x1="-3.15" y1="2.35" x2="-3.15" y2="-3.15" width="0.127" layer="21"/>
-<wire x1="-3.15" y1="-3.15" x2="3.15" y2="-3.15" width="0.127" layer="21"/>
-<text x="-3.5" y="0" size="0.8" layer="25" ratio="15" rot="R90" align="bottom-center">&gt;NAME</text>
-<text x="-1.5" y="0" size="0.8" layer="21" ratio="15" rot="R90" align="bottom-center">&gt;VALUE</text>
-</package>
-<package name="ECAP1MK">
-<pad name="P$1" x="-1" y="0" drill="0.8" diameter="1.5"/>
-<pad name="P$2" x="1" y="0" drill="0.8" diameter="1.5"/>
-<circle x="0" y="0" radius="2.5" width="0.127" layer="21"/>
-<polygon width="0.127" layer="21">
-<vertex x="1.27" y="2.159"/>
-<vertex x="1.27" y="-2.159"/>
-<vertex x="1.778" y="-1.651"/>
-<vertex x="2.159" y="-1.143"/>
-<vertex x="2.413" y="-0.508"/>
-<vertex x="2.413" y="0"/>
-<vertex x="2.413" y="0.508"/>
-<vertex x="2.159" y="1.143"/>
-<vertex x="1.778" y="1.651"/>
-</polygon>
-<text x="0" y="2.8" size="0.8" layer="21" ratio="15" align="bottom-center">&gt;NAME</text>
-<text x="-0.5" y="1" size="0.8" layer="21" ratio="15" align="bottom-center">&gt;VALUE</text>
-</package>
-<package name="ECAP-SMD-D4">
-<wire x1="-1.7" y1="2.2" x2="1.7" y2="2.2" width="0.1" layer="21"/>
-<wire x1="1.7" y1="2.2" x2="2.2" y2="1.7" width="0.1" layer="21"/>
-<wire x1="2.2" y1="1.7" x2="2.2" y2="-2.2" width="0.1" layer="21"/>
-<wire x1="2.2" y1="-2.2" x2="-2.2" y2="-2.2" width="0.1" layer="21"/>
-<wire x1="-2.2" y1="-2.2" x2="-2.2" y2="1.7" width="0.1" layer="21"/>
-<wire x1="-2.2" y1="1.7" x2="-1.7" y2="2.2" width="0.1" layer="21"/>
-<smd name="P+" x="0" y="1.6" dx="2.4" dy="0.6" layer="1" roundness="50" rot="R90"/>
-<smd name="P-" x="0" y="-1.6" dx="2.4" dy="0.6" layer="1" roundness="50" rot="R90"/>
-<text x="-2.5" y="-2" size="0.8" layer="21" rot="R90">&gt;NAME</text>
-<text x="-1" y="-2" size="0.8" layer="21" rot="R90">&gt;VALUE</text>
-</package>
-<package name="ECAP1000-CMD">
-<smd name="P$1" x="0" y="4" dx="3.5" dy="1.5" layer="1" rot="R90"/>
-<smd name="P$2" x="0" y="-4" dx="3.5" dy="1.5" layer="1" rot="R90"/>
-<wire x1="5.15" y1="-5.15" x2="5.15" y2="2.35" width="0.127" layer="21"/>
-<wire x1="5.15" y1="2.35" x2="2.35" y2="5.15" width="0.127" layer="21"/>
-<wire x1="2.35" y1="5.15" x2="-2.35" y2="5.15" width="0.127" layer="21"/>
-<wire x1="-2.35" y1="5.15" x2="-5.15" y2="2.35" width="0.127" layer="21"/>
-<wire x1="-5.15" y1="2.35" x2="-5.15" y2="-5.15" width="0.127" layer="21"/>
-<wire x1="-5.15" y1="-5.15" x2="5.15" y2="-5.15" width="0.127" layer="21"/>
-<text x="-3.5" y="0" size="0.8" layer="25" rot="R90" align="bottom-center">&gt;NAME</text>
-<text x="-1.5" y="0" size="0.8" layer="21" ratio="15" rot="R90" align="bottom-center">&gt;VALUE</text>
-</package>
-</packages>
-<symbols>
-<symbol name="C-US">
-<wire x1="-2.54" y1="0" x2="2.54" y2="0" width="0.254" layer="94"/>
-<wire x1="0" y1="-1.016" x2="0" y2="-2.54" width="0.1524" layer="94"/>
-<wire x1="0" y1="-1" x2="2.4892" y2="-1.8542" width="0.254" layer="94" curve="-37.878202"/>
-<wire x1="-2.4668" y1="-1.8504" x2="0" y2="-1.0161" width="0.254" layer="94" curve="-37.373024"/>
-<text x="1.016" y="0.635" size="1.778" layer="95">&gt;NAME</text>
-<text x="1.016" y="-4.191" size="1.778" layer="96">&gt;VALUE</text>
-<pin name="1" x="0" y="2.54" visible="off" length="short" direction="pas" swaplevel="1" rot="R270"/>
-<pin name="2" x="0" y="-5.08" visible="off" length="short" direction="pas" swaplevel="1" rot="R90"/>
-</symbol>
-</symbols>
-<devicesets>
-<deviceset name="ECAP" prefix="C">
-<gates>
-<gate name="G$1" symbol="C-US" x="0" y="0"/>
-</gates>
-<devices>
-<device name="ECAP150" package="ECAP150-CMD">
-<connects>
-<connect gate="G$1" pin="1" pad="P$1"/>
-<connect gate="G$1" pin="2" pad="P$2"/>
-</connects>
-<technologies>
-<technology name=""/>
-</technologies>
-</device>
-<device name="ECAP220" package="ECAP220-CMD">
-<connects>
-<connect gate="G$1" pin="1" pad="P$1"/>
-<connect gate="G$1" pin="2" pad="P$2"/>
-</connects>
-<technologies>
-<technology name=""/>
-</technologies>
-</device>
-<device name="ECAP100" package="ECAP100-CMD">
-<connects>
-<connect gate="G$1" pin="1" pad="P$1"/>
-<connect gate="G$1" pin="2" pad="P$2"/>
-</connects>
-<technologies>
-<technology name=""/>
-</technologies>
-</device>
-<device name="" package="ECAP1MK">
-<connects>
-<connect gate="G$1" pin="1" pad="P$1"/>
-<connect gate="G$1" pin="2" pad="P$2"/>
-</connects>
-<technologies>
-<technology name=""/>
-</technologies>
-</device>
-<device name="1UF" package="ECAP-SMD-D4">
-<connects>
-<connect gate="G$1" pin="1" pad="P+"/>
-<connect gate="G$1" pin="2" pad="P-"/>
-</connects>
-<technologies>
-<technology name=""/>
-</technologies>
-</device>
-<device name="ECAP1000" package="ECAP1000-CMD">
-<connects>
-<connect gate="G$1" pin="1" pad="P$1"/>
-<connect gate="G$1" pin="2" pad="P$2"/>
-</connects>
-<technologies>
-<technology name=""/>
-</technologies>
-</device>
-</devices>
-</deviceset>
-</devicesets>
-</library>
 </libraries>
 <attributes>
 </attributes>
@@ -10517,7 +10530,11 @@ Source: AVX .. aphvc.pdf</description>
 <part name="R1" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="2k"/>
 <part name="R2" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="2k"/>
 <part name="C1" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="C-EU" device="C0603" package3d_urn="urn:adsk.eagle:package:23616/2" value="100nF"/>
-<part name="C2" library="CanCubeSat" deviceset="ECAP" device="ECAP220" value="220uF"/>
+<part name="C2" library="UNKNOWN-2024" deviceset="ECAP" device="ECAP220" value="220uF"/>
+<part name="U$1" library="UNKNOWN-2024" deviceset="LOGO" device="PCB-&quot;&quot;" value="Плата радио"/>
+<part name="SW" library="UNKNOWN-2024" deviceset="CONNECT_3" device=""/>
+<part name="R3" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="2k"/>
+<part name="R4" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="R-US_" device="R0603" package3d_urn="urn:adsk.eagle:package:23555/3" value="2k"/>
 </parts>
 <sheets>
 <sheet>
@@ -10537,15 +10554,15 @@ Source: AVX .. aphvc.pdf</description>
 <attribute name="NAME" x="87.63" y="43.18" size="1.778" layer="95" align="center-left"/>
 <attribute name="VALUE" x="87.63" y="40.64" size="1.778" layer="96" align="center-left"/>
 </instance>
-<instance part="J2" gate="G$1" x="119.38" y="43.18" smashed="yes">
-<attribute name="NAME" x="135.89" y="53.34" size="1.778" layer="95" align="center-left"/>
-<attribute name="VALUE" x="135.89" y="50.8" size="1.778" layer="96" align="center-left"/>
+<instance part="J2" gate="G$1" x="127" y="33.02" smashed="yes">
+<attribute name="NAME" x="143.51" y="43.18" size="1.778" layer="95" align="center-left"/>
+<attribute name="VALUE" x="143.51" y="40.64" size="1.778" layer="96" align="center-left"/>
 </instance>
 <instance part="ROTATE1" gate="G$1" x="187.96" y="71.12" smashed="yes">
-<attribute name="NAME" x="187.96" y="78.74" size="1.778" layer="94"/>
+<attribute name="NAME" x="187.96" y="76.2" size="1.778" layer="95"/>
 </instance>
 <instance part="ROTATE2" gate="G$1" x="187.96" y="86.36" smashed="yes">
-<attribute name="NAME" x="187.96" y="93.98" size="1.778" layer="94"/>
+<attribute name="NAME" x="187.96" y="91.44" size="1.778" layer="95"/>
 </instance>
 <instance part="U$6" gate="G$1" x="43.18" y="116.84" smashed="yes">
 <attribute name="NAME" x="36.83" y="135.255" size="1.778" layer="95"/>
@@ -10582,6 +10599,20 @@ Source: AVX .. aphvc.pdf</description>
 <instance part="C2" gate="G$1" x="48.26" y="81.28" smashed="yes" rot="R180">
 <attribute name="NAME" x="47.244" y="80.645" size="1.778" layer="95" rot="R180"/>
 <attribute name="VALUE" x="47.244" y="85.471" size="1.778" layer="96" rot="R180"/>
+</instance>
+<instance part="U$1" gate="G$1" x="17.78" y="152.4" smashed="yes">
+<attribute name="VALUE" x="121.92" y="152.4" size="12.7" layer="96"/>
+</instance>
+<instance part="SW" gate="G$1" x="187.96" y="55.88" smashed="yes">
+<attribute name="NAME" x="187.96" y="60.96" size="1.778" layer="95"/>
+</instance>
+<instance part="R3" gate="G$1" x="162.56" y="50.8" smashed="yes">
+<attribute name="NAME" x="158.75" y="52.2986" size="1.778" layer="95"/>
+<attribute name="VALUE" x="158.75" y="47.498" size="1.778" layer="96"/>
+</instance>
+<instance part="R4" gate="G$1" x="162.56" y="60.96" smashed="yes">
+<attribute name="NAME" x="158.75" y="62.4586" size="1.778" layer="95"/>
+<attribute name="VALUE" x="158.75" y="57.658" size="1.778" layer="96"/>
 </instance>
 </instances>
 <busses>
@@ -10621,13 +10652,13 @@ Source: AVX .. aphvc.pdf</description>
 </segment>
 <segment>
 <pinref part="J2" gate="G$1" pin="2"/>
-<wire x1="139.7" y1="43.18" x2="139.7" y2="38.1" width="0.1524" layer="91"/>
-<wire x1="139.7" y1="38.1" x2="119.38" y2="38.1" width="0.1524" layer="91"/>
+<wire x1="147.32" y1="33.02" x2="147.32" y2="27.94" width="0.1524" layer="91"/>
+<wire x1="147.32" y1="27.94" x2="127" y2="27.94" width="0.1524" layer="91"/>
 <pinref part="J2" gate="G$1" pin="1"/>
-<wire x1="119.38" y1="38.1" x2="119.38" y2="43.18" width="0.1524" layer="91"/>
-<wire x1="119.38" y1="43.18" x2="106.68" y2="43.18" width="0.1524" layer="91"/>
-<junction x="119.38" y="43.18"/>
-<label x="106.68" y="43.18" size="1.778" layer="95"/>
+<wire x1="127" y1="27.94" x2="127" y2="33.02" width="0.1524" layer="91"/>
+<wire x1="127" y1="33.02" x2="114.3" y2="33.02" width="0.1524" layer="91"/>
+<junction x="127" y="33.02"/>
+<label x="114.3" y="33.02" size="1.778" layer="95"/>
 </segment>
 <segment>
 <pinref part="ROTATE2" gate="G$1" pin="P$3"/>
@@ -10648,6 +10679,11 @@ Source: AVX .. aphvc.pdf</description>
 <wire x1="144.78" y1="104.14" x2="114.3" y2="104.14" width="0.1524" layer="91"/>
 <label x="129.54" y="104.14" size="1.778" layer="95"/>
 <pinref part="U$8" gate="G$1" pin="2"/>
+</segment>
+<segment>
+<pinref part="R4" gate="G$1" pin="1"/>
+<wire x1="157.48" y1="60.96" x2="147.32" y2="60.96" width="0.1524" layer="91"/>
+<label x="147.32" y="60.96" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="3V3" class="0">
@@ -10702,6 +10738,11 @@ Source: AVX .. aphvc.pdf</description>
 <label x="129.54" y="106.68" size="1.778" layer="95"/>
 <pinref part="U$8" gate="G$1" pin="3"/>
 </segment>
+<segment>
+<pinref part="R3" gate="G$1" pin="1"/>
+<wire x1="157.48" y1="50.8" x2="147.32" y2="50.8" width="0.1524" layer="91"/>
+<label x="147.32" y="50.8" size="1.778" layer="95"/>
+</segment>
 </net>
 <net name="RF-IN" class="0">
 <segment>
@@ -10718,8 +10759,8 @@ Source: AVX .. aphvc.pdf</description>
 <net name="ANT_RADIO" class="0">
 <segment>
 <pinref part="J2" gate="G$1" pin="3"/>
-<wire x1="129.54" y1="53.34" x2="111.76" y2="53.34" width="0.1524" layer="91"/>
-<label x="111.76" y="53.34" size="1.778" layer="95"/>
+<wire x1="137.16" y1="43.18" x2="119.38" y2="43.18" width="0.1524" layer="91"/>
+<label x="119.38" y="43.18" size="1.778" layer="95"/>
 </segment>
 <segment>
 <pinref part="XQ-02A" gate="G$1" pin="ANT"/>
@@ -10943,15 +10984,13 @@ Source: AVX .. aphvc.pdf</description>
 <label x="25.4" y="78.74" size="1.778" layer="95"/>
 </segment>
 </net>
-<net name="SW_WMP" class="0">
-<segment>
-<wire x1="86.36" y1="111.76" x2="55.88" y2="111.76" width="0.1524" layer="91"/>
-<pinref part="U$7" gate="G$1" pin="9"/>
-<label x="55.88" y="111.76" size="1.778" layer="95"/>
-</segment>
+<net name="SW" class="0">
 <segment>
 <pinref part="XQ-02A" gate="G$1" pin="SW"/>
-<wire x1="104.14" y1="73.66" x2="121.92" y2="73.66" width="0.1524" layer="91"/>
+<wire x1="104.14" y1="73.66" x2="139.7" y2="73.66" width="0.1524" layer="91"/>
+<wire x1="139.7" y1="73.66" x2="139.7" y2="55.88" width="0.1524" layer="91"/>
+<pinref part="SW" gate="G$1" pin="PIN"/>
+<wire x1="139.7" y1="55.88" x2="182.88" y2="55.88" width="0.1524" layer="91"/>
 <label x="116.84" y="73.66" size="1.778" layer="95"/>
 </segment>
 </net>
@@ -10997,6 +11036,24 @@ Source: AVX .. aphvc.pdf</description>
 <pinref part="R1" gate="G$1" pin="1"/>
 <wire x1="104.14" y1="78.74" x2="142.24" y2="78.74" width="0.1524" layer="91"/>
 <wire x1="142.24" y1="78.74" x2="142.24" y2="71.12" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="N$7" class="0">
+<segment>
+<pinref part="SW" gate="G$1" pin="P$1"/>
+<wire x1="182.88" y1="53.34" x2="170.18" y2="53.34" width="0.1524" layer="91"/>
+<pinref part="R3" gate="G$1" pin="2"/>
+<wire x1="167.64" y1="50.8" x2="170.18" y2="50.8" width="0.1524" layer="91"/>
+<wire x1="170.18" y1="50.8" x2="170.18" y2="53.34" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="N$8" class="0">
+<segment>
+<wire x1="182.88" y1="58.42" x2="170.18" y2="58.42" width="0.1524" layer="91"/>
+<pinref part="R4" gate="G$1" pin="2"/>
+<wire x1="167.64" y1="60.96" x2="170.18" y2="60.96" width="0.1524" layer="91"/>
+<wire x1="170.18" y1="60.96" x2="170.18" y2="58.42" width="0.1524" layer="91"/>
+<pinref part="SW" gate="G$1" pin="P$3"/>
 </segment>
 </net>
 </nets>
