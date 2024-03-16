@@ -55,9 +55,9 @@ void rotate_sm(double angle, bool side){
 
 typedef enum
 {
-	STATE_GEN_PACK_1 = 1,
+	STATE_GEN_PACK_2 = 1,
 	STATE_WAIT = 2,
-	STATE_GEN_PACK_2_Q = 3,
+	STATE_GEN_PACK_1_Q = 3,
 	STATE_GEN_PACK_3 = 4,
 } state_nrf_t;
 
@@ -129,7 +129,7 @@ int app_main(){
 	//переменные
 	uint8_t counter = 0;
 	state_nrf_t state_nrf;
-	state_nrf = STATE_GEN_PACK_1;
+	state_nrf = STATE_GEN_PACK_2;
 	uint32_t start_time_nrf = HAL_GetTick();
 	nrf24_fifo_status_t rx_status = NRF24_FIFO_EMPTY;
 	nrf24_fifo_status_t tx_status = NRF24_FIFO_EMPTY;
@@ -406,10 +406,10 @@ int app_main(){
 		} state_t;*/
 
  		switch(state_nrf){
-		case STATE_GEN_PACK_1:
+		case STATE_GEN_PACK_2:
 			nrf24_fifo_flush_tx(&nrf24);
 			nrf24_fifo_status(&nrf24, &rx_status, &tx_status);
-			nrf24_fifo_write(&nrf24, (uint8_t *)&pack1, sizeof(pack1), true);//32
+			nrf24_fifo_write(&nrf24, (uint8_t *)&pack2, sizeof(pack2), true);//32
 			start_time_nrf = HAL_GetTick();
 			state_nrf = STATE_WAIT;
 			break;
@@ -437,18 +437,20 @@ int app_main(){
 				nrf24_fifo_flush_tx(&nrf24);
 				nrf24_fifo_status(&nrf24, &rx_status, &tx_status);
 				counter++;
-				if(counter == 2){
-					state_nrf = STATE_GEN_PACK_1;
+				if(counter == 4 || counter == 7){
+					state_nrf = STATE_GEN_PACK_2;
+				} else if(counter == 8){
+					state_nrf = STATE_GEN_PACK_3;
 					counter = 0;
 				}
 				else{
-					state_nrf = STATE_GEN_PACK_2_Q;
+					state_nrf = STATE_GEN_PACK_1_Q;
 				}
 			}
 			break;
-		case STATE_GEN_PACK_2_Q:
+		case STATE_GEN_PACK_1_Q:
 			nrf24_fifo_flush_tx(&nrf24);
-			nrf24_fifo_write(&nrf24, (uint8_t *)&pack2, sizeof(pack2), false);
+			nrf24_fifo_write(&nrf24, (uint8_t *)&pack1, sizeof(pack1), false);
 			nrf24_fifo_write(&nrf24, (uint8_t *)&packq, sizeof(packq), false);
 			state_nrf = STATE_WAIT;
 			break;

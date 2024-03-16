@@ -14,10 +14,8 @@ servo.start(0)
 print(servo)
 
 
-angle = 73
-duty = angle / 18 + 2
-servo.ChangeDutyCycle(duty)
-
+angle = 180
+setAngle(servo, angle)
 time.sleep(10)
 servo.stop()
 GPIO.cleanup()
