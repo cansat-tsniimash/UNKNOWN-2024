@@ -47,11 +47,11 @@ void rotate_sm(double angle, bool side){
 
 }
 
-int _write(int file, char *ptr, int len)
+/*int _write(int file, char *ptr, int len)
 {
 	HAL_UART_Transmit(&huart1, (uint8_t *)ptr, len, 100);
 	return 0;
-}
+}*/
 
 typedef enum
 {
@@ -259,8 +259,12 @@ int app_main(){
 
 	//gps
 	gps_init();
-	__HAL_UART_ENABLE_IT(&huart1, UART_IT_RXNE);
-	__HAL_UART_ENABLE_IT(&huart1, UART_IT_ERR);
+	char str1[60]={0};
+/*	HAL_UART_Receive_IT(&huart1,(uint8_t*)str1,1);*/
+	uint8_t bluetooth_recive = 1;
+	HAL_UART_Receive_IT(&huart2, &bluetooth_recive, 1);
+	/*	__HAL_UART_ENABLE_IT(&huart1, UART_IT_RXNE);
+	__HAL_UART_ENABLE_IT(&huart1, UART_IT_ERR);*/
 	uint32_t gps_time_s;
 	uint32_t gps_time_us;
 	//стх и структура лиса
@@ -347,7 +351,7 @@ int app_main(){
 		bus_voltage = ina219_bus_voltage_convert(&ina219, primary_data.busv) * 1.0399;*/
 		//Photorez
 
-		rotate_sm(360, 0);
+//		rotate_sm(360, 0);
 
 		switch (state_now)
 				{
