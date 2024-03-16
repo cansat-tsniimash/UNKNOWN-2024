@@ -13,8 +13,8 @@ from RF24 import RF24_CRC_8
 from RF24 import RF24_CRC_16
 
 
-radio2=RF24_CLASS(24, 1)
-#radio2=RF24_CLASS(22, 0)
+#radio2=RF24_CLASS(24, 1)
+radio2=RF24_CLASS(22, 0)
 
 
 def generate_logfile_name():
@@ -26,7 +26,7 @@ def generate_logfile_name():
 
 
 if __name__ == '__main__':
-    static_payload_size = 32
+    static_payload_size = None
 
     radio2.begin()
 
@@ -36,7 +36,7 @@ if __name__ == '__main__':
     radio2.setAddressWidth(5)
     radio2.channel = 101
     radio2.setDataRate(RF24_250KBPS)
-    radio2.setAutoAck(True)
+    radio2.setAutoAck(False)
 
 
     if static_payload_size is not None:
@@ -45,9 +45,9 @@ if __name__ == '__main__':
     else:
         radio2.enableDynamicPayloads()
 
-    #radio2.enableAckPayload()
-    #radio2.enableDynamicAck()
-    radio2.setCRCLength(RF24_CRC_8)
+    # radio2.enableAckPayload()
+    # radio2.enableDynamicAck()
+    # radio2.setCRCLength(RF24_CRC_DISABLED)
  
     radio2.startListening()
     radio2.printDetails()
@@ -56,18 +56,22 @@ if __name__ == '__main__':
     filename_f = generate_logfile_name()
     filename_f1 = "./log/knpn_1.csv"
     filename_f2 = "./log/knpn_2.csv"
-    # filename_f3 = "./log/knpn_3.csv"
-    # f = open(filename_f, 'wb')
-    # f.flush()
+    filename_f3 = "./log/knpn_3.csv"
+    filename_f4 = "./log/knpn_4.csv"
+    f = open(filename_f, 'wb')
+    f.flush()
     f1 = open(filename_f1, 'w')
-    f1.write('"Temp BME";"Pressure";"Humidity"\n')
+    f1.write('"Accel x";"Accel y";"Accel z";"Gyro x";"Gyro y";"Gyro z";"Mag x";"Mag y";"Mag z"\n')
     f1.flush()
     f2 = open(filename_f2, 'w')
-    f2.write('"Mag x";"Mag y";"Mag z";"Accel x";"Accel y";"Accel z";"Gyro x";"Gyro y";"Gyro z"\n')
+    f2.write('"Temp BME";"Pressure";"Humidity";Height BME";"Lux";"State"\n')
     f2.flush()
     # f3 = open(filename_f3, 'w')
     # f3.write('"Time Pack";"Number";"Temp DS";"Latitude";"Longitude";"Height";"Time, s";"Time, mks";"Fix"\n')
     # f3.flush()
+    f4 = open(filename_f4, 'w')
+    f4.write('"Time";"Q1";"Q2";"Q3";"Q4"\n')
+    f4.flush()
 
 
     while True:
@@ -80,7 +84,7 @@ if __name__ == '__main__':
                 payload_size = radio2.getDynamicPayloadSize()
 
             data = radio2.read(payload_size)
-            #print('got data %s' % data)
+            print('got data %s' % data)
             packet = data
             packet_size = len(packet)
             biter = struct.pack(">B", packet_size)
@@ -88,9 +92,8 @@ if __name__ == '__main__':
 
             try:
                 if data[0] == 187:
-                    pass
-                    print("==== Пакет тип 1 ====")
-                    unpack_data = struct.unpack("<BlQlffB", data[:25])
+                    print("==== Пакет тип 2 ====")
+                    unpack_data = struct.unpack("<BhIhffB", data[:18])
                     print ("Temperature BME", unpack_data[1]/100)
                     print ("Pressure", unpack_data[2])
                     print ("Humidity", unpack_data[3])
@@ -106,16 +109,16 @@ if __name__ == '__main__':
 
                     print ('\n')
 
-                    for i in range(1,10):
+                    for i in range(1,6):
                         f1.write(str(unpack_data[i]))
                         f1.write(";")
                         f1.flush()
                     f1.write('\n')
-
+                    print(data[0])
                 elif data[0] == 170:
                     #continue
-                    print("==== Пакет тип 2 ====")
-                    unpack_data = struct.unpack("<Blll", data[:19])
+                    print("==== Пакет тип 1 ====")
+                    unpack_data = struct.unpack("<Bhhhhhhhhh", data[:19])
                     print ("Accelerometer x", unpack_data[1]/1000)
                     print ("Accelerometer y", unpack_data[2]/1000)
                     print ("Accelerometer z", unpack_data[3]/1000)
@@ -130,16 +133,15 @@ if __name__ == '__main__':
 
                     print ('\n')
 
-                    for i in range(1,12):
+                    for i in range(1,9):
                         f2.write(str(unpack_data[i]))
                         f2.write(";")
                         f2.flush()
                     f2.write('\n')
-
+                    print(data[0])
                 elif data[0] == 204:
-                     continue
                      print("==== Пакет тип 3 ====")
-                     unpack_data = struct.unpack("<BfffQQ", data[:32])
+                     unpack_data = struct.unpack("<BfffLL", data[:21])
                      print ("Latitude", unpack_data[1])
                      print ("Longitude", unpack_data[2])
                      print ("Height", unpack_data[3])
@@ -151,16 +153,15 @@ if __name__ == '__main__':
 
                      print ('\n')
 
-                     for i in range(1,10):
+                     for i in range(1,5):
                          f3.write(str(unpack_data[i]))
                          f3.write(";")
                          f3.flush()
                      f3.write('\n')
-
+                     print(data[0])
                 elif data[0] == 255:
-                     continue
                      print("==== Пакет тип 4 ====")
-                     unpack_data = struct.unpack("<Bfffff", data[:32])
+                     unpack_data = struct.unpack("<Bfffff", data[:21])
                      print ("Q1", unpack_data[2])
                      print ("Q2", unpack_data[3])
                      print ("Q3", unpack_data[4])
@@ -168,16 +169,17 @@ if __name__ == '__main__':
                      print ("Time", unpack_data[1])
 
                      print ('\n')
-
-                     for i in range(1,10):
-                         f3.write(str(unpack_data[i]))
-                         f3.write(";")
-                         f3.flush()
-                     f3.write('\n')
+                     print(data[0])
+                     for i in range(1,5):
+                         f4.write(str(unpack_data[i]))
+                         f4.write(";")
+                         f4.flush()
+                     f4.write('\n')
                 else:
                     print('unknown flag ', data[0])
             except Exception as e:
                 print(e)
+
             f.write(record)
             f.flush()
         else:
