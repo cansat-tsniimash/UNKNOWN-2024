@@ -5,6 +5,9 @@
  *      Author: Install
  */
 
+#ifndef STRUCTS_H_
+#define STRUCTS_H_
+
 #include <string.h>
 #include <stdio.h>
 #pragma pack(push,1)
@@ -45,3 +48,5 @@ typedef struct{
 	float q4;
 }packq_t;
 #pragma pack(pop)
+
+#endif /* STRUCTS_H_ */

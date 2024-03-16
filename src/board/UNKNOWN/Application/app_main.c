@@ -164,9 +164,9 @@ int app_main(){
 	shift_reg_t shift_reg_r;
 	shift_reg_r.bus = &hspi1;
 	shift_reg_r.latch_port = GPIOB;
-	shift_reg_r.latch_pin = GPIO_PIN_2;
-	shift_reg_r.oe_port = GPIOB;
-	shift_reg_r.oe_pin = GPIO_PIN_10;
+	shift_reg_r.latch_pin = GPIO_PIN_14;
+	shift_reg_r.oe_port = GPIOA;
+	shift_reg_r.oe_pin = GPIO_PIN_8;
 	shift_reg_r.value = 0;
 	shift_reg_init(&shift_reg_r);
 	shift_reg_write_8(&shift_reg_r, 0xFF);
@@ -260,10 +260,10 @@ int app_main(){
 	//gps
 	gps_init();
 	char str1[60]={0};
-/*	HAL_UART_Receive_IT(&huart1,(uint8_t*)str1,1);*/
+/*	HAL_UART_Receive_IT(&huart1,(uint8_t*)str1,1);
 	uint8_t bluetooth_recive = 1;
 	HAL_UART_Receive_IT(&huart2, &bluetooth_recive, 1);
-	/*	__HAL_UART_ENABLE_IT(&huart1, UART_IT_RXNE);
+	__HAL_UART_ENABLE_IT(&huart1, UART_IT_RXNE);
 	__HAL_UART_ENABLE_IT(&huart1, UART_IT_ERR);*/
 	uint32_t gps_time_s;
 	uint32_t gps_time_us;
