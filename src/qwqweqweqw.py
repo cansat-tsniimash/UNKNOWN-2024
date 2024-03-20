@@ -1,7 +1,7 @@
 import socket
  
 
-localIP     = "127.0.0.1"
+localIP     = "192.168.0.8"
 
 localPort   = 20001
 
@@ -23,7 +23,7 @@ UDPServerSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
 
 # Bind to address and ip
 
-UDPServerSocket.bind((localIP, localPort))
+#UDPServerSocket.bind((localIP, localPort))
 
  
 
