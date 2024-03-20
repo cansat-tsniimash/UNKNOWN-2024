@@ -66,9 +66,9 @@ if __name__ == '__main__':
     f2 = open(filename_f2, 'w')
     f2.write('"Temp BME";"Pressure";"Humidity";Height BME";"Lux";"State"\n')
     f2.flush()
-    # f3 = open(filename_f3, 'w')
-    # f3.write('"Time Pack";"Number";"Temp DS";"Latitude";"Longitude";"Height";"Time, s";"Time, mks";"Fix"\n')
-    # f3.flush()
+    f3 = open(filename_f3, 'w')
+    f3.write('"Time Pack";"Number";"Temp DS";"Latitude";"Longitude";"Height";"Time, s";"Time, mks";"Fix"\n')
+    f3.flush()
     f4 = open(filename_f4, 'w')
     f4.write('"Time";"Q1";"Q2";"Q3";"Q4"\n')
     f4.flush()
@@ -77,14 +77,14 @@ if __name__ == '__main__':
     while True:
         has_payload, pipe_number = radio2.available_pipe()
         #print(f'has_payload-{has_payload}, pipe_number={pipe_number}')
-
+        time.sleep(0.5)
         if has_payload:
             payload_size = static_payload_size
             if payload_size is None:
                 payload_size = radio2.getDynamicPayloadSize()
 
             data = radio2.read(payload_size)
-            print('got data %s' % data)
+            #print('got data %s' % data)
             packet = data
             packet_size = len(packet)
             biter = struct.pack(">B", packet_size)
@@ -114,7 +114,7 @@ if __name__ == '__main__':
                         f1.write(";")
                         f1.flush()
                     f1.write('\n')
-                    print(data[0])
+                    
                 elif data[0] == 170:
                     #continue
                     print("==== Пакет тип 1 ====")
@@ -138,7 +138,7 @@ if __name__ == '__main__':
                         f2.write(";")
                         f2.flush()
                     f2.write('\n')
-                    print(data[0])
+                    
                 elif data[0] == 204:
                      print("==== Пакет тип 3 ====")
                      unpack_data = struct.unpack("<BfffLL", data[:21])
@@ -158,7 +158,7 @@ if __name__ == '__main__':
                          f3.write(";")
                          f3.flush()
                      f3.write('\n')
-                     print(data[0])
+                     
                 elif data[0] == 255:
                      print("==== Пакет тип 4 ====")
                      unpack_data = struct.unpack("<Bfffff", data[:21])
@@ -169,7 +169,7 @@ if __name__ == '__main__':
                      print ("Time", unpack_data[1])
 
                      print ('\n')
-                     print(data[0])
+                     
                      for i in range(1,5):
                          f4.write(str(unpack_data[i]))
                          f4.write(";")
