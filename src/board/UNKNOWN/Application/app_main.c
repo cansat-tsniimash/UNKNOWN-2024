@@ -437,6 +437,7 @@ int app_main(){
 				nrf24_fifo_flush_tx(&nrf24);
 				nrf24_fifo_status(&nrf24, &rx_status, &tx_status);
 				counter++;
+				HAL_Delay(500);
 				if(counter == 4 || counter == 7){
 					state_nrf = STATE_GEN_PACK_2;
 				} else if(counter == 8){
