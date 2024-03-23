@@ -239,7 +239,7 @@ if __name__ == '__main__':
                          f4.flush()
                      f4.write('\n')
                 else:
-                    UDPServerSocket.sendto(str.encode('unknown flag '+, str(data[0])), address)
+                    UDPServerSocket.sendto(str.encode('unknown flag '+ str(data[0])), address)
                     print('unknown flag ', data[0])
             except Exception as e:
                 print(e)
