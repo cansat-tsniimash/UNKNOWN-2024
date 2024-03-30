@@ -294,10 +294,15 @@ int app_main(){
 	ground_height += 30;
 	while(1){
 		//bme280
+		its_bme280_read(UNKNOWN_BME, &bme_shit);
 		bmp_temp = bme_shit.temperature * 100;
 		bmp_press = bme_shit.pressure;
 		bmp_humidity = bme_shit.humidity;
 
+		float angle = 123.321;
+		const uint8_t * angle_bytes = (const uint8_t*)&angle;
+		uint8_t frame[] = {0xAA, 0xBB, 0xCC, 0x01, angle_bytes[0], angle_bytes[1], angle_bytes[2], angle_bytes[3]};
+		HAL_UART_Transmit(&huart1, frame, sizeof(frame), HAL_MAX_DELAY);
 		height = 44330 * (1 - pow(bmp_press / ground_pressure, 1.0 / 5.255));
 		//сдвиговый регистр
 		shift_reg_write_bit_8(&shift_reg_r, 3, 1);
