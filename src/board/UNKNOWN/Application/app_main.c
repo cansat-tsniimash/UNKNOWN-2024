@@ -40,9 +40,9 @@ void rotate_sm(double angle, bool side){
 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_9, side);
 	for(int i = 0; i<steps; i++){
 		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_10, true);
-		dwt_delay_ms(1);
+		dwt_delay_ms(3);
 		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_10, false);
-		dwt_delay_ms(1);
+		dwt_delay_ms(3);
 	}
 
 }
@@ -79,6 +79,16 @@ typedef struct INA219_DATA{
 }INA219_DATA;
 
 void nrf_dump_regs(nrf24_lower_api_config_t * lower);
+
+uint16_t Crc16(uint8_t *buf, uint16_t len) {
+	uint16_t crc = 0xFFFF;
+	while (len--) {
+		crc ^= *buf++ << 8;
+		for (uint8_t i = 0; i < 8; i++)
+			crc = crc & 0x8000 ? (crc << 1) ^ 0x1021 : crc << 1;
+	}
+	return crc;
+}
 
 int app_main(){
 	//файлы
@@ -256,7 +266,10 @@ int app_main(){
 	printf("\n\n");
 	nrf24_mode_tx(&nrf24);
 
-
+	uint16_t num1 = 0;
+	uint16_t num2 = 0;
+	uint16_t num3 = 0;
+	uint16_t num4 = 0;
 	//gps
 	gps_init();
 	char str1[60]={0};
@@ -298,7 +311,6 @@ int app_main(){
 		bmp_temp = bme_shit.temperature * 100;
 		bmp_press = bme_shit.pressure;
 		bmp_humidity = bme_shit.humidity;
-
 		float angle = 123.321;
 		const uint8_t * angle_bytes = (const uint8_t*)&angle;
 		uint8_t frame[] = {0xAA, 0xBB, 0xCC, 0x01, angle_bytes[0], angle_bytes[1], angle_bytes[2], angle_bytes[3]};
@@ -307,6 +319,9 @@ int app_main(){
 		//сдвиговый регистр
 		shift_reg_write_bit_8(&shift_reg_r, 3, 1);
 		float lux = photorezistor_get_lux(photrez);
+
+
+
 		//gps
 		gps_work();
 		gps_get_coords(&cookie, &lat, &lon, &alt, &fix_);
@@ -334,6 +349,8 @@ int app_main(){
 		packq.q2 = seb_quaternion[1];
 		packq.q3 = seb_quaternion[2];
 		packq.q4 = seb_quaternion[3];
+
+
 		if(resq == FR_OK){
 			str_wr = sd_parse_to_bytes_quaterneon(str_buf, &packq);
 			resq = f_write(&Fileq, str_buf, str_wr, &Bytes); // отправка на запись в файл
@@ -356,7 +373,7 @@ int app_main(){
 		bus_voltage = ina219_bus_voltage_convert(&ina219, primary_data.busv) * 1.0399;*/
 		//Photorez
 
-//		rotate_sm(360, 0);
+ 		rotate_sm(100, 0);
 
 		switch (state_now)
 				{
@@ -414,6 +431,10 @@ int app_main(){
 		case STATE_GEN_PACK_2:
 			nrf24_fifo_flush_tx(&nrf24);
 			nrf24_fifo_status(&nrf24, &rx_status, &tx_status);
+			pack2.time_ms = HAL_GetTick();
+			num2 += 1;
+			pack2.num = num2;
+			pack2.crc = Crc16((uint8_t *)&pack2, sizeof(pack2) - 2);
 			nrf24_fifo_write(&nrf24, (uint8_t *)&pack2, sizeof(pack2), true);//32
 			start_time_nrf = HAL_GetTick();
 			state_nrf = STATE_WAIT;
@@ -456,12 +477,22 @@ int app_main(){
 			break;
 		case STATE_GEN_PACK_1_Q:
 			nrf24_fifo_flush_tx(&nrf24);
+			pack1.time_ms = HAL_GetTick();
+			packq.time_ms = HAL_GetTick();
+			pack1.crc = Crc16((uint8_t *)&pack1, sizeof(pack1) - 2);
 			nrf24_fifo_write(&nrf24, (uint8_t *)&pack1, sizeof(pack1), false);
+			num4 += 1;
+			packq.num = num4;
+			packq.crc = Crc16((uint8_t *)&packq, sizeof(packq) - 2);
 			nrf24_fifo_write(&nrf24, (uint8_t *)&packq, sizeof(packq), false);
 			state_nrf = STATE_WAIT;
 			break;
 		case STATE_GEN_PACK_3:
 			nrf24_fifo_flush_tx(&nrf24);
+			pack3.time_ms = HAL_GetTick();
+			num3 += 1;
+			pack3.num = num3;
+			pack3.crc = Crc16((uint8_t *)&pack3, sizeof(pack3) - 2);
 			nrf24_fifo_write(&nrf24, (uint8_t *)&pack3, sizeof(pack3), false);
 			state_nrf = STATE_WAIT;
 			break;
@@ -472,6 +503,9 @@ int app_main(){
 		pack2.bmp_humidity = bmp_humidity;
 		pack2.bme_height = height;
 		pack2.lux = lux;
+
+		num1 += 1;
+		pack1.num = num1;
 		for (int i = 0; i < 3; i++){
 			pack1.accl[i] = acc_g[i]*1000;
 			pack1.gyro[i] = gyro_dps[i]*1000;
