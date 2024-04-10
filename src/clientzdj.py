@@ -40,66 +40,72 @@ class UnknownDataSource():
 	def read_data(self):
 		try:
 			msgFromServer = self.UDPClientSocket.recvfrom(1024)
-			msg = str(msgFromServer[0])
+			msg = str(msgFromServer)[0]
 			print(msg[2:-1])
-
-			if msgFromServer[0] == 187:
-				data = struct.unpack("<BhIhffB", msgFromServer[:18])
+			if bytearray(msgFromServer[0])[0] == 187:
+				data = struct.unpack("<BHIhIhffBH", bytearray(msgFromServer[0])[:26])
 				return[Message(message_id='paket_2',
 					    source_id='board',
-					    msg_time = data[1],
+					    msg_time = data[2],
 					    msg_data= {
-					    "Temperature BME": data[1]/100,
-					    "Pressure": data[2],
-					    "Humidity": data[3],
-					    "Height": data[4],
-					    "Lux": data[5],
-					    "State": data[6]
+					    "Number": data[1],
+					    "Temperature BME": data[3]/100,
+					    "Pressure": data[4],
+					    "Humidity": data[5],
+					    "Height": data[6],
+					    "Lux": data[7],
+					    "State": data[8],
+					    "crc": data[9]
 					    })]
 
-			elif msgFromServer[0] == 170:
-				data = struct.unpack("<BhIhffB", msgFromServer[:18])
-				return[Message(message_id-'paket_1',
+			elif bytearray(msgFromServer[0])[0] == 170:
+				data = struct.unpack("<BHIhhhhhhhhhH", bytearray(msgFromServer[0])[:27])
+				return[Message(message_id='paket_1',
 						source_id='board',
-						msg_time=data[1],
+						msg_time=data[2],
 						msg_data= {
-						"Accelerometer x": data[1]/1000,
-						"Accelerometer y": data[2]/1000,
-						"Accelerometer z": data[3]/1000,
-						"Gyroscope x": data[4]/1000,
-						"Gyroscope y": data[5]/1000,
-						"Gyroscope z": data[6]/1000,
-						"Magnetometer x": data[7]/1000,
-						"Magnetometer y": data[8]/1000,
-						"Magnetometer z": data[9]/1000
+						"Number": data[1],
+						"Accelerometer x": data[3]/1000,
+						"Accelerometer y": data[4]/1000,
+						"Accelerometer z": data[5]/1000,
+						"Gyroscope x": data[6]/1000,
+						"Gyroscope y": data[7]/1000,
+						"Gyroscope z": data[8]/1000,
+						"Magnetometer x": data[9]/1000,
+						"Magnetometer y": data[10]/1000,
+						"Magnetometer z": data[11]/1000,
+						"crc": data[9]
 						})]
 
-			elif msgFromServer[0] == 204:
-				data = struct.unpack("<BhIhffB", msgFromServer[:18])
-				return[Message(message_id-'paket_3',
+			elif bytearray(msgFromServer[0])[0] == 204:
+				data = struct.unpack("<BHIfffLLH", bytearray(msgFromServer[0])[:29])
+				return[Message(message_id='paket_3',
 						source_id='board',
-						msg_time=data[1],
+						msg_time=data[2],
 						msg_data= {
-						"Latitude": data[1],
-					 	"Longitude": data[2],
-					 	"Height": data[3],
-					 	"Time, s": data[4],
-					 	"Time, mks": data[5]
+						"Number": data[1],
+						"Latitude": data[3],
+					 	"Longitude": data[4],
+					 	"Height": data[5],
+					 	"Time, s": data[6],
+					 	"Time, mks": data[7],
+					 	"crc": data[8]
 					 	})]
 
-			elif msgFromServer[0] == 255:
-				data = struct.unpack("<BhIhffB", msgFromServer[:18])
-				return[Message(message_id-'paket_4',
+			elif bytearray(msgFromServer[0])[0] == 255:
+				data = struct.unpack("<BHIfffffH", bytearray(msgFromServer[0])[:29])
+				return[Message(message_id='paket_4',
 						source_id='board',
-						msg_time=data[1],
+						msg_time=data[2],
 						msg_data= {
-						"Q1": data[2],
-					 	"Q2": data[3],
-					 	"Q3": data[4],
-					 	"Q4": data[5],
-					 	"Time": data[1]
+						"Number": data[1],
+						"Q1": data[4],
+					 	"Q2": data[5],
+					 	"Q3": data[6],
+					 	"Q4": data[7],
+					 	"Time": data[3],
+					 	"crc": data[8]
 					 	})]
-
 		except BlockingIOError as e:
 			pass
 		return []
