@@ -23,6 +23,7 @@
 #include "ina219/inc/ina219_helper.h"
 #include <Photorezistor/photorezistor.h>
 #include "madgwick.h"
+#include "DWT_Delay/dwt_delay.h"
 
 extern SPI_HandleTypeDef hspi5;
 extern SPI_HandleTypeDef hspi1;
@@ -32,17 +33,17 @@ extern I2C_HandleTypeDef hi2c1;
 extern ADC_HandleTypeDef hadc1;
 
 void rotate_sm(double angle, bool side){
-	double steps = angle/0.225;
-	if(steps>4000){
-		steps = 4000;
+	double steps = angle/0.0325791855;
+	if(steps>11050){
+		steps = 11050;
 	}
 
 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_9, side);
 	for(int i = 0; i<steps; i++){
 		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_10, true);
-		dwt_delay_ms(3);
+		dwt_delay_us(70);
 		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_10, false);
-		dwt_delay_ms(3);
+		dwt_delay_us(70);
 	}
 
 }
@@ -319,6 +320,7 @@ int app_main(){
 		//сдвиговый регистр
 		shift_reg_write_bit_8(&shift_reg_r, 3, 1);
 		float lux = photorezistor_get_lux(photrez);
+		limit_lux = lux;
 
 
 
@@ -351,6 +353,7 @@ int app_main(){
 		packq.q4 = seb_quaternion[3];
 
 
+
 		if(resq == FR_OK){
 			str_wr = sd_parse_to_bytes_quaterneon(str_buf, &packq);
 			resq = f_write(&Fileq, str_buf, str_wr, &Bytes); // отправка на запись в файл
@@ -373,13 +376,13 @@ int app_main(){
 		bus_voltage = ina219_bus_voltage_convert(&ina219, primary_data.busv) * 1.0399;*/
 		//Photorez
 
- 		rotate_sm(100, 0);
+ 		rotate_sm(90, 1);
 
 		switch (state_now)
 				{
 				case STATE_READY:
 					//HAL_Delay(100);
-					if(0/*HAL_GPIO_ReadPin(GPIOx, GPIO_PIN_x)*/){
+					if(0/*!HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_4)*/){
 						state_now = STATE_IN_ROCKET;
 						limit_lux = lux * 0.8;
 					}
@@ -436,6 +439,7 @@ int app_main(){
 			pack2.num = num2;
 			pack2.crc = Crc16((uint8_t *)&pack2, sizeof(pack2) - 2);
 			nrf24_fifo_write(&nrf24, (uint8_t *)&pack2, sizeof(pack2), true);//32
+			//uint8_t pack2_size = sizeof(pack2);
 			start_time_nrf = HAL_GetTick();
 			state_nrf = STATE_WAIT;
 			break;
@@ -479,12 +483,16 @@ int app_main(){
 			nrf24_fifo_flush_tx(&nrf24);
 			pack1.time_ms = HAL_GetTick();
 			packq.time_ms = HAL_GetTick();
+			num1 += 1;
+			pack1.num = num1;
 			pack1.crc = Crc16((uint8_t *)&pack1, sizeof(pack1) - 2);
 			nrf24_fifo_write(&nrf24, (uint8_t *)&pack1, sizeof(pack1), false);
+			//uint8_t pack1_size = sizeof(pack1);
 			num4 += 1;
 			packq.num = num4;
 			packq.crc = Crc16((uint8_t *)&packq, sizeof(packq) - 2);
 			nrf24_fifo_write(&nrf24, (uint8_t *)&packq, sizeof(packq), false);
+			//uint8_t packq_size = sizeof(packq);
 			state_nrf = STATE_WAIT;
 			break;
 		case STATE_GEN_PACK_3:
@@ -494,6 +502,7 @@ int app_main(){
 			pack3.num = num3;
 			pack3.crc = Crc16((uint8_t *)&pack3, sizeof(pack3) - 2);
 			nrf24_fifo_write(&nrf24, (uint8_t *)&pack3, sizeof(pack3), false);
+			//uint8_t pack3_size = sizeof(pack3);
 			state_nrf = STATE_WAIT;
 			break;
  		}
@@ -504,8 +513,6 @@ int app_main(){
 		pack2.bme_height = height;
 		pack2.lux = lux;
 
-		num1 += 1;
-		pack1.num = num1;
 		for (int i = 0; i < 3; i++){
 			pack1.accl[i] = acc_g[i]*1000;
 			pack1.gyro[i] = gyro_dps[i]*1000;
