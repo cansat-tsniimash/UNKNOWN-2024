@@ -315,14 +315,14 @@ int app_main(){
 		float angle = 123.321;
 		const uint8_t * angle_bytes = (const uint8_t*)&angle;
 		uint8_t frame[] = {0xAA, 0xBB, 0xCC, 0x01, angle_bytes[0], angle_bytes[1], angle_bytes[2], angle_bytes[3]};
-		HAL_UART_Transmit(&huart1, frame, sizeof(frame), HAL_MAX_DELAY);
+		//HAL_UART_Transmit(&huart1, frame, sizeof(frame), HAL_MAX_DELAY);
 		height = 44330 * (1 - pow(bmp_press / ground_pressure, 1.0 / 5.255));
 		//сдвиговый регистр
 		shift_reg_write_bit_8(&shift_reg_r, 3, 1);
 		float lux = photorezistor_get_lux(photrez);
 		limit_lux = lux;
 
-
+		double alpha = 15.3; double beta = 13.5;
 
 		//gps
 		gps_work();
@@ -377,7 +377,19 @@ int app_main(){
 		//Photorez
 
  		rotate_sm(90, 1);
-
+ 		uint8_t message[] = {0xAA, 0xBB, 'a', 'n', 'g', 'l', 'e', 0x00, 0x00, 0x00, 0x00};
+ 		uint8_t array[8] = {0xAA, 0xBB, 's', 't', 'a', 'r', 't', 0xFF};
+ 		uint8_t array1[8] = {0xAA, 0xBB, 's', 't', 'o', 'p', 0, 0xFF};
+ 		float value = 40.0;
+ 		memcpy(message + 7, &value, sizeof(value));
+ 		int cntcnt = 0;
+ 		if(cntcnt <= 1)
+ 			HAL_UART_Transmit(&huart1, array, sizeof(array), 100);
+ 		if(cntcnt == 2)
+ 			HAL_UART_Transmit(&huart1, message, sizeof(message), 100);
+ 		if(cntcnt == 3)
+ 			HAL_UART_Transmit(&huart1, array1, sizeof(array1), 100);
+ 		cntcnt++;
 		switch (state_now)
 				{
 				case STATE_READY:
@@ -390,7 +402,7 @@ int app_main(){
 				case STATE_IN_ROCKET:
 					if(lux >=  limit_lux){
 						state_now = STATE_AFTER_ROCKET;
-						break;
+
 					}
 
 					break;
@@ -407,14 +419,15 @@ int app_main(){
 					if (HAL_GetTick()-start_time_par >= 1488)
 					{
 						state_now = STATE_DESCENT;
-						break;
 					}
+					break;
 				case STATE_DESCENT:
 					//наведение
+					HAL_UART_Transmit(&huart1, array, sizeof(array), 1);
 					if(height <= ground_height){
 						state_now = STATE_ON_EARTH;
-						break;
 					}
+					break;
 				case STATE_ON_EARTH:
 					//ыкл камеры и вкл пищалки
 					state_now = STATE_ON_EARTH;
