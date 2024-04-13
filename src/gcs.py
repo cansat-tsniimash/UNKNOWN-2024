@@ -13,37 +13,11 @@ from RF24 import RF24_CRC_DISABLED
 from RF24 import RF24_CRC_8
 from RF24 import RF24_CRC_16
 
-localIP     = "0.0.0.0"
-localPort   = 20001
-bufferSize  = 1024
-
 UDPServerSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
 UDPServerSocket.setblocking(False)
 UDPServerSocket.settimeout(0)
-UDPServerSocket.bind((localIP, localPort))
-print("UDP server up and listening")
-
-while(True):
-
-    try:
-        bytesAddressPair = UDPServerSocket.recvfrom(bufferSize)
-        message = bytesAddressPair[0]
-        address = bytesAddressPair[1]
-        clientMsg = "Message from Client:{}".format(message)
-        clientIP  = "Client IP Address:{}".format(address)
-    
-        print(clientMsg)
-        print(clientIP)
-        for i in range(10):
-            msgFromServer       = str(i)
-            bytesToSend         = str.encode(msgFromServer)
-            # Sending a reply to client
-            UDPServerSocket.sendto(bytesToSend, address)
-        break
-    except BlockingIOError as e:
-        pass#print(str(e))
-    except Exception as e:
-        print(str(e))
+UDPServerSocket.bind(("0.0.0.0", 20001))
+addresses = []
 
 #radio2=RF24_CLASS(24, 1)
 radio2=RF24_CLASS(22, 0)
@@ -107,6 +81,24 @@ if __name__ == '__main__':
 
 
     while True:
+
+        try:
+            bytesAddressPair = UDPServerSocket.recvfrom(2)
+            flag = True
+            for i in range(len(addresses)):
+                if addresses[i][0] == bytesAddressPair[1][0]:
+                    addresses[i] = bytesAddressPair[1]
+                    flag = False
+                    break
+            if flag:
+                addresses.append(bytesAddressPair[1])        
+            clientIP  = "Client IP Address:{}".format(bytesAddressPair[1])
+        except BlockingIOError as e:
+            pass
+        except Exception as e:
+            print(str(e))
+
+
         has_payload, pipe_number = radio2.available_pipe()
         #print(f'has_payload-{has_payload}, pipe_number={pipe_number}')
         #time.sleep(0.2)
@@ -121,18 +113,16 @@ if __name__ == '__main__':
             packet_size = len(packet)
             biter = struct.pack(">B", packet_size)
             record = biter + packet
+            if len(data) <= 0:
+                continue
+
+            for address in addresses:
+                UDPServerSocket.sendto(data, address)
 
             try:
                 if data[0] == 187:
                     print("==== paket 2 ====")
-                    UDPServerSocket.sendto(str.encode("==== paket 2 ===="), address)
                     unpack_data = struct.unpack("<BhIhffB", data[:18])
-                    UDPServerSocket.sendto(str.encode("Temperature BME "+str(unpack_data[1]/100)), address)
-                    UDPServerSocket.sendto(str.encode("Pressure "+str(unpack_data[2])), address)
-                    UDPServerSocket.sendto(str.encode("Humidity "+str(unpack_data[3])), address)
-                    UDPServerSocket.sendto(str.encode("Height "+str(unpack_data[4])), address)
-                    UDPServerSocket.sendto(str.encode("Lux "+str(unpack_data[5])), address)
-                    UDPServerSocket.sendto(str.encode("State "+str(unpack_data[6])), address)
                     print ("Temperature BME", unpack_data[1]/100)
                     print ("Pressure", unpack_data[2])
                     print ("Humidity", unpack_data[3])
@@ -145,7 +135,6 @@ if __name__ == '__main__':
                     # print ("Photo", unpack_data[9]/100)
                     # print ("State", unpack_data[8])
                     # print ("Time", unpack_data[1])
-                    UDPServerSocket.sendto(str.encode('\n'), address)
                     print ('\n')
 
                     for i in range(1,6):
@@ -157,17 +146,7 @@ if __name__ == '__main__':
                 elif data[0] == 170:
                     #continue
                     print("==== Пакет тип 1 ====")
-                    UDPServerSocket.sendto(str.encode("==== paket 1 ===="), address)
                     unpack_data = struct.unpack("<Bhhhhhhhhh", data[:19])
-                    UDPServerSocket.sendto(str.encode("Accelerometer x "+ str(unpack_data[1]/1000)), address)
-                    UDPServerSocket.sendto(str.encode("Accelerometer y "+ str(unpack_data[2]/1000)), address)
-                    UDPServerSocket.sendto(str.encode("Accelerometer z "+ str(unpack_data[3]/1000)), address)
-                    UDPServerSocket.sendto(str.encode("Gyroscope x "+ str(unpack_data[4]/1000)), address)
-                    UDPServerSocket.sendto(str.encode("Gyroscope y "+ str(unpack_data[5]/1000)), address)
-                    UDPServerSocket.sendto(str.encode("Gyroscope z "+ str(unpack_data[6]/1000)), address)
-                    UDPServerSocket.sendto(str.encode("Magnetometer x "+ str(unpack_data[7]/1000)), address)
-                    UDPServerSocket.sendto(str.encode("Magnetometer y "+ str(unpack_data[8]/1000)), address)
-                    UDPServerSocket.sendto(str.encode("Magnetometer z "+ str(unpack_data[9]/1000)), address)
                     print ("Accelerometer x", unpack_data[1]/1000)
                     print ("Accelerometer y", unpack_data[2]/1000)
                     print ("Accelerometer z", unpack_data[3]/1000)
@@ -179,7 +158,6 @@ if __name__ == '__main__':
                     print ("Magnetometer z", unpack_data[9]/1000)
                     # print ("Number", unpack_data[2])
                     # print ("Time", unpack_data[1])
-                    UDPServerSocket.sendto(str.encode('\n'), address)
                     print ('\n')
 
                     for i in range(1,9):
@@ -190,14 +168,7 @@ if __name__ == '__main__':
                     
                 elif data[0] == 204:
                      print("==== Пакет тип 3 ====")
-                     UDPServerSocket.sendto(str.encode("==== paket 3 ===="), address)
                      unpack_data = struct.unpack("<BfffLL", data[:21])
-                     UDPServerSocket.sendto(str.encode("Latitude "+ str(unpack_data[1])), address)
-                     UDPServerSocket.sendto(str.encode("Longitude "+ str(unpack_data[2])), address)
-                     UDPServerSocket.sendto(str.encode("Height "+ str(unpack_data[3])), address)
-                     UDPServerSocket.sendto(str.encode("Time, s "+ str(unpack_data[4])), address)
-                     UDPServerSocket.sendto(str.encode("Time, mks "+ str(unpack_data[5])), address)
-
                      print ("Latitude", unpack_data[1])
                      print ("Longitude", unpack_data[2])
                      print ("Height", unpack_data[3])
@@ -206,7 +177,6 @@ if __name__ == '__main__':
                      #print ("Fix", unpack_data[9])
                      #print ("Number", unpack_data[2])
                      #print ("Time", unpack_data[1])
-                     UDPServerSocket.sendto(str.encode('\n'), address)
                      print ('\n')
 
                      for i in range(1,5):
@@ -216,21 +186,13 @@ if __name__ == '__main__':
                      f3.write('\n')
                      
                 elif data[0] == 255:
-                     UDPServerSocket.sendto(str.encode("==== paket 4 ===="), address)
                      print("==== Пакет тип 4 ====")
                      unpack_data = struct.unpack("<Bfffff", data[:21])
-                     UDPServerSocket.sendto(str.encode("Q1 "+ str(unpack_data[2])), address)
-                     UDPServerSocket.sendto(str.encode("Q2 "+ str(unpack_data[3])), address)
-                     UDPServerSocket.sendto(str.encode("Q3 "+ str(unpack_data[4])), address)
-                     UDPServerSocket.sendto(str.encode("Q4 "+ str(unpack_data[5])), address)
-                     UDPServerSocket.sendto(str.encode("Time "+ str(unpack_data[1])), address)
-
                      print ("Q1", unpack_data[2])
                      print ("Q2", unpack_data[3])
                      print ("Q3", unpack_data[4])
                      print ("Q4", unpack_data[5])
                      print ("Time", unpack_data[1])
-                     UDPServerSocket.sendto(str.encode('\n'), address)
                      print ('\n')
                      
                      for i in range(1,5):
@@ -239,8 +201,8 @@ if __name__ == '__main__':
                          f4.flush()
                      f4.write('\n')
                 else:
-                    UDPServerSocket.sendto(str.encode('unknown flag '+ str(data[0])), address)
                     print('unknown flag ', data[0])
+
             except Exception as e:
                 print(e)
 
