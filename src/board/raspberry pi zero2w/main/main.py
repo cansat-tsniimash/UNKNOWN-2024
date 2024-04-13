@@ -6,7 +6,7 @@ import RPi.GPIO as GPIO
 import time
 
 def setAngle(serv, ang):
-    duty = ang / 18 + 2
+    duty = ang / 15
     serv.ChangeDutyCycle(duty)
 
 
@@ -49,7 +49,7 @@ while True:
 		GPIO.cleanup()
 	if word == "angle":
 		angle = data[7:12].decode("ascii")
-		setAngle(servo, angle)
+		setAngle(servo, angle)#min 30, max 150
 
 
 
