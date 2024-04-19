@@ -306,6 +306,8 @@ int app_main(){
 	uint32_t height = 44330 * (1 - pow(bmp_press / ground_pressure, 1.0 / 5.255));
 	uint32_t ground_height = 44330 * (1 - pow(bmp_press / ground_pressure, 1.0 / 5.255));
 	ground_height += 30;
+	int cntcnt = 0;
+	int anglee = 120;
 	while(1){
 		//bme280
 		its_bme280_read(UNKNOWN_BME, &bme_shit);
@@ -344,7 +346,7 @@ int app_main(){
 		MadgwickAHRSupdate(seb_quaternion, gyro_m[0], gyro_m[1], gyro_m[2], acc_m[0], acc_m[1], acc_m[2], mag[0], mag[1], mag[2], time_before-time_now, 0.3);
 		/*MadgwickAHRSupdateIMU(seb_quaternion, gyro_m[0], gyro_m[1], gyro_m[2], acc_m[0], acc_m[1], acc_m[2], time_before-time_now, 0.3);*/
 		time_before = time_now;
-		printf("%f	%f	%f	%f	%f\n", time_now, seb_quaternion[0], seb_quaternion[1], seb_quaternion[2], seb_quaternion[3]);
+		//printf("%f	%f	%f	%f	%f\n", time_now, seb_quaternion[0], seb_quaternion[1], seb_quaternion[2], seb_quaternion[3]);
 		/*printf("%f	%f	%f\n", gyro_dps[0], gyro_dps[1], gyro_dps[2]);*/
 		packq.times = time_now;
 		packq.q1 = seb_quaternion[0];
@@ -376,19 +378,30 @@ int app_main(){
 		bus_voltage = ina219_bus_voltage_convert(&ina219, primary_data.busv) * 1.0399;*/
 		//Photorez
 
- 		rotate_sm(90, 1);
+ 		//rotate_sm(5, 1);
+
  		uint8_t message[] = {0xAA, 0xBB, 'a', 'n', 'g', 'l', 'e', 0x00, 0x00, 0x00, 0x00};
- 		uint8_t array[8] = {0xAA, 0xBB, 's', 't', 'a', 'r', 't', 0xFF};
- 		uint8_t array1[8] = {0xAA, 0xBB, 's', 't', 'o', 'p', 0, 0xFF};
- 		float value = 40.0;
- 		memcpy(message + 7, &value, sizeof(value));
- 		int cntcnt = 0;
+ 		uint8_t array[8] = {'s', 't', 'a', 'r', 't', 0xFF};
+ 		uint8_t array1[8] = {'s', 't', 'o', 'p', 0, 0xFF};
+ 		char buffer[40] = {};
+ 		int len = sprintf(buffer, "%d", anglee);
+ 		/*float value = ;
+ 		memcpy(message + 7, &value, sizeof(value));*/
+
  		if(cntcnt <= 1)
- 			HAL_UART_Transmit(&huart1, array, sizeof(array), 100);
- 		if(cntcnt == 2)
- 			HAL_UART_Transmit(&huart1, message, sizeof(message), 100);
- 		if(cntcnt == 3)
- 			HAL_UART_Transmit(&huart1, array1, sizeof(array1), 100);
+		{
+			HAL_UART_Transmit(&huart1, array, sizeof(array), 100);
+		}
+		if(cntcnt == 2)
+		{
+			char buffer[40] = {};
+			const int len = snprintf(buffer, sizeof(buffer), "angle %d\n", anglee);
+			HAL_UART_Transmit(&huart1, (uint8_t *)buffer, len, 100);
+		}
+		if(cntcnt > 50)
+		{
+			HAL_UART_Transmit(&huart1, array1, sizeof(array1), 100);
+		}
  		cntcnt++;
 		switch (state_now)
 				{
