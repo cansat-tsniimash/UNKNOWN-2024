@@ -19,8 +19,8 @@ UDPServerSocket.settimeout(0)
 UDPServerSocket.bind(("0.0.0.0", 20001))
 addresses = []
 
-#radio2=RF24_CLASS(24, 1)
-radio2=RF24_CLASS(22, 0)
+radio2=RF24_CLASS(24, 1)
+#radio2=RF24_CLASS(22, 0)
 
 
 def generate_logfile_name():
@@ -67,16 +67,16 @@ if __name__ == '__main__':
     f = open(filename_f, 'wb')
     f.flush()
     f1 = open(filename_f1, 'w')
-    f1.write('"Accel x";"Accel y";"Accel z";"Gyro x";"Gyro y";"Gyro z";"Mag x";"Mag y";"Mag z"\n')
+    f1.write('"Number";"Time_ms";"Accel x";"Accel y";"Accel z";"Gyro x";"Gyro y";"Gyro z";"Mag x";"Mag y";"Mag z";"crc"\n')
     f1.flush()
     f2 = open(filename_f2, 'w')
-    f2.write('"Temp BME";"Pressure";"Humidity";Height BME";"Lux";"State"\n')
+    f2.write('"Number";"Time_ms";"Temp BME";"Pressure";"Humidity";Height BME";"Lux";"State";"crc"\n')
     f2.flush()
     f3 = open(filename_f3, 'w')
-    f3.write('"Time Pack";"Number";"Temp DS";"Latitude";"Longitude";"Height";"Time, s";"Time, mks";"Fix"\n')
+    f3.write('"Number";"Time_ms";Temp DS";"Latitude";"Longitude";"Height";"Time, s";"Time, mks";"Fix";"crc"\n')
     f3.flush()
     f4 = open(filename_f4, 'w')
-    f4.write('"Time";"Q1";"Q2";"Q3";"Q4"\n')
+    f4.write('"Number";"Time_ms";"Time";"Q1";"Q2";"Q3";"Q4";"crc"\n')
     f4.flush()
 
 
@@ -121,14 +121,18 @@ if __name__ == '__main__':
 
             try:
                 if data[0] == 187:
-                    print("==== paket 2 ====")
-                    unpack_data = struct.unpack("<BhIhffB", data[:18])
-                    print ("Temperature BME", unpack_data[1]/100)
-                    print ("Pressure", unpack_data[2])
-                    print ("Humidity", unpack_data[3])
-                    print ("Height", unpack_data[4])
-                    print ("Lux", unpack_data[5])
-                    print ("State", unpack_data[6])
+                    print("==== Пакет тип 2 ====")
+                    unpack_data = struct.unpack("<BHIhIhffBH", data[:26])
+                    
+                    print ("Number", unpack_data[1])
+                    print ("Time_ms", unpack_data[2])
+                    print ("Temperature BME", unpack_data[3]/100)
+                    print ("Pressure", unpack_data[4])
+                    print ("Humidity", unpack_data[5])
+                    print ("Height", unpack_data[6])
+                    print ("Lux", unpack_data[7])
+                    print ("State", unpack_data[8])
+                    print ("crc", unpack_data[9])
                     # print ("Bus voltage", unpack_data[7]/1000)
                     # print ("Current", unpack_data[6]/1000)
                     # print ("Number", unpack_data[2])
@@ -137,7 +141,7 @@ if __name__ == '__main__':
                     # print ("Time", unpack_data[1])
                     print ('\n')
 
-                    for i in range(1,6):
+                    for i in range(1,9):
                         f1.write(str(unpack_data[i]))
                         f1.write(";")
                         f1.flush()
@@ -146,21 +150,24 @@ if __name__ == '__main__':
                 elif data[0] == 170:
                     #continue
                     print("==== Пакет тип 1 ====")
-                    unpack_data = struct.unpack("<Bhhhhhhhhh", data[:19])
-                    print ("Accelerometer x", unpack_data[1]/1000)
-                    print ("Accelerometer y", unpack_data[2]/1000)
-                    print ("Accelerometer z", unpack_data[3]/1000)
-                    print ("Gyroscope x", unpack_data[4]/1000)
-                    print ("Gyroscope y", unpack_data[5]/1000)
-                    print ("Gyroscope z", unpack_data[6]/1000)
-                    print ("Magnetometer x", unpack_data[7]/1000)
-                    print ("Magnetometer y", unpack_data[8]/1000)
-                    print ("Magnetometer z", unpack_data[9]/1000)
+                    unpack_data = struct.unpack("<BHIhhhhhhhhhH", data[:27])
+                    print ("Number", unpack_data[1])
+                    print ("Time_ms", unpack_data[2])
+                    print ("Accelerometer x", unpack_data[3]/1000)
+                    print ("Accelerometer y", unpack_data[4]/1000)
+                    print ("Accelerometer z", unpack_data[5]/1000)
+                    print ("Gyroscope x", unpack_data[6]/1000)
+                    print ("Gyroscope y", unpack_data[7]/1000)
+                    print ("Gyroscope z", unpack_data[8]/1000)
+                    print ("Magnetometer x", unpack_data[9]/1000)
+                    print ("Magnetometer y", unpack_data[10]/1000)
+                    print ("Magnetometer z", unpack_data[11]/1000)
+                    print ("crc", unpack_data[12])
                     # print ("Number", unpack_data[2])
                     # print ("Time", unpack_data[1])
                     print ('\n')
 
-                    for i in range(1,9):
+                    for i in range(1,12):
                         f2.write(str(unpack_data[i]))
                         f2.write(";")
                         f2.flush()
@@ -168,18 +175,21 @@ if __name__ == '__main__':
                     
                 elif data[0] == 204:
                      print("==== Пакет тип 3 ====")
-                     unpack_data = struct.unpack("<BfffLL", data[:21])
-                     print ("Latitude", unpack_data[1])
-                     print ("Longitude", unpack_data[2])
-                     print ("Height", unpack_data[3])
-                     print ("Time, s", unpack_data[4])
-                     print ("Time, mks", unpack_data[5])
+                     unpack_data = struct.unpack("<BHIfffLLH", data[:29])
+                     print ("Number", unpack_data[1])
+                     print ("Time_ms", unpack_data[2])
+                     print ("Latitude", unpack_data[3])
+                     print ("Longitude", unpack_data[4])
+                     print ("Height", unpack_data[5])
+                     print ("Time, s", unpack_data[6])
+                     print ("Time, mks", unpack_data[7])
+                     print ("crc", unpack_data[8])
                      #print ("Fix", unpack_data[9])
                      #print ("Number", unpack_data[2])
                      #print ("Time", unpack_data[1])
                      print ('\n')
 
-                     for i in range(1,5):
+                     for i in range(1,8):
                          f3.write(str(unpack_data[i]))
                          f3.write(";")
                          f3.flush()
@@ -187,15 +197,18 @@ if __name__ == '__main__':
                      
                 elif data[0] == 255:
                      print("==== Пакет тип 4 ====")
-                     unpack_data = struct.unpack("<Bfffff", data[:21])
-                     print ("Q1", unpack_data[2])
-                     print ("Q2", unpack_data[3])
-                     print ("Q3", unpack_data[4])
-                     print ("Q4", unpack_data[5])
-                     print ("Time", unpack_data[1])
+                     unpack_data = struct.unpack("<BHIfffffH", data[:29])
+                     print ("Number", unpack_data[1])
+                     print ("Time_ms", unpack_data[2])
+                     print ("Q1", unpack_data[4])
+                     print ("Q2", unpack_data[5])
+                     print ("Q3", unpack_data[6])
+                     print ("Q4", unpack_data[7])
+                     print ("Time", unpack_data[3])
+                     print ("crc", unpack_data[8])
                      print ('\n')
                      
-                     for i in range(1,5):
+                     for i in range(1,8):
                          f4.write(str(unpack_data[i]))
                          f4.write(";")
                          f4.flush()
