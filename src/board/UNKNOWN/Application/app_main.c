@@ -153,12 +153,16 @@ int app_main(){
 	float acc_m[3] = {0};
 	float lat;
 	float lon;
+	float alt;
+	float lats;
+	float lons;
+	float alts;
 
 	uint32_t start_time_par = 0;
 	uint32_t start_time_stab = 0;
 	float time_now = 0;
 	float time_before = 1;
-	float alt;
+
 	int fix_;
 	float limit_lux;
 	int comp = 0;
@@ -231,7 +235,7 @@ int app_main(){
 	nrf24_mode_power_down(&nrf24);
 	nrf24_rf_config_t nrf_config;
 	nrf_config.data_rate = NRF24_DATARATE_250_KBIT;
-	nrf_config.tx_power = NRF24_TXPOWER_MINUS_18_DBM;
+	nrf_config.tx_power = NRF24_TXPOWER_MINUS_0_DBM;
 	nrf_config.rf_channel = 101;
 	nrf24_setup_rf(&nrf24, &nrf_config);
 	nrf24_protocol_config_t nrf_protocol_config;
@@ -271,16 +275,33 @@ int app_main(){
 	uint16_t num2 = 0;
 	uint16_t num3 = 0;
 	uint16_t num4 = 0;
+	int a = 6378000;
+	int b = 6357000;
+	uint32_t gps_time_s;
+	uint32_t gps_time_us;
 	//gps
 	gps_init();
+	gps_work();
+	gps_get_coords(&cookie, &lats, &lons, &alts, &fix_);
+	gps_get_time(&cookie, &gps_time_s, &gps_time_us);
+	double b2da2 = (b*b)/(a*a);
+	double nb = (a*a)/sqrt((a*a)* (cos(lats)*cos(lats) + (b*b) * ((sin(lats) * sin(lats)))));
+	double x_gpss = (nb + alts)* cos(lats) * cos(lons);
+	double y_gpss = (nb + alts)* cos(lats) * sin(lons);
+	double z_gpss = (b2da2*nb + alts) * sin(lats);
+
+	double matrix1[3][3] =
+	{{-sin(lons), cos(lons), 0},
+	{(-sin(lats)*cos(lons)), (-sin(lats)*sin(lons)), cos(lats)},
+	{cos(lats)*cos(lons), cos(lats)*sin(lons), sin(lats)}};
+
 	char str1[60]={0};
 /*	HAL_UART_Receive_IT(&huart1,(uint8_t*)str1,1);
 	uint8_t bluetooth_recive = 1;
 	HAL_UART_Receive_IT(&huart2, &bluetooth_recive, 1);
 	__HAL_UART_ENABLE_IT(&huart1, UART_IT_RXNE);
 	__HAL_UART_ENABLE_IT(&huart1, UART_IT_ERR);*/
-	uint32_t gps_time_s;
-	uint32_t gps_time_us;
+
 	//стх и структура лиса
 	stmdev_ctx_t ctx_lis;
 	struct lis_spi_intf_sr lis_sr;
@@ -289,10 +310,10 @@ int app_main(){
 	lis_sr.sr = &shift_reg_r;
 	lisset_sr(&ctx_lis, &lis_sr);
 
-	pack1_t pack1;
-	pack2_t pack2;
-	pack3_t pack3;
-	packq_t packq;
+	pack1_t pack1 = {0};
+	pack2_t pack2 = {0};
+	pack3_t pack3 = {0};
+	packq_t packq = {0};
 	pack1.flag = 0xAA;
 	pack2.flag = 0xBB;
 	pack3.flag = 0xCC;
@@ -330,7 +351,36 @@ int app_main(){
 		gps_work();
 		gps_get_coords(&cookie, &lat, &lon, &alt, &fix_);
 		gps_get_time(&cookie, &gps_time_s, &gps_time_us);
+		double b2da2 = (b*b)/(a*a);
+		double nb = (a*a)/sqrt((a*a)* (cos(lat)*cos(lat) + (b*b) * ((sin(lat) * sin(lat)))));
+		double x_gps = (nb + alt)* cos(lat) * cos(lon);
+		double y_gps = (nb + alt)* cos(lat) * sin(lon);
+		double z_gps = (b2da2*nb + alt) * sin(lat);
+
+		double matrix2[3][1] =
+		{{x_gps - x_gpss},
+		 {y_gps - y_gpss},
+		 {z_gps - z_gpss}};
+
+		double matrix3[3][1] =
+		{{0},
+		{0},
+		{0}};
+
+		for(int i = 0; i < 3; i++)
+		    for(int j = 0; j < 1; j++)
+		    {
+		    	matrix3[i][j] = 0;
+		        for(int k = 0; k < 3; k++)
+		        	matrix3[i][j] += matrix1[i][k] * matrix2[k][j];
+		    }
+		for(int i = 0; i < 3; i++){
+			for(int j = 0; j<1; j++){
+				matrix3[i][j] *= -1;
+			}
+		}
 		//lsm и lis
+
 		lsmread(&ctx_lsm, &temperature_celsius_gyro, &acc_g, &gyro_dps);
 		lisread(&ctx_lis, &temperature_celsius_mag, &mag);
 		gyro_dps[0] += 0.46;
@@ -353,7 +403,17 @@ int app_main(){
 		packq.q2 = seb_quaternion[1];
 		packq.q3 = seb_quaternion[2];
 		packq.q4 = seb_quaternion[3];
-
+		double matrix4[3][1] =
+		{{0},
+		{0},
+		{0}};
+		for(int i = 0; i < 1; i++)
+			for(int j = 0; j < 1; j++)
+			{
+				matrix3[i][j] = 0;
+				for(int k = 0; k < 4; k++)
+					matrix3[i][j] += seb_quaternion[k] * matrix3[k][j];
+			}
 
 
 		if(resq == FR_OK){
@@ -379,7 +439,12 @@ int app_main(){
 		//Photorez
 
  		//rotate_sm(5, 1);
-
+		if(!HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_12)){
+			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, 0);
+		}
+		if(HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_12)){
+			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, 1);
+		}
  		uint8_t message[] = {0xAA, 0xBB, 'a', 'n', 'g', 'l', 'e', 0x00, 0x00, 0x00, 0x00};
  		uint8_t array[8] = {'s', 't', 'a', 'r', 't', 0xFF};
  		uint8_t array1[8] = {'s', 't', 'o', 'p', 0, 0xFF};
