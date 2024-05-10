@@ -1,0 +1,821 @@
+CentralWidget:
+  DataWidget:
+    Data_table:
+      PL_I2C_LINK_STATS:
+        name: 13_0_I2C_LINK_STATS
+        sourse_id: '13_0'
+        message_id: 'I2C_LINK_STATS'
+      SINS_I2C_LINK_STATS:
+        name: 12_0_I2C_LINK_STATS
+        sourse_id: '12_0'
+        message_id: 'I2C_LINK_STATS'
+      ARK_I2C_LINK_STATS:
+        name: 11_0_I2C_LINK_STATS
+        sourse_id: '11_0'
+        message_id: 'I2C_LINK_STATS'
+      CUBE_1_BCU_TEMP_COMP_0:
+        name: BCU C0 THERMAL_STATE
+        sourse_id: '10_0'
+        message_id: 'THERMAL_STATE'
+      CUBE_1_BCU_TEMP_COMP_1:
+        name: BCU C1 THERMAL_STATE
+        sourse_id: '10_1'
+        message_id: 'THERMAL_STATE'
+      CUBE_1_BCU_TEMP_COMP_2:
+        name: BCU C2 THERMAL_STATE
+        sourse_id: '10_2'
+        message_id: 'THERMAL_STATE'
+      CUBE_1_BCU_TEMP_COMP_3:
+        name: BCU C3 THERMAL_STATE
+        sourse_id: '10_3'
+        message_id: 'THERMAL_STATE'
+      CUBE_1_BCU_TEMP_COMP_4:
+        name: BCU C4 THERMAL_STATE
+        sourse_id: '10_4'
+        message_id: 'THERMAL_STATE'
+      CUBE_1_BCU_TEMP_COMP_5:
+        name: BCU C5 THERMAL_STATE
+        sourse_id: '10_5'
+        message_id: 'THERMAL_STATE'
+      CUBE_1_BCU_EL_STATE_COMP_0:
+        name: BCU C0 ELECTRICAL_STATE
+        sourse_id: '10_0'
+        message_id: 'ELECTRICAL_STATE'
+      CUBE_1_BCU_EL_STATE_COMP_1:
+        name: BCU C1 ELECTRICAL_STATE
+        sourse_id: '10_1'
+        message_id: 'ELECTRICAL_STATE'
+      CUBE_1_BCU_EL_STATE_COMP_2:
+        name: BCU C2 ELECTRICAL_STATE
+        sourse_id: '10_2'
+        message_id: 'ELECTRICAL_STATE'
+      CUBE_1_BCU_EL_STATE_COMP_3:
+        name: BCU C3 ELECTRICAL_STATE
+        sourse_id: '10_3'
+        message_id: 'ELECTRICAL_STATE'
+      CUBE_1_RADIO_CONN_STATS:
+        name: BCU C0 BCU_RADIO_CONN_STATS
+        sourse_id: '10_0'
+        message_id: 'BCU_RADIO_CONN_STATS'
+      SINS_OWN_TEMP:
+        name: SINS OWN_TEMP
+        sourse_id: '11_0'
+        message_id: OWN_TEMP
+      PL_OWN_TEMP:
+        name: PLD OWN_TEMP
+        sourse_id: '13_0'
+        message_id: OWN_TEMP
+      GCS_RADIO_RSSI_PACKET:
+        name: GCS RADIO PACKET RSSI
+        sourse_id: '1_0'
+        message_id: 'radio.rssi_packet'
+      GCS_RADIO_RSSI_INSTANT:
+        name: GCS RADIO INSTANT RSSI
+        sourse_id: '1_0'
+        message_id: 'radio.rssi_instant'
+      GCS_RADIO_STATS:
+        name: GCS RADIO STATS
+        sourse_id: '1_0'
+        message_id: 'radio.stats'
+      LOST_MESSAGES:
+        name: LOST_MESSAGES
+        sourse_id: '0_0'
+        message_id: 'LOST_MESSAGES'
+      def_time_limit: 20
+    Packet_table:
+      BAD_DATA:
+        name: 'BAD DATA'
+        sourse_id: '0_0'
+        message_id: 'BAD_DATA'
+      CUBE_1_BCU_STATS:
+        name: 'BCU C0 BCU_STATS'
+        sourse_id: '10_0'
+        message_id: 'BCU_STATS'
+      CUBE_1_BCU_TEMP_COMP_0:
+        name: BCU C0 THERMAL_STATE
+        sourse_id: '10_0'
+        message_id: 'THERMAL_STATE'
+      CUBE_1_BCU_TEMP_COMP_1:
+        name: BCU C1 THERMAL_STATE
+        sourse_id: '10_1'
+        message_id: 'THERMAL_STATE'
+      CUBE_1_BCU_TEMP_COMP_2:
+        name: BCU C2 THERMAL_STATE
+        sourse_id: '10_2'
+        message_id: 'THERMAL_STATE'
+      CUBE_1_BCU_TEMP_COMP_3:
+        name: BCU C3 THERMAL_STATE
+        sourse_id: '10_3'
+        message_id: 'THERMAL_STATE'
+      CUBE_1_BCU_TEMP_COMP_4:
+        name: BCU C4 THERMAL_STATE
+        sourse_id: '10_4'
+        message_id: 'THERMAL_STATE'
+      CUBE_1_BCU_TEMP_COMP_5:
+        name: BCU C5 THERMAL_STATE
+        sourse_id: '10_5'
+        message_id: 'THERMAL_STATE'
+      CUBE_1_BCU_EL_STATE_COMP_0:
+        name: BCU C0 ELECTRICAL_STATE
+        sourse_id: '10_0'
+        message_id: 'ELECTRICAL_STATE'
+      CUBE_1_BCU_EL_STATE_COMP_1:
+        name: BCU C1 ELECTRICAL_STATE
+        sourse_id: '10_1'
+        message_id: 'ELECTRICAL_STATE'
+      CUBE_1_BCU_EL_STATE_COMP_2:
+        name: BCU C2 ELECTRICAL_STATE
+        sourse_id: '10_2'
+        message_id: 'ELECTRICAL_STATE'
+      CUBE_1_BCU_EL_STATE_COMP_3:
+        name: BCU C3 ELECTRICAL_STATE
+        sourse_id: '10_3'
+        message_id: 'ELECTRICAL_STATE'
+      CUBE_1_RADIO_CONN_STATS:
+        name: BCU C0 BCU_RADIO_CONN_STATS
+        sourse_id: '10_0'
+        message_id: 'BCU_RADIO_CONN_STATS'
+      PLD_DOSIM_DATA:
+        name: PLD C0 PLD_DOSIM_DATA
+        sourse_id: '13_0'
+        message_id: 'PLD_DOSIM_DATA'
+      PLD_DOSIM_DATA_MOMENTARY:
+        name: PLD PLD_DOSIM_DATA_MOMENTARY
+        sourse_id: '13_0'
+        message_id: 'PLD_DOSIM_DATA'
+      PLD_DOSIM_DATA_WINDOWED:
+        name: PLD PLD_DOSIM_DATA_WINDOWED
+        sourse_id: '13_1'
+        message_id: 'PLD_DOSIM_DATA'
+      PLD_BME280_DATA_IN:
+        name: PLD C2 PLD_BME280_DATA (IN)
+        sourse_id: '13_2'
+        message_id: 'PLD_BME280_DATA'
+      PLD_MS5611_DATA_IN:
+        name: PLD C2 PLD__MS5611_DATA (IN)
+        sourse_id: '13_2'
+        message_id: 'PLD_MS5611_DATA'
+      PLD_BME280_DATA_OUT:
+        name: PLD C1 EXT_BME280_DATA (OUT)
+        sourse_id: '13_1'
+        message_id: 'PLD_BME280_DATA'
+      PLD_MS5611_DATA_OUT:
+        name: PLD C1 PLD_MS5611_DATA (OUT)
+        sourse_id: '13_1'
+        message_id: 'PLD_MS5611_DATA'
+      PLD_DNA_DATA:
+        name: PLD C0 PLD_DNA_DATA
+        sourse_id: '13_0'
+        message_id: 'PLD_DNA_DATA'
+      PL_I2C_LINK_STATS:
+        name: PLD C0 I2C_LINK_STATS
+        sourse_id: '13_0'
+        message_id: I2C_LINK_STATS
+      PL_ME2O2:
+        name: PLD C0 ME2O2
+        sourse_id: '13_0'
+        message_id: PLD_ME2O2_DATA
+      PL_MICS_6814_CO:
+        name: PLD C0 PLD_MICS_6814_DATA
+        sourse_id: '13_0'
+        message_id: PLD_MICS_6814_DATA
+      PL_OWN_TEMP:
+        name: PLD C0 OWN_TEMP
+        sourse_id: '13_0'
+        message_id: OWN_TEMP
+      PL_STATS:
+        name: PLD C0 PLD_STATS
+        sourse_id: '13_0'
+        message_id: PLD_STATS
+      SINS_ERRORS:
+        name: SINS C0 SINS_ERRORS
+        sourse_id: '11_0'
+        message_id: SINS_ERRORS
+      SINS_GPS_UBX_NAV_SOL:
+        name: SINS C0 GPS_UBX_NAV_SOL
+        sourse_id: '11_0'
+        message_id: GPS_UBX_NAV_SOL
+      SINS_ISC:
+        name: SINS C0 SINS_ISC
+        sourse_id: '11_0'
+        message_id: SINS_ISC
+      SINS_OWN_TEMP:
+        name: SINS C0 OWN_TEMP
+        sourse_id: '11_0'
+        message_id: OWN_TEMP
+      GCS_RADIO_RSSI_PACKET:
+        name: GCS RADIO PACKET RSSI
+        sourse_id: '1_0'
+        message_id: 'radio.rssi_packet'
+      GCS_RADIO_RSSI_INSTANT:
+        name: GCS RADIO INSTANT RSSI
+        sourse_id: '1_0'
+        message_id: 'radio.rssi_instant'
+      GCS_RADIO_STATS:
+        name: GCS RADIO STATS
+        sourse_id: '1_0'
+        message_id: 'radio.stats'
+      PL_I2C_LINK_STATS:
+        name: 13_0_I2C_LINK_STATS
+        sourse_id: '13_0'
+        message_id: 'I2C_LINK_STATS'
+      SINS_I2C_LINK_STATS:
+        name: 12_0_I2C_LINK_STATS
+        sourse_id: '12_0'
+        message_id: 'I2C_LINK_STATS'
+      ARK_I2C_LINK_STATS:
+        name: 11_0_I2C_LINK_STATS
+        sourse_id: '11_0'
+        message_id: 'I2C_LINK_STATS'
+      ANTENNA_STATE:
+        name: AS_STATE
+        sourse_id: '0_0'
+        message_id: 'AS_STATE'
+      is_on: true
+    Time_table:
+      CUBE_1_BCU:
+        is_on: true
+        system_name: BCU time
+        sourse_id:
+        - '10_0'
+        - '10_1'
+        - '10_2'
+        - '10_3'
+        - '10_4'
+        add_date_mode: true
+      CUBE_1_PCU:
+        is_on: true
+        system_name: PCU time
+        sourse_id:
+        - '12_0'
+        - '12_1'
+        - '12_2'
+        - '12_3'
+        add_date_mode: true
+      CUBE_1_PL:
+        is_on: true
+        system_name: PL time
+        sourse_id:
+        - '13_0'
+        add_date_mode: true
+      CUBE_1_SINS:
+        is_on: true
+        system_name: SINS time
+        sourse_id:
+        - '11_0'
+        add_date_mode: true
+      GCS_RADIO:
+        is_on: true
+        system_name: GCS RADIO time
+        sourse_id:
+        - '1_0'
+        add_date_mode: true
+      is_on: true
+      def_time_limit: 20
+    background_color: '#888888'
+    colors:
+    - '#0000FF'
+    - '#FF0000'
+    - '#FFFF00'
+    is_on: true
+    position:
+    - 0
+    - 3
+    - 1
+    - 1
+  GraphWidget:
+    Graph:
+      Thermal_state:
+        Packets:
+          PLD_TEMP:
+            sourse_id: '13_0'
+            message_id: 'OWN_TEMP'
+            field_id:
+            - deg
+            field_name:
+            - PLD
+            color:
+            - '#666666'
+          SINS_OWN_TEMP:
+            sourse_id: '11_0'
+            message_id: 'OWN_TEMP'
+            field_id:
+            - deg
+            field_name:
+            - SINS
+            color:
+            - '#FFFFFF'
+          ARK_OWN_TEMP:
+            sourse_id: '12_0'
+            message_id: 'OWN_TEMP'
+            field_id:
+            - deg
+            field_name:
+            - ARK
+            color:
+            - '#0096FF'
+          CUBE_1_BCU_TEMP_COMP_0:
+            sourse_id: '10_0'
+            message_id: 'THERMAL_STATE'
+            field_id:
+            - temperature
+            field_name:
+            - BCU
+            color:
+            - '#FF4646'
+          CUBE_1_BCU_TEMP_COMP_1:
+            sourse_id: '10_1'
+            message_id: 'THERMAL_STATE'
+            field_id:
+            - temperature
+            field_name:
+            - BSK1
+            color:
+            - g
+          CUBE_1_BCU_TEMP_COMP_2:
+            sourse_id: '10_2'
+            message_id: 'THERMAL_STATE'
+            field_id:
+            - temperature
+            field_name:
+            - BSK2
+            color:
+            - '#0096FF'
+          CUBE_1_BCU_TEMP_COMP_3:
+            sourse_id: '10_3'
+            message_id: 'THERMAL_STATE'
+            field_id:
+            - temperature
+            field_name:
+            - BSK3
+            color:
+            - '#FFFF00'
+          CUBE_1_BCU_TEMP_COMP_4:
+            sourse_id: '10_4'
+            message_id: 'THERMAL_STATE'
+            field_id:
+            - temperature
+            field_name:
+            - BSK4
+            color:
+            - '#FF00FF'
+          CUBE_1_BCU_TEMP_COMP_5:
+            sourse_id: '10_5'
+            message_id: 'THERMAL_STATE'
+            field_id:
+            - temperature
+            field_name:
+            - BSK5
+            color:
+            - '#00FFFF'
+          CUBE_1_PCU_TEMP_COMP_0:
+            sourse_id: '12_0'
+            message_id: 'THERMAL_STATE'
+            field_id:
+            - temperature
+            field_name:
+            - AB1
+            color:
+            - '#33AAAA'
+          CUBE_1_PCU_TEMP_COMP_1:
+            sourse_id: '12_1'
+            message_id: 'THERMAL_STATE'
+            field_id:
+            - temperature
+            field_name:
+            - AB2
+            color:
+            - '#33AA33'
+          CUBE_1_PCU_TEMP_COMP_2:
+            sourse_id: '12_2'
+            message_id: 'THERMAL_STATE'
+            field_id:
+            - temperature
+            field_name:
+            - AB3
+            color:
+            - '#3333AA'
+          CUBE_1_PCU_TEMP_COMP_3:
+            sourse_id: '12_3'
+            message_id: 'THERMAL_STATE'
+            field_id:
+            - temperature
+            field_name:
+            - AB4
+            color:
+            - '#AA33AA'
+        legend_is_on: true
+        is_on: true
+        max_data_length: 100
+        name: "Thermal state"
+        position:
+        - 0
+        - 0
+        - 1
+        - 1
+        units: C
+      SB_Voltage:
+        Packets:
+          CUBE_1_BCU_EL_STATE_COMP_0:
+            sourse_id: '10_0'
+            message_id: 'ELECTRICAL_STATE'
+            field_id:
+            - voltage
+            field_name:
+            - BSK1
+            color:
+            - '#FF4646'
+          CUBE_1_BCU_EL_STATE_COMP_1:
+            sourse_id: '10_1'
+            message_id: 'ELECTRICAL_STATE'
+            field_id:
+            - voltage
+            field_name:
+            - BSK2
+            color:
+            - '#0096FF'
+          CUBE_1_BCU_EL_STATE_COMP_2:
+            sourse_id: '10_2'
+            message_id: 'ELECTRICAL_STATE'
+            field_id:
+            - voltage
+            field_name:
+            - BSK3
+            color:
+            - '#00FF00'
+          CUBE_1_BCU_EL_STATE_COMP_3:
+            sourse_id: '10_3'
+            message_id: 'ELECTRICAL_STATE'
+            field_id:
+            - voltage
+            field_name:
+            - BSK4
+            color:
+            - '#00FFFF'
+        legend_is_on: true
+        is_on: true
+        max_data_length: 100
+        name: "Sun battary voltage"
+        position:
+        - 1
+        - 0
+        - 1
+        - 1
+        units: V
+      SB_Current:
+        Packets:
+          CUBE_1_BCU_EL_STATE_COMP_0:
+            sourse_id: '10_0'
+            message_id: 'ELECTRICAL_STATE'
+            field_id:
+            - current
+            field_name:
+            - BSK1
+            color:
+            - '#FF4646'
+          CUBE_1_BCU_EL_STATE_COMP_1:
+            sourse_id: '10_1'
+            message_id: 'ELECTRICAL_STATE'
+            field_id:
+            - current
+            field_name:
+            - BSK2
+            color:
+            - '#0096FF'
+          CUBE_1_BCU_EL_STATE_COMP_2:
+            sourse_id: '10_2'
+            message_id: 'ELECTRICAL_STATE'
+            field_id:
+            - current
+            field_name:
+            - BSK3
+            color:
+            - '#00FF00'
+          CUBE_1_BCU_EL_STATE_COMP_3:
+            sourse_id: '10_3'
+            message_id: 'ELECTRICAL_STATE'
+            field_id:
+            - current
+            field_name:
+            - BSK4
+            color:
+            - '#00FFFF'
+        legend_is_on: true
+        is_on: true
+        max_data_length: 100
+        name: "Sun battary current"
+        position:
+        - 1
+        - 1
+        - 1
+        - 1
+        units: A
+      A_Voltage:
+        Packets:
+          CUBE_1_PCU_EL_STATE_COMP_0:
+            sourse_id: '12_0'
+            message_id: 'ELECTRICAL_STATE'
+            field_id:
+            - voltage
+            field_name:
+            - BMS+
+            color:
+            - '#FFFF00'
+          CUBE_1_PCU_EL_STATE_COMP_1:
+            sourse_id: '12_1'
+            message_id: 'ELECTRICAL_STATE'
+            field_id:
+            - voltage
+            field_name:
+            - BUS+
+            color:
+            - '#FF00FF'
+        legend_is_on: true
+        is_on: true
+        max_data_length: 100
+        name: "Accumulator voltage"
+        position:
+        - 2
+        - 0
+        - 1
+        - 1
+        units: V
+      A_Current:
+        Packets:
+          CUBE_1_PCU_EL_STATE_COMP_0:
+            sourse_id: '12_0'
+            message_id: 'ELECTRICAL_STATE'
+            field_id:
+            - current
+            field_name:
+            - BMS+
+            color:
+            - '#FFFF00'
+          CUBE_1_PCU_EL_STATE_COMP_1:
+            sourse_id: '12_1'
+            message_id: 'ELECTRICAL_STATE'
+            field_id:
+            - current
+            field_name:
+            - BUS+
+            color:
+            - '#FF00FF'
+        legend_is_on: true
+        is_on: true
+        max_data_length: 100
+        name: "Accumulator current"
+        position:
+        - 2
+        - 1
+        - 1
+        - 1
+        units: A
+      Own_voltage:
+        Packets:
+          PLD_VOLTAGE:
+            sourse_id: '13_0'
+            message_id: 'OWN_TEMP'
+            field_id:
+            - vdda
+            - vbat
+            field_name:
+            - PLD vdda
+            - PLD vbat
+            color:
+            - '#0096FF'
+            - '#FF00FF'
+          SINS_VOLTAGE:
+            sourse_id: '11_0'
+            message_id: 'OWN_TEMP'
+            field_id:
+            - vdda
+            - vbat
+            field_name:
+            - SINS vdda
+            - SINS vbat
+            color:
+            - g
+            - '#FF4646'
+          ARK_VOLTAGE:
+            sourse_id: '12_0'
+            message_id: 'OWN_TEMP'
+            field_id:
+            - vdda
+            field_name:
+            - ARK vdda
+            color:
+            - b
+        legend_is_on: true
+        is_on: true
+        max_data_length: 100
+        name: "Own voltage"
+        position:
+        - 0
+        - 1
+        - 1
+        - 1
+        units: C
+      RSSI:
+        Packets:
+          GCS_RADIO_RSSI_PACKET:
+            sourse_id: '1_0'
+            message_id: 'radio.rssi_packet'
+            field_id:
+            - rssi_pkt
+            - rssi_signal
+            - snr_pkt
+            field_name:
+            - rssi packet
+            - rssi signal
+            - snr pkt
+            color:
+            - '#FF4646'
+            - '#0096FF'
+            - '#FFFFFF'
+        legend_is_on: true
+        is_on: true
+        max_data_length: 100
+        name: "RSSI"
+        position:
+        - 3
+        - 0
+        - 1
+        - 1
+        units: dB
+      RSSI_INSTANT:
+        Packets:
+          GCS_RADIO_RSSI_INSTANT:
+            sourse_id: '1_0'
+            message_id: 'radio.rssi_instant'
+            field_id:
+            - rssi
+            field_name:
+            - instant rssi
+            color:
+            - g
+        legend_is_on: false
+        is_on: true
+        max_data_length: 100
+        name: "RSSI Instant"
+        position:
+        - 3
+        - 1
+        - 1
+        - 1
+        units: dB
+    is_on: true
+    position:
+    - 0
+    - 0
+    - 1
+    - 3
+    time_units: s
+  MapWidget:
+    center:
+    - 55.9
+    - 37.8
+    follow: true
+    is_on: false
+    max_data_length: 40
+    sourse_id: '11_0'
+    message_id: 'GPS_UBX_NAV_SOL'
+    field_lat_id: lat
+    field_lon_id: lon
+    position:
+    - 0
+    - 1
+    - 2
+    - 1
+    zoom: 4
+  ModelWidget:
+    Axis:
+      is_on: false
+      scale:
+      - 6.5
+      - 6.5
+      - 7
+      translate:
+      - 0
+      - 0
+      - -5
+    Camera:
+      azimuth: 0
+      distance: 470
+      elevation: 35
+      pan:
+      - 0
+      - 0
+      - 30
+    Grid:
+      is_on: true
+      scale:
+      - 3
+      - 3
+      - 3
+      translate:
+      - 0
+      - 0
+      - -10
+    Mesh:
+      Colors:
+        is_on: true
+        path: /media/sf_git/can-cube-sat/src/ground/laptop/source/models/CanCubeSat-for-GKS_color.mfcl
+      compute_normals: true
+      draw_edges: false
+      draw_faces: true
+      path: /media/sf_git/can-cube-sat/src/ground/laptop/source/models/CanCubeSat-for-GKS.stl
+      shader: edgeHilight
+      smooth: false
+    Scene:
+      Colors:
+        is_on: true
+        path: /media/sf_git/can-cube-sat/src/ground/laptop/source/models/axis.mfcl
+      compute_normals: true
+      draw_edges: false
+      draw_faces: true
+      is_on: true
+      path: /media/sf_git/can-cube-sat/src/ground/laptop/source/models/axis.stl
+      shader: balloon
+      smooth: false
+    background_color: '#323232'
+    is_on: false
+    sourse_id: '11_0'
+    message_id: 'SINS_ISC'
+    quat_field_id: 
+    - quaternion[0]
+    - quaternion[1]
+    - quaternion[2]
+    - quaternion[3]
+    position:
+    - 1
+    - 1
+    - 1
+    - 1
+  EventWidget:
+    Event:
+      SINS_UNDERTEMP_H:
+        name: cube 1 SINS overcooling threat
+        sourse_id: '11_0'
+        message_id: 'OWN_TEMPERATURE 2'
+        field_id: 
+        - TEMP
+        identifier: UnderRange
+        trigger_value: 35
+        index: 1
+        time_limit: 2
+        event_type: 'Error'
+        priority: 3
+        audio: 'D:\My_Programs\smartgit-portable-18_2_9\git\can-cube-sat-2021\src\ground\laptop\StrelA-MS\source\audio\alarm2.mp3'
+      SINS_UNDERTEMP_L:
+        name: cube 1 SINS overcooling
+        sourse_id: '11_0'
+        message_id: 'OWN_TEMPERATURE 2'
+        field_id: 
+        - TEMP
+        identifier: UnderRange
+        trigger_value: 40
+        index: 1
+        time_limit: 2
+        event_type: 'Warning'
+        priority: 2
+    background_color: '#888888'
+    attention_color: '#0000FF'
+    is_on: false
+    position:
+    - 0
+    - 4
+    - 1
+    - 1
+CurrentValues:
+  time_shift: 1601731871.944
+DefaultValues:
+  time_shift: false
+MainWindow:
+  DataSourse:
+    Log:
+      MAV:
+        log_path: ./log/T.mav
+        real_time: false
+        time_delay: 0.00000000005
+        notimestamps: true
+        packet_num_shift: 46300
+        packet_count: 0
+      type: MAV
+    MAVLink:
+      connection: udpin:0.0.0.0:14540
+      notimestamps: true
+    ZMQ:
+      bus_bpcs: "tcp://192.168.1.210:7778"
+      topics:
+      - "its.telemetry_packet"
+      - "radio.downlink_frame"
+      - 'radio.rssi_instant'
+      - 'radio.rssi_packet'
+      - 'radio.stats'
+      - "antenna.telemetry_packet"
+      notimestamps: true
+    type: ZMQ
+  size:
+  - 1000
+  - 800
+  update_time: 0.1
