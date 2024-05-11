@@ -1,0 +1,446 @@
+CentralWidget:
+  DataWidget:
+    Data_table:
+      PACKET_PERVUI:
+        name: PAKET_1
+        sourse_id: board
+        message_id: paket_1
+        field_name:
+        
+        - Accelerometer x
+        - Accelerometer y
+        - Accelerometer z
+        - Gyroscope x
+        - Gyroscope y
+        - Gyroscope z
+        - Magnetometer x
+        - Magnetometer y
+        - Magnetometer z
+        - Number
+        - crc
+      PACKET_VTOROY:
+        name: PAKET_2
+        sourse_id: board
+        message_id: paket_2
+        field_name:
+        - Height BME
+        - Humidity
+        - Lux
+        - Number
+        - Pressure
+        - State
+        - Temperature
+        - crc
+      PACKET_TRETIY:
+        name: PAKET_3
+        sourse_id: 'board'
+        message_id: 'paket_3'
+        field_name:
+        - Height GPS
+        - Latitude
+        - Longitude
+        - Number
+        - Time, mks
+        - Time, s
+        - crc
+      PACKET_CHETVERTUY:
+        name: PAKET_4
+        sourse_id: 'board'
+        message_id: 'paket_4'
+        field_name:
+        - Number
+        - Q1
+        - Q2
+        - Q3
+        - Q4
+        - Time
+        - crc
+      is_on: true
+      def_time_limit: 20
+    Packet_table:
+      paket_1:
+        name: 'PAKET_1'
+        sourse_id: 'board'
+        message_id: 'paket_1'
+      paket_2:
+        name: 'PAKET_2'
+        sourse_id: 'board'
+        message_id: 'paket_2'
+      paket_3:
+        name: 'PAKET_3'
+        sourse_id: 'board'
+        message_id: 'paket_3'
+      paket_4:
+        name: 'PAKET_4'
+        sourse_id: 'board'
+        message_id: 'paket_4'
+      is_on: true
+    Time_table:
+      is_on: false
+      def_time_limit: 20
+    background_color: '#888888'
+    colors:
+    - '#0000FF'
+    - '#FF0000'
+    - '#FFFF00'
+    is_on: true
+    position:
+    - 0
+    - 5
+    - 2
+    - 1
+  GraphWidget:
+    Graph:
+      Gyro:
+        Packets:
+          Gyroscop:
+            sourse_id: board
+            message_id: paket_1
+            field_id:
+            - Gyroscope x
+            - Gyroscope y
+            - Gyroscope z
+            field_name:
+            - 'x'
+            - 'y'
+            - 'z'
+            color:
+            - '#FF4646'
+            - g
+            - '#0096FF'
+        legend_is_on: true
+        is_on: true
+        max_data_length: 100
+        name: Gyroscope
+        position:
+        - 2
+        - 0
+        - 1
+        - 1
+        units: ' °'
+      Accel:
+        Packets:
+          Acceleration:
+            sourse_id: 'board'
+            message_id: paket_1
+            field_id:
+            - Accelerometer x
+            - Accelerometer y
+            - Accelerometer z
+            field_name:
+            - 'x'
+            - 'y'
+            - 'z'
+            color:
+            - '#FF4646'
+            - g
+            - '#0096FF'
+        legend_is_on: true
+        is_on: true
+        max_data_length: 100
+        name: Acceleration
+        position:
+        - 0
+        - 0
+        - 1
+        - 1
+        units: m/c^2
+      Magnet:
+        legend_is_on: true
+        Packets:
+          Magnetometr:
+            field_id:
+            - Magnetometer x
+            - Magnetometer y
+            - Magnetometer z
+            field_name:
+            - 'x'
+            - 'y'
+            - 'z'
+            color:
+            - '#FF4646'
+            - g
+            - '#0096FF'
+            sourse_id: 'board'
+            message_id: paket_1
+        name: Magnetometer
+        is_on: true
+        max_data_length: 100
+        position:
+        - 1
+        - 0
+        - 1
+        - 1
+        units: ' G'
+      Height:
+        Packets:
+          HeightBme:
+            sourse_id: 'board'
+            message_id: paket_2
+            field_id:
+            - Height
+            field_name:
+            - height bme
+            color:
+            - '#0096FF'
+          HeightGps:
+            sourse_id: 'board'
+            message_id: paket_3
+            field_id:
+            - Height
+            field_name:
+            - height gps
+            color:
+            - r
+        name: Height
+        legend_is_on: true
+        is_on: true
+        max_data_length: 100
+        position:
+        - 3
+        - 0
+        - 1
+        - 1
+        units: 'm'
+      Temp:
+        Packets:
+          Temperature:
+            sourse_id: 'board'
+            message_id: paket_2
+            field_id:
+            - Temperature BME
+            field_name:
+            - Temp bme
+            color:
+            - '#0096FF'
+        name: Temperature
+        legend_is_on: false
+        is_on: true
+        max_data_length: 100
+        position:
+        - 0
+        - 1
+        - 1
+        - 1
+        units: 'C'
+      Press:
+        Packets:
+          Pressure:
+            sourse_id: 'board'
+            message_id: paket_2
+            field_id:
+            - Pressure
+            field_name:
+            - Pressure
+            color:
+            - '0096FF'
+        name: Pressure
+        legend_is_on: false 
+        is_on: true
+        max_data_length: 100
+        position:
+        - 1
+        - 1
+        - 1
+        - 1
+        units: 'Pa'
+      Hum:
+        Packets:
+          Humidity:
+            sourse_id: 'board'
+            message_id: paket_2
+            field_id:
+            - Humidity
+            field_name:
+            - Humidity
+            color:
+            - '0096FF'
+        name: Humidity
+        legend_is_on: false 
+        is_on: true
+        max_data_length: 100
+        position:
+        - 2
+        - 1
+        - 1
+        - 1
+        units: '%'
+      Lux:
+        Packets:
+          Luximity:
+            sourse_id: 'board'
+            message_id: paket_2
+            field_id:
+            - Lux
+            field_name:
+            - Lux
+            color:
+            - '0096FF'
+        name: Illumination
+        legend_is_on: false 
+        is_on: true
+        max_data_length: 100
+        position:
+        - 3
+        - 1
+        - 1
+        - 1
+        units: ' '
+    is_on: true
+    position:
+    - 0
+    - 0
+    - 2
+    - 3
+    time_units: ms
+  MapWidget:
+    center:
+    - 55.9
+    - 37.8
+    follow: true
+    is_on: true
+    max_data_length: 40
+    sourse_id: 'board'
+    message_id: 'paket_3'
+    field_lat_id: Latitude
+    field_lon_id: Longitude
+    position:
+    - 0
+    - 3
+    - 1
+    - 2
+    zoom: 4
+  ModelWidget:
+    Axis:
+      is_on: false
+      scale:
+      - 6.5
+      - 6.5
+      - 7
+      translate:
+      - 0
+      - 0
+      - -5
+    Camera:
+      azimuth: 0
+      distance: 640
+      elevation: 35
+      pan:
+      - 0
+      - 0
+      - 0
+    Grid:
+      is_on: true
+      scale:
+      - 3
+      - 3
+      - 3
+      translate:
+      - 0
+      - 0
+      - -10
+    Mesh:
+      Colors:
+        is_on: false
+        path: /media/sf_git/can-cube-sat/src/ground/laptop/source/models/CanCubeSat-2-for-GKS_color.mfcl
+      compute_normals: true
+      draw_edges: true
+      draw_faces: true
+      path: C:\Users\User\Desktop\cansat-gcs\src\laptop\StrelA-MS\source\models\knpn.stl
+      shader: edgeHilight
+      smooth: false
+    Scene:
+      Colors:
+        is_on: true
+        path: /media/sf_git/can-cube-sat/src/ground/laptop/source/models/axis.mfcl
+      compute_normals: true
+      draw_edges: false
+      draw_faces: true
+      is_on: true
+      path: /media/sf_git/can-cube-sat/src/ground/laptop/source/models/axis.stl
+      shader: balloon
+      smooth: false
+    background_color: '#505050'
+    is_on: true
+    sourse_id: 'board'
+    message_id: 'paket_4'
+    quat_field_id: 
+    - Q1
+    - Q2
+    - Q3
+    - Q4
+    position:
+    - 1
+    - 3
+    - 1
+    - 2
+  EventWidget:
+    Event:
+      SINS_UNDERTEMP_H:
+        name: cube 1 SINS overcooling threat
+        sourse_id: '11_0'
+        message_id: 'OWN_TEMPERATURE 2'
+        field_id: 
+        - TEMP
+        identifier: UnderRange
+        trigger_value: 35
+        index: 1
+        time_limit: 2
+        event_type: 'Error'
+        priority: 3
+        audio: 'D:\My_Programs\smartgit-portable-18_2_9\git\can-cube-sat-2021\src\ground\laptop\StrelA-MS\source\audio\alarm2.mp3'
+      SINS_UNDERTEMP_L:
+        name: cube 1 SINS overcooling
+        sourse_id: '11_0'
+        message_id: 'OWN_TEMPERATURE 2'
+        field_id: 
+        - TEMP
+        identifier: UnderRange
+        trigger_value: 40
+        index: 1
+        time_limit: 2
+        event_type: 'Warning'
+        priority: 2
+    background_color: '#888888'
+    attention_color: '#0000FF'
+    is_on: false
+    position:
+    - 0
+    - 3
+    - 2
+    - 1
+CurrentValues:
+  time_shift: 1601731871.944
+DefaultValues:
+  time_shift: false
+MainWindow:
+  DataSourse:
+    Log:
+      MAV:
+        log_path: ./log/T.mav
+        real_time: false
+        time_delay: 0.0005
+        notimestamps: true
+        packet_num_shift: 46300
+        packet_count: 0
+      type: MAV
+    MAVLink:
+      connection: udpin:0.0.0.0:14540
+      notimestamps: true
+    ZMQ:
+      bus_bpcs: "tcp://192.168.1.210:7778"
+      topics:
+      - "its.telemetry_packet"
+      - "radio.downlink_frame"
+      - 'radio.rssi_instant'
+      - 'radio.rssi_packet'
+      - 'radio.stats'
+      - "antenna.telemetry_packet"
+    KNPN:
+      ServerIP: "192.168.138.58"
+      ServerPort: 20001
+    type: KNPN
+  size:
+  - 1000
+  - 800
+  update_time: 0.1

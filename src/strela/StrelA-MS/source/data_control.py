@@ -1,0 +1,383 @@
+import typing
+import os
+os.environ['MAVLINK_DIALECT'] = "its"
+os.environ['MAVLINK20'] = "its"
+from pymavlink.dialects.v20 import its as its_mav
+from pymavlink import mavutil
+import time
+import re
+import math
+import numpy as NumPy
+import struct
+import zmq
+import json
+import logging
+import socket
+
+_log = logging.getLogger(__name__)
+
+from source.functions.wgs84 import wgs84_xyz_to_latlonh as wgs84_conv
+
+def generate_log_file_name():
+  return time.strftime("StrelA-MS_log_%d-%m-%Y_%H-%M-%S", time.localtime())
+
+
+class Message():
+    def __init__(self, message_id, source_id, msg_time, msg_data):
+        self.message_id = message_id
+        self.source_id = source_id
+        self.data = msg_data
+        self.time = msg_time
+        self.creation_time = time.time()
+
+    def get_message_id(self):
+        return self.message_id
+
+    def get_source_id(self):
+        return self.source_id
+
+    def get_time(self):
+        return self.time
+
+    def get_data_dict(self):
+        return self.data
+
+    def get_creation_time(self):
+        return self.creation_time
+
+
+class MAVDataSource():
+    def __init__(self, connection_str="tcp://127.0.0.1:7778", log_path="./", notimestamps=True):
+        self.notimestamps = notimestamps
+        self.connection_str = connection_str
+        self.log_path = log_path
+        self.ground_coords = NumPy.array((0, 0, 0)).reshape((3, 1))
+        self.target_coords = NumPy.array((0, 0, 0)).reshape((3, 1))
+
+    def start(self):
+        self.connection = mavutil.mavlink_connection(self.connection_str)
+        self.log = open(self.log_path + generate_log_file_name + '.mav', 'wb')
+
+    def read_data(self):
+        msg = self.connection.recv_match()
+        if (msg is None):
+            raise RuntimeError("No Message")
+        if not self.notimestamps:
+            self.log.write(struct.pack("<Q", int(time.time() * 1.0e6) & -3))
+        self.log.write(msg.get_msgbuf())
+
+        if msg.get_type() == "BAD_DATA":
+            raise TypeError("BAD_DATA message received")
+
+        data = self.get_data([msg])
+        if data is None:
+            raise TypeError("Message type not supported")
+
+        return data
+
+    def get_data(self, msgs):
+        msg_list = []
+        for msg in msgs:
+            if msg.get_type() == "BAD_DATA":
+                msg_list.append(Message(message_id=msg.get_type(),
+                                        source_id='0_0',
+                                        msg_time=time.time(),
+                                        msg_data={}))
+                continue
+            data = msg.to_dict()
+            data.pop('mavpackettype', None)
+            data.pop('time_steady', None)
+            msg_time = data.pop("time_s", time.time()) + data.pop("time_us", 0)/1000000
+
+            for item in list(data.items()):
+                if isinstance(item[1], list):
+                    data.pop(item[0])
+                    for i in range(len(item[1])):
+                        data.update([[item[0] + '[' + str(i) + ']', item[1][i]]])
+
+            if msg.get_type() == "GPS_UBX_NAV_SOL":
+                gps = wgs84_conv(msg.ecefX / 100, msg.ecefY / 100, msg.ecefZ / 100)
+                self.target_coords = NumPy.array((msg.ecefX / 100, msg.ecefY / 100, msg.ecefZ / 100)).reshape((3, 1))
+                data.update([['lat', gps[0]],
+                             ['lon', gps[1]],
+                             ['alt', gps[2]]])
+                data['ecefX'] /= 100
+                data['ecefY'] /= 100
+                data['ecefZ'] /= 100
+                msg_list.append(Message(message_id='TARGET_DISTANCE',
+                                        source_id='0_0',
+                                        msg_time=time.time(),
+                                        msg_data={'distance':NumPy.linalg.norm((self.target_coords - self.ground_coords))}))
+            elif msg.get_type() == 'PLD_DOSIM_DATA':
+                gain =  1000 * 60 * 60
+                delta = msg.delta_time
+                if msg.delta_time != 0:
+                    data.update([['dose_max', (msg.count_tick / 44) / msg.delta_time * gain],
+                                 ['dose_min', (msg.count_tick / 52) / msg.delta_time * gain]])
+                else:
+                    data.update([['dose_max', 0],
+                                 ['dose_min', 0]])
+            elif msg.get_type() == 'AS_STATE':
+                self.ground_coords = NumPy.array(msg.ecef).reshape((3, 1))
+                msg_list.append(Message(message_id='TARGET_DISTANCE',
+                                        source_id='0_0',
+                                        msg_time=time.time(),
+                                        msg_data={'distance':(NumPy.linalg.norm((self.target_coords - self.ground_coords)))}))
+
+            header = msg.get_header()
+            msg_list.append(Message(message_id=msg.get_type(),
+                                    source_id=(str(header.srcSystem) + '_' + str(header.srcComponent)),
+                                    msg_time=msg_time,
+                                    msg_data=data))
+        return msg_list
+
+    def stop(self):
+        self.connection.close()
+        self.log.close()
+        self.ground_coords = NumPy.array((0, 0, 0)).reshape((3, 1))
+        self.target_coords = NumPy.array((0, 0, 0)).reshape((3, 1))
+
+
+class MAVLogDataSource():
+    def __init__(self, log_path, real_time=0, time_delay=0.01, notimestamps=True, packet_num_shift=0, packet_count=0):
+        self.notimestamps = notimestamps
+        self.log_path = log_path
+        self.real_time = real_time
+        self.time_delay = time_delay
+        self.mav_data_sourse = MAVDataSource()
+        self.packet_num_shift = packet_num_shift
+        self.packet_count = packet_count
+
+    def start(self):
+        self.connection = mavutil.mavlogfile(self.log_path, notimestamps=self.notimestamps)
+        self.time_shift = None
+        self.time_start = None
+        self.count = 0
+
+    def read_data(self):
+        msg = self.connection.recv_match()
+        if (msg is None):
+            raise RuntimeError("No Message")
+
+        data = self.mav_data_sourse.get_data([msg])
+        if data is None:
+            raise TypeError("Message type not supported")
+
+        self.count += 1
+        if self.count < self.packet_num_shift:
+            return []
+
+        if self.packet_count > 0:
+            if self.count > (self.packet_num_shift + self.packet_count):
+                return []
+
+        if self.real_time:
+          if self.time_shift is None:
+            self.time_shift = datetime.fromtimestamp(msg._timestamp)
+            if self.time_start is None:
+                self.time_start = time.time()
+            while (time.time() - self.time_start) < (datetime.fromtimestamp(msg._timestamp) - self.time_shift):
+                pass
+        else:
+            time.sleep(self.time_delay)
+        return data
+
+    def stop(self):
+        self.connection.close()
+
+
+class ZMQDataSource():
+
+    def _extract_mdt_time(self, zmq_message: typing.List[bytes]) -> float:
+        """ Извлекает из сообщения на ZMQ шине таймштамп если он там есть
+            Если не удалось - возвращает time.time() """
+        mdt = zmq_message[1]
+        parsed = json.loads(mdt)  # type: typing.Dict
+
+        timestamp = None
+        if "time_s" in parsed and "time_us" in parsed:
+            try:
+                timestamp = int(parsed["time_s"]) + float(parsed["time_us"])/1000/1000
+            except:
+                pass
+
+        return timestamp if timestamp is not None else time.time()
+
+    def __init__(self, bus_bpcs="tcp://127.0.0.1:7778", topics=[], log_path="./", notimestamps=True):
+        self.notimestamps = notimestamps
+        self.bus_bpcs = bus_bpcs
+        self.topics = topics
+        self.log_path = log_path
+        self.pkt_num = None
+        self.pkt_count = 0
+        self.mav_data_sourse = MAVDataSource()
+
+    def start(self):
+        self.zmq_ctx = zmq.Context()
+
+        self.sub_socket = self.zmq_ctx.socket(zmq.SUB)
+        self.sub_socket.connect(self.bus_bpcs)
+        for topic in self.topics:
+            self.sub_socket.setsockopt_string(zmq.SUBSCRIBE, topic)
+
+        self.poller = zmq.Poller()
+        self.poller.register(self.sub_socket, zmq.POLLIN)
+
+        self.log = open(self.log_path + generate_log_file_name() + '.mav', 'wb')
+
+        self.default_mav = its_mav.MAVLink(file=None)
+        self.default_mav.robust_parsing = True
+        self.mav_dict = {}
+
+    def parse_mav_buffer(self, key, buf):
+        mav = self.mav_dict.get(key, None)
+        if mav is None:
+            mav = its_mav.MAVLink(file=None)
+            mav.robust_parsing = True
+            self.mav_dict.update([(key, mav)])
+
+        return mav.parse_buffer(buf)
+
+    def read_data(self):
+        events = dict(self.poller.poll(10))
+        if self.sub_socket in events:
+            zmq_msg = self.sub_socket.recv_multipart()
+            data = []
+
+            if zmq_msg[0] == b'radio.rssi_instant':
+                return [Message(message_id='radio.rssi_instant',
+                                source_id=('1_0'),
+                                msg_time=self._extract_mdt_time(zmq_msg),
+                                msg_data=json.loads(zmq_msg[1].decode("utf-8")))]
+            elif zmq_msg[0] == b'radio.rssi_packet':
+                return [Message(message_id='radio.rssi_packet',
+                                source_id=('1_0'),
+                                msg_time=self._extract_mdt_time(zmq_msg),
+                                msg_data=json.loads(zmq_msg[1].decode("utf-8")))]
+            elif zmq_msg[0] == b'radio.stats':
+                return [Message(message_id='radio.stats',
+                                source_id=('1_0'),
+                                msg_time=self._extract_mdt_time(zmq_msg),
+                                msg_data=json.loads(zmq_msg[1].decode("utf-8")))]
+
+            elif (zmq_msg[0] == b'radio.downlink_frame') or (zmq_msg[0] == b'sdr.downlink_frame'):
+                num = json.loads(zmq_msg[1].decode("utf-8")).get("frame_no", None)
+                if (num is not None) and (self.pkt_num is not None):
+                    if ((self.pkt_num + 1) < num):
+                        self.pkt_count += num - (self.pkt_num + 1)
+                self.pkt_num = num
+                data.append(Message(message_id='LOST_MESSAGES',
+                                    source_id=('0_0'),
+                                    msg_time=time.time(),
+                                    msg_data={'count': self.pkt_count,
+                                              'num': self.pkt_num}))
+
+            if len(zmq_msg) > 2:
+                msg_buf = zmq_msg[2]
+
+                if not self.notimestamps:
+                    self.log.write(struct.pack("<Q", int(time.time() * 1.0e6) & -3))
+                self.log.write(msg_buf)
+
+                msg = self.parse_mav_buffer(zmq_msg[0].decode('utf-8'), msg_buf)
+                _log.debug("got message: %s", list([str(x) for x in msg]))
+
+                if msg is None:
+                    raise RuntimeError("No Message")
+                data.extend(self.mav_data_sourse.get_data(msg))
+
+            return data
+        else:
+            raise RuntimeError("No Message")
+
+    def stop(self):
+        self.pkt_count = 0
+        self.log.close()
+
+
+class UnknownDataSource():
+    def __init__(self, ServerIP="192.168.43.153", ServerPort=20001):
+        self.ServerIP = ServerIP
+        self.ServerPort = ServerPort
+
+    def start(self):
+        self.UDPClientSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
+        self.UDPClientSocket.setblocking(False)
+        self.UDPClientSocket.settimeout(0)
+        self.UDPClientSocket.sendto(str.encode("Give me data plz"), (self.ServerIP, self.ServerPort))
+
+    def read_data(self):
+        try:
+            msgFromServer = self.UDPClientSocket.recvfrom(1024)
+            msg = str(msgFromServer)[0]
+            print(msg[2:-1])
+            if bytearray(msgFromServer[0])[0] == 187:
+                data = struct.unpack("<BHIhIhffBH", bytearray(msgFromServer[0])[:26])
+                return[Message(message_id='paket_2',
+                        source_id='board',
+                        msg_time = data[2],
+                        msg_data= {
+                        "Number": data[1],
+                        "Temperature BME": data[3]/100,
+                        "Pressure": data[4],
+                        "Humidity": data[5],
+                        "Height": data[6],
+                        "Lux": data[7],
+                        "State": data[8],
+                        "crc": data[9]
+                        })]
+
+            elif bytearray(msgFromServer[0])[0] == 170:
+                data = struct.unpack("<BHIhhhhhhhhhH", bytearray(msgFromServer[0])[:27])
+                return[Message(message_id='paket_1',
+                        source_id='board',
+                        msg_time=data[2],
+                        msg_data= {
+                        "Number": data[1],
+                        "Accelerometer x": data[3]/1000,
+                        "Accelerometer y": data[4]/1000,
+                        "Accelerometer z": data[5]/1000,
+                        "Gyroscope x": data[6]/1000,
+                        "Gyroscope y": data[7]/1000,
+                        "Gyroscope z": data[8]/1000,
+                        "Magnetometer x": data[9]/1000,
+                        "Magnetometer y": data[10]/1000,
+                        "Magnetometer z": data[11]/1000,
+                        "crc": data[12]
+                        })]
+
+            elif bytearray(msgFromServer[0])[0] == 204:
+                data = struct.unpack("<BHIfffLLH", bytearray(msgFromServer[0])[:29])
+                return[Message(message_id='paket_3',
+                        source_id='board',
+                        msg_time=data[2],
+                        msg_data= {
+                        "Number": data[1],
+                        "Latitude": data[3],
+                        "Longitude": data[4],
+                        "Height": data[5],
+                        "Time, s": data[6],
+                        "Time, mks": data[7],
+                        "crc": data[8]
+                        })]
+
+            elif bytearray(msgFromServer[0])[0] == 255:
+                data = struct.unpack("<BHIfffffH", bytearray(msgFromServer[0])[:29])
+                return[Message(message_id='paket_4',
+                        source_id='board',
+                        msg_time=data[2],
+                        msg_data= {
+                        "Number": data[1],
+                        "Q1": data[4],
+                        "Q2": data[5],
+                        "Q3": data[6],
+                        "Q4": data[7],
+                        "Time": data[3],
+                        "crc": data[8]
+                        })]
+        except BlockingIOError as e:
+            pass
+        return []
+
+    def stop(self):
+        self.UDPClientSocket.close()
