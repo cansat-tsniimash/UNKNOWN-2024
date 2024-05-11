@@ -38,11 +38,11 @@ void rotate_sm(double angle, bool side){
 		steps = 11050;
 	}
 
-	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_9, side);
+	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_10, side);
 	for(int i = 0; i<steps; i++){
-		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_10, true);
+		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_9, true);
 		dwt_delay_us(70);
-		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_10, false);
+		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_9, false);
 		dwt_delay_us(70);
 	}
 
@@ -118,17 +118,17 @@ int app_main(){
 	is_mount = f_mount(&fileSystem, "", 1);
 	if(is_mount == FR_OK) { // монтируете файловую систему по пути SDPath, проверяете, что она смонтировалась, только при этом условии начинаете с ней работать
 		res1 = f_open(&File1, (char*)path1, FA_WRITE | FA_CREATE_ALWAYS); // открытие файла, обязательно для работы с ним
-		f_puts("accl1; accl2; accl3; gyro1; gyro2; gyro3; mag1; mag2; mag\n;", &File1);
+		f_puts("num; time; accl1; accl2; accl3; gyro1; gyro2; gyro3; mag1; mag2; mag\n;", &File1);
 		res1 = f_sync(&File1);
 	}
 	if(is_mount == FR_OK) { // монтируете файловую систему по пути SDPath, проверяете, что она смонтировалась, только при этом условии начинаете с ней работать
 		res2 = f_open(&File2, (char*)path2, FA_WRITE | FA_CREATE_ALWAYS); // открытие файла, обязательно для работы с ним
-		f_puts("bmp_temp; bmp_press; bmp_humidity; bmp_height; photorez\n", &File2);
+		f_puts("num; time; bmp_temp; bmp_press; bmp_humidity; bmp_height; photorez\n", &File2);
 		res2 = f_sync(&File2);
 	}
 	if(is_mount == FR_OK) { // монтируете файловую систему по пути SDPath, проверяете, что она смонтировалась, только при этом условии начинаете с ней работать
 		res3 = f_open(&File3, (char*)path3, FA_WRITE | FA_CREATE_ALWAYS); // открытие файла, обязательно для работы с ним
-		f_puts("lat; lon; alt; times; timems\n", &File3);
+		f_puts("num; time; lat; lon; alt; times; timems\n", &File3);
 		res3 = f_sync(&File3);
 	}
 	if(is_mount == FR_OK) { // монтируете файловую систему по пути SDPath, проверяете, что она смонтировалась, только при этом условии начинаете с ней работать
@@ -161,7 +161,7 @@ int app_main(){
 	uint32_t start_time_par = 0;
 	uint32_t start_time_stab = 0;
 	float time_now = 0;
-	float time_before = 1;
+	float time_before = 0;
 
 	int fix_;
 	float limit_lux;
@@ -187,6 +187,7 @@ int app_main(){
 	shift_reg_write_8(&shift_reg_r, 0xFF);
 	state_t state_now;
 	state_now = STATE_READY;
+	shift_reg_write_bit_8(&shift_reg_r, 7, 0);
 	//работа бме
 	/*struct bme_spi_intf_sr bme_struct;
 	bme_struct.sr_pin = 2;
@@ -211,7 +212,7 @@ int app_main(){
 	//стх и структура лcмa
 	stmdev_ctx_t ctx_lsm;
 	struct lsm_spi_intf_sr lsm_sr;
-	lsm_sr.sr_pin = 4;
+	lsm_sr.sr_pin = 6;
 	lsm_sr.spi = &hspi1;
 	lsm_sr.sr = &shift_reg_r;
 	lsmset_sr(&ctx_lsm, &lsm_sr);
@@ -305,7 +306,7 @@ int app_main(){
 	//стх и структура лиса
 	stmdev_ctx_t ctx_lis;
 	struct lis_spi_intf_sr lis_sr;
-	lis_sr.sr_pin = 1;
+	lis_sr.sr_pin = 2;
 	lis_sr.spi = &hspi1;
 	lis_sr.sr = &shift_reg_r;
 	lisset_sr(&ctx_lis, &lis_sr);
@@ -331,6 +332,7 @@ int app_main(){
 	int anglee = 120;
 	while(1){
 		//bme280
+		float start = HAL_GetTick();
 		its_bme280_read(UNKNOWN_BME, &bme_shit);
 		bmp_temp = bme_shit.temperature * 100;
 		bmp_press = bme_shit.pressure;
@@ -393,29 +395,31 @@ int app_main(){
 		acc_m[1] = acc_g[1] * 9.81;
 		acc_m[2] = acc_g[2] * 9.81;
 		time_now = HAL_GetTick() / 1000.0;
-		MadgwickAHRSupdate(seb_quaternion, gyro_m[0], gyro_m[1], gyro_m[2], acc_m[0], acc_m[1], acc_m[2], mag[0], mag[1], mag[2], time_before-time_now, 0.3);
+		MadgwickAHRSupdate(seb_quaternion, gyro_m[0], gyro_m[1], gyro_m[2], acc_m[0], acc_m[1], acc_m[2], mag[0], mag[1], mag[2], time_now-time_before, 0.3);
 		/*MadgwickAHRSupdateIMU(seb_quaternion, gyro_m[0], gyro_m[1], gyro_m[2], acc_m[0], acc_m[1], acc_m[2], time_before-time_now, 0.3);*/
+		packq.times = time_now;
 		time_before = time_now;
 		//printf("%f	%f	%f	%f	%f\n", time_now, seb_quaternion[0], seb_quaternion[1], seb_quaternion[2], seb_quaternion[3]);
 		/*printf("%f	%f	%f\n", gyro_dps[0], gyro_dps[1], gyro_dps[2]);*/
-		packq.times = time_now;
+
 		packq.q1 = seb_quaternion[0];
 		packq.q2 = seb_quaternion[1];
 		packq.q3 = seb_quaternion[2];
 		packq.q4 = seb_quaternion[3];
-		double matrix4[3][1] =
-		{{0},
-		{0},
-		{0}};
-		for(int i = 0; i < 1; i++)
-			for(int j = 0; j < 1; j++)
-			{
-				matrix3[i][j] = 0;
-				for(int k = 0; k < 4; k++)
-					matrix3[i][j] += seb_quaternion[k] * matrix3[k][j];
-			}
+		double quat_vec[4] = {0, matrix3[0][0], matrix3[0][1], matrix3[0][2]};
+		double quat_mid[4] = {seb_quaternion[0] * quat_vec[0] - seb_quaternion[1] * quat_vec[1] - seb_quaternion[2] * quat_vec[2] - seb_quaternion[3] * quat_vec[3],
+				seb_quaternion[0] * quat_vec[1] + seb_quaternion[1] * quat_vec[0] + seb_quaternion[2] * quat_vec[3] - seb_quaternion[3] * quat_vec[2],
+				seb_quaternion[0] * quat_vec[2] - seb_quaternion[1] * quat_vec[3] + seb_quaternion[2] * quat_vec[0] + seb_quaternion[3] * quat_vec[1],
+				seb_quaternion[0] * quat_vec[3] + seb_quaternion[1] * quat_vec[2] - seb_quaternion[2] * quat_vec[1] + seb_quaternion[3] * quat_vec[0]};
+		double quat_rev[4] = {seb_quaternion[0], seb_quaternion[1], seb_quaternion[2], seb_quaternion[3]};
 
+		double quat_end[4] = {quat_mid[0] * quat_rev[0] - quat_mid[1] * quat_rev[1] - quat_mid[2] * quat_rev[2] - quat_mid[3] * quat_rev[3],
+				quat_mid[0] * quat_rev[1] + quat_mid[1] * quat_rev[0] + quat_mid[2] * quat_rev[3] - quat_mid[3] * quat_rev[2],
+				quat_mid[0] * quat_rev[2] - quat_mid[1] * quat_rev[3] + quat_mid[2] * quat_rev[0] + quat_mid[3] * quat_rev[1],
+				quat_mid[0] * quat_rev[3] + quat_mid[1] * quat_rev[2] - quat_mid[2] * quat_rev[1] + quat_mid[3] * quat_rev[0]};
 
+		double omega = atan(quat_end[1]/quat_end[2]);
+		double ksi = atan((sqrt((quat_end[1]*quat_end[1]) + (quat_end[2]*quat_end[2])))/quat_end[3]);
 		if(resq == FR_OK){
 			str_wr = sd_parse_to_bytes_quaterneon(str_buf, &packq);
 			resq = f_write(&Fileq, str_buf, str_wr, &Bytes); // отправка на запись в файл
@@ -443,17 +447,14 @@ int app_main(){
 			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, 0);
 		}
 		if(HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_12)){
-			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, 1);
 		}
  		uint8_t message[] = {0xAA, 0xBB, 'a', 'n', 'g', 'l', 'e', 0x00, 0x00, 0x00, 0x00};
  		uint8_t array[8] = {'s', 't', 'a', 'r', 't', 0xFF};
  		uint8_t array1[8] = {'s', 't', 'o', 'p', 0, 0xFF};
- 		char buffer[40] = {};
- 		int len = sprintf(buffer, "%d", anglee);
  		/*float value = ;
  		memcpy(message + 7, &value, sizeof(value));*/
 
- 		if(cntcnt <= 1)
+ 		/*if(cntcnt <= 1)
 		{
 			HAL_UART_Transmit(&huart1, array, sizeof(array), 100);
 		}
@@ -466,12 +467,17 @@ int app_main(){
 		if(cntcnt > 50)
 		{
 			HAL_UART_Transmit(&huart1, array1, sizeof(array1), 100);
-		}
+		}*/
  		cntcnt++;
 		switch (state_now)
 				{
 				case STATE_READY:
 					//HAL_Delay(100);
+					 b2da2 = (b*b)/(a*a);
+					 nb = (a*a)/sqrt((a*a)* (cos(lats)*cos(lats) + (b*b) * ((sin(lats) * sin(lats)))));
+					 x_gpss = (nb + alts)* cos(lats) * cos(lons);
+					 y_gpss = (nb + alts)* cos(lats) * sin(lons);
+					 z_gpss = (b2da2*nb + alts) * sin(lats);
 					if(0/*!HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_4)*/){
 						state_now = STATE_IN_ROCKET;
 						limit_lux = lux * 0.8;
@@ -494,6 +500,7 @@ int app_main(){
 				case STATE_STABILZATORS:
 					shift_reg_write_bit_8(&shift_reg_r, 2, 1);
 					start_time_stab = HAL_GetTick();
+					HAL_UART_Transmit(&huart1, array, sizeof(array), 100);
 					if (HAL_GetTick()-start_time_par >= 1488)
 					{
 						state_now = STATE_DESCENT;
@@ -501,16 +508,27 @@ int app_main(){
 					break;
 				case STATE_DESCENT:
 					//наведение
-					HAL_UART_Transmit(&huart1, array, sizeof(array), 1);
+					if(ksi > 180){
+						ksi = ksi - 180;
+						rotate_sm(ksi, 1);
+					}else
+						rotate_sm(ksi, 0);
+					char buffer[40] = {};
+					const int len = snprintf(buffer, sizeof(buffer), "angle %d\n", omega);
+					HAL_UART_Transmit(&huart1, (uint8_t *)buffer, len, 100);
 					if(height <= ground_height){
 						state_now = STATE_ON_EARTH;
 					}
 					break;
 				case STATE_ON_EARTH:
 					//ыкл камеры и вкл пищалки
+					HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, 1);
+
+					HAL_UART_Transmit(&huart1, array1, sizeof(array1), 100);
 					state_now = STATE_ON_EARTH;
 					break;
 				}
+		rotate_sm(30, 1);
 /*		typedef enum
 		{
 			STATE_READY = 0,
@@ -520,7 +538,6 @@ int app_main(){
 			STATE_DESCENT = 4,
 			STATE_ON_EARTH = 5
 		} state_t;*/
-
  		switch(state_nrf){
 		case STATE_GEN_PACK_2:
 			nrf24_fifo_flush_tx(&nrf24);
@@ -558,7 +575,6 @@ int app_main(){
 				nrf24_fifo_flush_tx(&nrf24);
 				nrf24_fifo_status(&nrf24, &rx_status, &tx_status);
 				counter++;
-				HAL_Delay(500);
 				if(counter == 4 || counter == 7){
 					state_nrf = STATE_GEN_PACK_2;
 				} else if(counter == 8){
@@ -609,7 +625,7 @@ int app_main(){
 			pack1.gyro[i] = gyro_dps[i]*1000;
 			pack1.mag[i] = mag[i]*1000;
 		}
-		/*if(res1 == FR_OK){
+		if(res1 == FR_OK){
 			str_wr = sd_parse_to_bytes_pack1(str_buf, &pack1);
 			res1 = f_write(&File1, str_buf, str_wr, &Bytes); // отправка на запись в файл
 			res1 = f_sync(&File1);
@@ -624,8 +640,6 @@ int app_main(){
 			res3 = f_write(&File3, str_buf, str_wr, &Bytes); // отправка на запись в файл
 			res3 = f_sync(&File3);
 		}
-		printf("%d\n", HAL_GetTick());*/
-
 	}
 }
 
