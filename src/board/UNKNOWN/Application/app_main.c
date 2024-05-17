@@ -325,8 +325,8 @@ int app_main(){
 	bmp_temp = bme_shit.temperature * 100;
 	bmp_press = bme_shit.pressure;
 	bmp_humidity = bme_shit.humidity;
-	uint32_t height = 44330 * (1 - pow(bmp_press / ground_pressure, 1.0 / 5.255));
-	uint32_t ground_height = 44330 * (1 - pow(bmp_press / ground_pressure, 1.0 / 5.255));
+	float height = 44330 * (1 - pow(bmp_press / ground_pressure, 1.0 / 5.255));
+	float ground_height = 44330 * (1 - pow(bmp_press / ground_pressure, 1.0 / 5.255));
 	ground_height += 30;
 	int cntcnt = 0;
 	int anglee = 120;
@@ -344,7 +344,8 @@ int app_main(){
 		height = 44330 * (1 - pow(bmp_press / ground_pressure, 1.0 / 5.255));
 		//сдвиговый регистр
 		shift_reg_write_bit_8(&shift_reg_r, 3, 1);
-		float lux = photorezistor_get_lux(photrez);
+		float lux = 22.91;
+		lux = photorezistor_get_lux(photrez);
 		limit_lux = lux;
 
 		double alpha = 15.3; double beta = 13.5;
@@ -538,6 +539,19 @@ int app_main(){
 			STATE_DESCENT = 4,
 			STATE_ON_EARTH = 5
 		} state_t;*/
+
+		pack2.bmp_temp = bmp_temp;
+		pack2.bmp_press = bmp_press;
+		pack2.bmp_humidity = bmp_humidity;
+		pack2.bme_height = height;
+		pack2.lux = lux;
+
+		for (int i = 0; i < 3; i++){
+			pack1.accl[i] = acc_g[i]*1000;
+			pack1.gyro[i] = gyro_dps[i]*1000;
+			pack1.mag[i] = mag[i]*1000;
+		}
+
  		switch(state_nrf){
 		case STATE_GEN_PACK_2:
 			nrf24_fifo_flush_tx(&nrf24);
@@ -590,9 +604,11 @@ int app_main(){
 			nrf24_fifo_flush_tx(&nrf24);
 			pack1.time_ms = HAL_GetTick();
 			packq.time_ms = HAL_GetTick();
+			its_bme280_read(UNKNOWN_BME, &bme_shit);
 			num1 += 1;
 			pack1.num = num1;
 			pack1.crc = Crc16((uint8_t *)&pack1, sizeof(pack1) - 2);
+			nrf24_fifo_write(&nrf24, (uint8_t *)&pack1, sizeof(pack1), false);
 			nrf24_fifo_write(&nrf24, (uint8_t *)&pack1, sizeof(pack1), false);
 			//uint8_t pack1_size = sizeof(pack1);
 			num4 += 1;
@@ -614,17 +630,7 @@ int app_main(){
 			break;
  		}
  		/*printf("%d\n", HAL_GetTick());*/
-		pack2.bmp_temp = bmp_temp;
-		pack2.bmp_press = bmp_press;
-		pack2.bmp_humidity = bmp_humidity;
-		pack2.bme_height = height;
-		pack2.lux = lux;
 
-		for (int i = 0; i < 3; i++){
-			pack1.accl[i] = acc_g[i]*1000;
-			pack1.gyro[i] = gyro_dps[i]*1000;
-			pack1.mag[i] = mag[i]*1000;
-		}
 		if(res1 == FR_OK){
 			str_wr = sd_parse_to_bytes_pack1(str_buf, &pack1);
 			res1 = f_write(&File1, str_buf, str_wr, &Bytes); // отправка на запись в файл

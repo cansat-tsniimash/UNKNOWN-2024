@@ -19,8 +19,10 @@ UDPServerSocket.settimeout(0)
 UDPServerSocket.bind(("0.0.0.0", 20001))
 addresses = []
 
+radio2=RF24_CLASS(22, 1)
+
 #radio2=RF24_CLASS(24, 1)
-radio2=RF24_CLASS(22, 0)
+#radio2=RF24_CLASS(22, 0)
 
 
 def generate_logfile_name():

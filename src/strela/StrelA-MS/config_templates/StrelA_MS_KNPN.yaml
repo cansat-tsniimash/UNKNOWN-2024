@@ -346,7 +346,7 @@ CentralWidget:
       compute_normals: true
       draw_edges: true
       draw_faces: true
-      path: C:\Users\User\Desktop\cansat-gcs\src\laptop\StrelA-MS\source\models\knpn.stl
+      path: D:\CanSat\2023-2024\UNKNOWN-2024\src\strela\StrelA-MS\source\models\knpn.stl
       shader: edgeHilight
       smooth: false
     Scene:
@@ -437,7 +437,8 @@ MainWindow:
       - 'radio.stats'
       - "antenna.telemetry_packet"
     KNPN:
-      ServerIP: "192.168.138.58"
+      #ServerIP: "pi-nocchio"
+      ServerIP: "192.168.129.217"
       ServerPort: 20001
     type: KNPN
   size:
