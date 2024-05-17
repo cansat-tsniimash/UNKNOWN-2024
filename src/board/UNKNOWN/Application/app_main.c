@@ -310,7 +310,8 @@ int app_main(){
 	lis_sr.spi = &hspi1;
 	lis_sr.sr = &shift_reg_r;
 	lisset_sr(&ctx_lis, &lis_sr);
-
+	int16_t magg[3];
+	int16_t gyro[3];
 	pack1_t pack1 = {0};
 	pack2_t pack2 = {0};
 	pack3_t pack3 = {0};
@@ -386,6 +387,13 @@ int app_main(){
 
 		lsmread(&ctx_lsm, &temperature_celsius_gyro, &acc_g, &gyro_dps);
 		lisread(&ctx_lis, &temperature_celsius_mag, &mag);
+		for(int i = 0; i<3; i++){
+			gyro[i] = gyro_dps[i];
+			magg[i] = mag[i];
+		}
+		gyro[0] += 460;
+		gyro[1] += 4830;
+		gyro[2] += 3850;
 		gyro_dps[0] += 0.46;
 		gyro_dps[1] += 4.83;
 		gyro_dps[2] += 3.85;
@@ -479,9 +487,11 @@ int app_main(){
 					 x_gpss = (nb + alts)* cos(lats) * cos(lons);
 					 y_gpss = (nb + alts)* cos(lats) * sin(lons);
 					 z_gpss = (b2da2*nb + alts) * sin(lats);
-					if(0/*!HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_4)*/){
+					if(!HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_4)){
 						state_now = STATE_IN_ROCKET;
 						limit_lux = lux * 0.8;
+						shift_reg_write_bit_8(&shift_reg_r, 1, 1);
+
 					}
 					break;
 				case STATE_IN_ROCKET:
@@ -499,7 +509,7 @@ int app_main(){
 						break;
 					}
 				case STATE_STABILZATORS:
-					shift_reg_write_bit_8(&shift_reg_r, 2, 1);
+					shift_reg_write_bit_8(&shift_reg_r, 1, 1);
 					start_time_stab = HAL_GetTick();
 					HAL_UART_Transmit(&huart1, array, sizeof(array), 100);
 					if (HAL_GetTick()-start_time_par >= 1488)
@@ -548,8 +558,8 @@ int app_main(){
 
 		for (int i = 0; i < 3; i++){
 			pack1.accl[i] = acc_g[i]*1000;
-			pack1.gyro[i] = gyro_dps[i]*1000;
-			pack1.mag[i] = mag[i]*1000;
+			pack1.gyro[i] = gyro[i];
+			pack1.mag[i] = mag[i];
 		}
 
  		switch(state_nrf){
