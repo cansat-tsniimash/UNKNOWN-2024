@@ -387,10 +387,8 @@ int app_main(){
 
 		lsmread(&ctx_lsm, &temperature_celsius_gyro, &acc_g, &gyro_dps);
 		lisread(&ctx_lis, &temperature_celsius_mag, &mag);
-		for(int i = 0; i<3; i++){
-			gyro[i] = gyro_dps[i];
-			magg[i] = mag[i];
-		}
+		lsm6ds3_angular_rate_raw_get(&ctx_lsm, gyro);
+		lis3mdl_magnetic_raw_get(&ctx_lis, magg);
 		gyro[0] += 460;
 		gyro[1] += 4830;
 		gyro[2] += 3850;
