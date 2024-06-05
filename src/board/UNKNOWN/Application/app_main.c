@@ -33,9 +33,9 @@ extern I2C_HandleTypeDef hi2c1;
 extern ADC_HandleTypeDef hadc1;
 
 void rotate_sm(double angle, bool side){
-	double steps = angle/0.0325791855;
-	if(steps>11050){
-		steps = 11050;
+	double steps = angle*2/0.0325791855;
+	if(steps>22100){
+		steps = 22100;
 	}
 
 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_10, side);
@@ -157,9 +157,13 @@ int app_main(){
 	float lats;
 	float lons;
 	float alts;
-
+	uint32_t timefv1 = 200000000;
+	uint32_t timefv2 = 200000000;
+	uint32_t timefv3 = 200000000;
+	uint32_t timefv4 = 200000000;
 	uint32_t start_time_par = 0;
 	uint32_t start_time_stab = 0;
+	uint32_t start_time_luxes = 0;
 	float time_now = 0;
 	float time_before = 0;
 
@@ -184,7 +188,7 @@ int app_main(){
 	shift_reg_r.oe_pin = GPIO_PIN_8;
 	shift_reg_r.value = 0;
 	shift_reg_init(&shift_reg_r);
-	shift_reg_write_8(&shift_reg_r, 0xFF);
+	shift_reg_write_8(&shift_reg_r, 0x00);
 	state_t state_now;
 	state_now = STATE_READY;
 	shift_reg_write_bit_8(&shift_reg_r, 7, 0);
@@ -331,6 +335,8 @@ int app_main(){
 	ground_height += 30;
 	int cntcnt = 0;
 	int anglee = 120;
+	int sca = 0;
+	int rot = 0;
 	while(1){
 		//bme280
 		float start = HAL_GetTick();
@@ -343,11 +349,9 @@ int app_main(){
 		uint8_t frame[] = {0xAA, 0xBB, 0xCC, 0x01, angle_bytes[0], angle_bytes[1], angle_bytes[2], angle_bytes[3]};
 		//HAL_UART_Transmit(&huart1, frame, sizeof(frame), HAL_MAX_DELAY);
 		height = 44330 * (1 - pow(bmp_press / ground_pressure, 1.0 / 5.255));
-		//сдвиговый регистр
-		shift_reg_write_bit_8(&shift_reg_r, 3, 1);
 		float lux = 22.91;
 		lux = photorezistor_get_lux(photrez);
-		limit_lux = lux;
+
 
 		double alpha = 15.3; double beta = 13.5;
 
@@ -355,6 +359,7 @@ int app_main(){
 		gps_work();
 		gps_get_coords(&cookie, &lat, &lon, &alt, &fix_);
 		gps_get_time(&cookie, &gps_time_s, &gps_time_us);
+		pack3.fix = fix_;
 		double b2da2 = (b*b)/(a*a);
 		double nb = (a*a)/sqrt((a*a)* (cos(lat)*cos(lat) + (b*b) * ((sin(lat) * sin(lat)))));
 		double x_gps = (nb + alt)* cos(lat) * cos(lon);
@@ -432,6 +437,7 @@ int app_main(){
 			resq = f_write(&Fileq, str_buf, str_wr, &Bytes); // отправка на запись в файл
 			resq = f_sync(&Fileq);
 		}
+
 		/*printf("%d\n", HAL_GetTick());*/
 		/*//ina
 		ina_res = ina219_read_primary(&ina219,&primary_data);
@@ -450,17 +456,13 @@ int app_main(){
 		//Photorez
 
  		//rotate_sm(5, 1);
-		if(!HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_12)){
-			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, 0);
-		}
-		if(HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_12)){
-		}
- 		uint8_t message[] = {0xAA, 0xBB, 'a', 'n', 'g', 'l', 'e', 0x00, 0x00, 0x00, 0x00};
+ 		uint8_t message[] = {'a', 'n', 'g', 'l', 'e', 0x00, 0x00, 0x00, 0x00};
  		uint8_t array[8] = {'s', 't', 'a', 'r', 't', 0xFF};
- 		uint8_t array1[8] = {'s', 't', 'o', 'p', 0, 0xFF};
+ 		uint8_t array1[6] = {'s', 't', 'o', 'p', 0, 0xFF};
+ //		HAL_UART_Transmit(&huart1, array, sizeof(array), 100);
  		/*float value = ;
  		memcpy(message + 7, &value, sizeof(value));*/
-
+ 		//rotate_sm(10, 1);
  		/*if(cntcnt <= 1)
 		{
 			HAL_UART_Transmit(&huart1, array, sizeof(array), 100);
@@ -475,7 +477,6 @@ int app_main(){
 		{
 			HAL_UART_Transmit(&huart1, array1, sizeof(array1), 100);
 		}*/
- 		cntcnt++;
 		switch (state_now)
 				{
 				case STATE_READY:
@@ -485,48 +486,58 @@ int app_main(){
 					 x_gpss = (nb + alts)* cos(lats) * cos(lons);
 					 y_gpss = (nb + alts)* cos(lats) * sin(lons);
 					 z_gpss = (b2da2*nb + alts) * sin(lats);
-					if(!HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_4)){
+					if(HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_12)){
 						state_now = STATE_IN_ROCKET;
+						start_time_luxes = HAL_GetTick();
 						limit_lux = lux * 0.8;
-						shift_reg_write_bit_8(&shift_reg_r, 1, 1);
-
 					}
 					break;
 				case STATE_IN_ROCKET:
-					if(lux >=  limit_lux){
-						state_now = STATE_AFTER_ROCKET;
-
-					}
-
+					rot = ksi-sca;
+					sca += rot;
+					if(rot >= 0)
+						rotate_sm(rot, 0);
+					else
+						rotate_sm(rot*-1, 1);
+					char buffer[40] = {};
+					const int len = snprintf(buffer, sizeof(buffer), "angle %f\n", omega);
+					HAL_UART_Transmit(&huart1, (uint8_t *)buffer, len, 100);
+					/*if (HAL_GetTick()-start_time_luxes >= 300010000){
+						if(lux >=  limit_lux){
+							state_now = STATE_AFTER_ROCKET;
+							start_time_par = HAL_GetTick();
+						}
+					}*/
 					break;
 				case STATE_AFTER_ROCKET:
-					start_time_par = HAL_GetTick();
-					if (HAL_GetTick()-start_time_par >= 3228)
-					{
-						state_now = STATE_STABILZATORS;
-						break;
-					}
-				case STATE_STABILZATORS:
-					shift_reg_write_bit_8(&shift_reg_r, 1, 1);
-					start_time_stab = HAL_GetTick();
-					HAL_UART_Transmit(&huart1, array, sizeof(array), 100);
 					if (HAL_GetTick()-start_time_par >= 1488)
 					{
+						state_now = STATE_STABILZATORS;
+						start_time_stab = HAL_GetTick();
+					}
+					break;
+				case STATE_STABILZATORS:
+					shift_reg_write_bit_8(&shift_reg_r, 1, 1);
+					HAL_UART_Transmit(&huart1, array, sizeof(array), 100);
+					if (HAL_GetTick()-start_time_stab >= 500)
+					{
+						shift_reg_write_bit_8(&shift_reg_r, 1, 0);
 						state_now = STATE_DESCENT;
 					}
 					break;
 				case STATE_DESCENT:
 					//наведение
-					if(ksi > 180){
-						ksi = ksi - 180;
-						rotate_sm(ksi, 1);
-					}else
-						rotate_sm(ksi, 0);
-					char buffer[40] = {};
-					const int len = snprintf(buffer, sizeof(buffer), "angle %d\n", omega);
-					HAL_UART_Transmit(&huart1, (uint8_t *)buffer, len, 100);
+					rot = ksi-sca;
+					sca += rot;
+					if(rot >= 0)
+						rotate_sm(rot, 0);
+					else
+						rotate_sm(rot*-1, 1);
+					/*char buffer[40] = {};
+					const int len = snprintf(buffer, sizeof(buffer), "angle %f\n", omega);*/
+					//HAL_UART_Transmit(&huart1, (uint8_t *)buffer, len, 100);
 					if(height <= ground_height){
-						state_now = STATE_ON_EARTH;
+						//state_now = STATE_ON_EARTH;
 					}
 					break;
 				case STATE_ON_EARTH:
@@ -537,7 +548,6 @@ int app_main(){
 					state_now = STATE_ON_EARTH;
 					break;
 				}
-		rotate_sm(30, 1);
 /*		typedef enum
 		{
 			STATE_READY = 0,

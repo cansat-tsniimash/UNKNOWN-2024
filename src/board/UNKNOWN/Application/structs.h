@@ -39,6 +39,7 @@ typedef struct{
 	uint8_t flag; // 1
 	uint16_t num;
 	uint32_t time_ms;
+	uint16_t fix;
 	float lat;
 	float lon;
 	float alt;
