@@ -347,18 +347,19 @@ class UnknownDataSource():
                         })]
 
             elif bytearray(msgFromServer[0])[0] == 204:
-                data = struct.unpack("<BHIfffLLH", bytearray(msgFromServer[0])[:29])
+                data = struct.unpack("<BHIhfffLLH", bytearray(msgFromServer[0])[:29])
                 return[Message(message_id='paket_3',
                         source_id='board',
                         msg_time=data[2],
                         msg_data= {
                         "Number": data[1],
-                        "Latitude": data[3],
-                        "Longitude": data[4],
-                        "Height": data[5],
-                        "Time, s": data[6],
-                        "Time, mks": data[7],
-                        "crc": data[8]
+                        "Fix": data[3],
+                        "Latitude": data[4],
+                        "Longitude": data[5],
+                        "Height": data[6],
+                        "Time, s": data[7],
+                        "Time, mks": data[8],
+                        "crc": data[9]
                         })]
 
             elif bytearray(msgFromServer[0])[0] == 255:
