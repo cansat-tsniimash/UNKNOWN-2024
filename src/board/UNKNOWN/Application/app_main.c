@@ -28,6 +28,7 @@
 extern SPI_HandleTypeDef hspi5;
 extern SPI_HandleTypeDef hspi1;
 extern UART_HandleTypeDef huart1;
+extern UART_HandleTypeDef huart2;
 extern SPI_HandleTypeDef hspi4;
 extern I2C_HandleTypeDef hi2c1;
 extern ADC_HandleTypeDef hadc1;
@@ -300,12 +301,12 @@ int app_main(){
 	{(-sin(lats)*cos(lons)), (-sin(lats)*sin(lons)), cos(lats)},
 	{cos(lats)*cos(lons), cos(lats)*sin(lons), sin(lats)}};
 
-	char str1[60]={0};
-/*	HAL_UART_Receive_IT(&huart1,(uint8_t*)str1,1);
+	/*char str1[60]={0};
+	HAL_UART_Receive_IT(&huart1,(uint8_t*)str1,1);
 	uint8_t bluetooth_recive = 1;
-	HAL_UART_Receive_IT(&huart2, &bluetooth_recive, 1);
-	__HAL_UART_ENABLE_IT(&huart1, UART_IT_RXNE);
-	__HAL_UART_ENABLE_IT(&huart1, UART_IT_ERR);*/
+	HAL_UART_Receive_IT(&huart2, &bluetooth_recive, 1);*/
+	__HAL_UART_ENABLE_IT(&huart2, UART_IT_RXNE);
+	__HAL_UART_ENABLE_IT(&huart2, UART_IT_ERR);
 
 	//стх и структура лиса
 	stmdev_ctx_t ctx_lis;
@@ -359,6 +360,9 @@ int app_main(){
 		gps_work();
 		gps_get_coords(&cookie, &lat, &lon, &alt, &fix_);
 		gps_get_time(&cookie, &gps_time_s, &gps_time_us);
+		alt = 55.91065;
+		lot = 37.80538;
+		alt = 200.0000;
 		pack3.fix = fix_;
 		double b2da2 = (b*b)/(a*a);
 		double nb = (a*a)/sqrt((a*a)* (cos(lat)*cos(lat) + (b*b) * ((sin(lat) * sin(lat)))));
@@ -481,11 +485,15 @@ int app_main(){
 				{
 				case STATE_READY:
 					//HAL_Delay(100);
-					 b2da2 = (b*b)/(a*a);
-					 nb = (a*a)/sqrt((a*a)* (cos(lats)*cos(lats) + (b*b) * ((sin(lats) * sin(lats)))));
-					 x_gpss = (nb + alts)* cos(lats) * cos(lons);
-					 y_gpss = (nb + alts)* cos(lats) * sin(lons);
-					 z_gpss = (b2da2*nb + alts) * sin(lats);
+					gps_get_coords(&cookie, &lats, &lons, &alts, &fix_);
+					lats = 55.91119444;
+					lons = 37.80572222;
+					alts = 100.0000000;
+					b2da2 = (b*b)/(a*a);
+					nb = (a*a)/sqrt((a*a)* (cos(lats)*cos(lats) + (b*b) * ((sin(lats) * sin(lats)))));
+					x_gpss = (nb + alts)* cos(lats) * cos(lons);
+					y_gpss = (nb + alts)* cos(lats) * sin(lons);
+					z_gpss = (b2da2*nb + alts) * sin(lats);
 					if(HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_12)){
 						state_now = STATE_IN_ROCKET;
 						start_time_luxes = HAL_GetTick();
