@@ -360,10 +360,13 @@ int app_main(){
 		gps_work();
 		gps_get_coords(&cookie, &lat, &lon, &alt, &fix_);
 		gps_get_time(&cookie, &gps_time_s, &gps_time_us);
-		//alt = 55.91065;
-		//lat = 37.80538;
-		//alt = 200.0000;
+		lat = 55.91119444;
+		lon = 37.80572222;
+		alt = 200.0000;
 		pack3.fix = fix_;
+		pack3.lat = lat;
+		pack3.lon = lon;
+		pack3.alt = alt;
 		double b2da2 = (b*b)/(a*a);
 		double nb = (a*a)/sqrt((a*a)* (cos(lat)*cos(lat) + (b*b) * ((sin(lat) * sin(lat)))));
 		double x_gps = (nb + alt)* cos(lat) * cos(lon);
