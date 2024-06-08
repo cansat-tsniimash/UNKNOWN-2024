@@ -31,8 +31,8 @@ uint16_t sd_parse_to_bytes_pack3(char *buffer, pack3_t *pack3) {
 	memset(buffer, 0, 300);
 	uint16_t num_written = snprintf(
 			buffer, 300,
-			"%d; %d; %f; %f; %f; %d; %d;\n",
-			pack3->num, pack3->time_ms, pack3->lat, pack3->lon, pack3->alt, pack3->gps_time_s, pack3->gps_time_us);
+			"%d; %d; %d; %f; %f; %f; %d; %d;\n",
+			pack3->num, pack3->time_ms, pack3->fix, pack3->lat, pack3->lon, pack3->alt, pack3->gps_time_s, pack3->gps_time_us);
 	return num_written;
 }
 

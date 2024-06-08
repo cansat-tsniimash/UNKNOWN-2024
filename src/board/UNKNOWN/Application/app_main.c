@@ -129,7 +129,7 @@ int app_main(){
 	}
 	if(is_mount == FR_OK) { // монтируете файловую систему по пути SDPath, проверяете, что она смонтировалась, только при этом условии начинаете с ней работать
 		res3 = f_open(&File3, (char*)path3, FA_WRITE | FA_CREATE_ALWAYS); // открытие файла, обязательно для работы с ним
-		f_puts("num; time; lat; lon; alt; times; timems\n", &File3);
+		f_puts("num; time; fix; lat; lon; alt; times; timems\n", &File3);
 		res3 = f_sync(&File3);
 	}
 	if(is_mount == FR_OK) { // монтируете файловую систему по пути SDPath, проверяете, что она смонтировалась, только при этом условии начинаете с ней работать
@@ -360,9 +360,9 @@ int app_main(){
 		gps_work();
 		gps_get_coords(&cookie, &lat, &lon, &alt, &fix_);
 		gps_get_time(&cookie, &gps_time_s, &gps_time_us);
-		alt = 55.91065;
-		lot = 37.80538;
-		alt = 200.0000;
+		//alt = 55.91065;
+		//lat = 37.80538;
+		//alt = 200.0000;
 		pack3.fix = fix_;
 		double b2da2 = (b*b)/(a*a);
 		double nb = (a*a)/sqrt((a*a)* (cos(lat)*cos(lat) + (b*b) * ((sin(lat) * sin(lat)))));

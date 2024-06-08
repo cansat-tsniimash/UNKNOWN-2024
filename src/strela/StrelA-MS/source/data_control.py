@@ -347,7 +347,7 @@ class UnknownDataSource():
                         })]
 
             elif bytearray(msgFromServer[0])[0] == 204:
-                data = struct.unpack("<BHIhfffLLH", bytearray(msgFromServer[0])[:29])
+                data = struct.unpack("<BHIhfffLLH", bytearray(msgFromServer[0])[:31])
                 return[Message(message_id='paket_3',
                         source_id='board',
                         msg_time=data[2],

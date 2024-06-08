@@ -36,10 +36,10 @@ CentralWidget:
         sourse_id: 'board'
         message_id: 'paket_3'
         field_name:
+        - Fix
         - Height GPS
         - Latitude
         - Longitude
-        - Fix
         - Number
         - Time, mks
         - Time, s
