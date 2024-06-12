@@ -488,6 +488,7 @@ int app_main(){
 				{
 				case STATE_READY:
 					//HAL_Delay(100);
+					HAL_UART_Transmit(&huart1, array, sizeof(array), 100);
 					gps_get_coords(&cookie, &lats, &lons, &alts, &fix_);
 					lats = 55.91119444;
 					lons = 37.80572222;
