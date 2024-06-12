@@ -336,8 +336,8 @@ int app_main(){
 	ground_height += 30;
 	int cntcnt = 0;
 	int anglee = 120;
-	int sca = 0;
-	int rot = 0;
+	float sca = 0;
+	float rot = 0;
 	while(1){
 		//bme280
 		float start = HAL_GetTick();
@@ -360,8 +360,8 @@ int app_main(){
 		gps_work();
 		gps_get_coords(&cookie, &lat, &lon, &alt, &fix_);
 		gps_get_time(&cookie, &gps_time_s, &gps_time_us);
-		lat = 55.91119444;
-		lon = 37.80572222;
+		lat = 55.91065;
+		lon = 37.80538;
 		alt = 200.0000;
 		pack3.fix = fix_;
 		pack3.lat = lat;
@@ -437,8 +437,8 @@ int app_main(){
 				quat_mid[0] * quat_rev[2] - quat_mid[1] * quat_rev[3] + quat_mid[2] * quat_rev[0] + quat_mid[3] * quat_rev[1],
 				quat_mid[0] * quat_rev[3] + quat_mid[1] * quat_rev[2] - quat_mid[2] * quat_rev[1] + quat_mid[3] * quat_rev[0]};
 
-		double omega = atan(quat_end[1]/quat_end[2]);
-		double ksi = atan((sqrt((quat_end[1]*quat_end[1]) + (quat_end[2]*quat_end[2])))/quat_end[3]);
+		double delta = atan(quat_end[1]/quat_end[2]) * 63.66;
+		double ksi = atan((sqrt((quat_end[1]*quat_end[1]) + (quat_end[2]*quat_end[2])))/quat_end[3]) * 63.66;
 		if(resq == FR_OK){
 			str_wr = sd_parse_to_bytes_quaterneon(str_buf, &packq);
 			resq = f_write(&Fileq, str_buf, str_wr, &Bytes); // отправка на запись в файл
@@ -511,7 +511,7 @@ int app_main(){
 					else
 						rotate_sm(rot*-1, 1);
 					char buffer[40] = {};
-					const int len = snprintf(buffer, sizeof(buffer), "angle %f\n", omega);
+					const int len = snprintf(buffer, sizeof(buffer), "angle %f\n", delta);
 					HAL_UART_Transmit(&huart1, (uint8_t *)buffer, len, 100);
 					/*if (HAL_GetTick()-start_time_luxes >= 300010000){
 						if(lux >=  limit_lux){
@@ -545,7 +545,7 @@ int app_main(){
 					else
 						rotate_sm(rot*-1, 1);
 					/*char buffer[40] = {};
-					const int len = snprintf(buffer, sizeof(buffer), "angle %f\n", omega);*/
+					const int len = snprintf(buffer, sizeof(buffer), "angle %f\n", delta);*/
 					//HAL_UART_Transmit(&huart1, (uint8_t *)buffer, len, 100);
 					if(height <= ground_height){
 						//state_now = STATE_ON_EARTH;
