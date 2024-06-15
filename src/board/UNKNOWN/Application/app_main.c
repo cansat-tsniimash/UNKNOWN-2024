@@ -98,13 +98,18 @@ int app_main(){
 	FIL File1; // хендлер файла
 	FIL File2;
 	FIL File3;
-	FIL File4;
 	FIL Fileq;
-	FIL File_bin;
+	FIL File1b;
+	FIL File2b;
+	FIL File3b;
+	FIL Fileqb;
 	FRESULT res1 = 255;
 	FRESULT res2 = 255;
 	FRESULT res3 = 255;
-	FRESULT res4 = 255;
+	FRESULT res1b = 255;
+	FRESULT res2b = 255;
+	FRESULT res3b = 255;
+	FRESULT resqb = 255;
 	FRESULT resq = 255;
 	FRESULT res_bin = 255;
 	FRESULT megares = 255;
@@ -112,6 +117,10 @@ int app_main(){
  	const char path2[] = "packet2.csv";
  	const char path3[] = "packet3.csv";
  	const char pathq[] = "quaternion.csv";
+ 	const char path1b[] = "packet1.bin";
+	const char path2b[] = "packet2.bin";
+	const char path3b[] = "packet3.bin";
+	const char pathqb[] = "q.bin";
 	memset(&fileSystem, 0x00, sizeof(fileSystem));
 	FRESULT is_mount = 0;
 	extern Disk_drvTypeDef disk;
@@ -119,7 +128,7 @@ int app_main(){
 	is_mount = f_mount(&fileSystem, "", 1);
 	if(is_mount == FR_OK) { // монтируете файловую систему по пути SDPath, проверяете, что она смонтировалась, только при этом условии начинаете с ней работать
 		res1 = f_open(&File1, (char*)path1, FA_WRITE | FA_CREATE_ALWAYS); // открытие файла, обязательно для работы с ним
-		f_puts("num; time; accl1; accl2; accl3; gyro1; gyro2; gyro3; mag1; mag2; mag\n;", &File1);
+		f_puts("num; time; accl1; accl2; accl3; gyro1; gyro2; gyro3; mag1; mag2; mag3\n", &File1);
 		res1 = f_sync(&File1);
 	}
 	if(is_mount == FR_OK) { // монтируете файловую систему по пути SDPath, проверяете, что она смонтировалась, только при этом условии начинаете с ней работать
@@ -136,6 +145,12 @@ int app_main(){
 		resq = f_open(&Fileq, (char*)pathq, FA_WRITE | FA_CREATE_ALWAYS); // открытие файла, обязательно для работы с ним
 		f_puts("", &Fileq);
 		resq = f_sync(&Fileq);
+	}
+	if(is_mount == FR_OK){
+		res1b = f_open(&File1b, path1b, FA_WRITE | FA_OPEN_APPEND);
+		res2b = f_open(&File2b, path2b, FA_WRITE | FA_OPEN_APPEND);
+		res3b = f_open(&File3b, path3b, FA_WRITE | FA_OPEN_APPEND);
+		resqb = f_open(&Fileqb, pathqb, FA_WRITE | FA_OPEN_APPEND);
 	}
 
 	//переменные
@@ -507,10 +522,12 @@ int app_main(){
 				case STATE_IN_ROCKET:
 					rot = ksi-sca;
 					sca += rot;
-					if(rot >= 0)
-						rotate_sm(rot, 0);
-					else
-						rotate_sm(rot*-1, 1);
+					if(rot >= 2){
+						if(rot >= 0)
+							rotate_sm(rot, 0);
+						else
+							rotate_sm(rot*-1, 1);
+					}
 					char buffer[40] = {};
 					const int len = snprintf(buffer, sizeof(buffer), "angle %f\n", delta);
 					HAL_UART_Transmit(&huart1, (uint8_t *)buffer, len, 100);
@@ -569,13 +586,21 @@ int app_main(){
 			STATE_DESCENT = 4,
 			STATE_ON_EARTH = 5
 		} state_t;*/
-
+		pack1.time_ms = HAL_GetTick();
+		packq.time_ms = HAL_GetTick();
 		pack2.bmp_temp = bmp_temp;
 		pack2.bmp_press = bmp_press;
 		pack2.bmp_humidity = bmp_humidity;
 		pack2.bme_height = height;
 		pack2.lux = lux;
-
+		pack2.time_ms = HAL_GetTick();
+		num2 += 1;
+		pack2.num = num2;
+		num1 += 1;
+		pack1.num = num1;
+		pack3.time_ms = HAL_GetTick();
+		num3 += 1;
+		pack3.num = num3;
 		for (int i = 0; i < 3; i++){
 			pack1.accl[i] = acc_g[i]*1000;
 			pack1.gyro[i] = gyro[i];
@@ -586,9 +611,6 @@ int app_main(){
 		case STATE_GEN_PACK_2:
 			nrf24_fifo_flush_tx(&nrf24);
 			nrf24_fifo_status(&nrf24, &rx_status, &tx_status);
-			pack2.time_ms = HAL_GetTick();
-			num2 += 1;
-			pack2.num = num2;
 			pack2.crc = Crc16((uint8_t *)&pack2, sizeof(pack2) - 2);
 			nrf24_fifo_write(&nrf24, (uint8_t *)&pack2, sizeof(pack2), true);//32
 			//uint8_t pack2_size = sizeof(pack2);
@@ -632,11 +654,7 @@ int app_main(){
 			break;
 		case STATE_GEN_PACK_1_Q:
 			nrf24_fifo_flush_tx(&nrf24);
-			pack1.time_ms = HAL_GetTick();
-			packq.time_ms = HAL_GetTick();
 			its_bme280_read(UNKNOWN_BME, &bme_shit);
-			num1 += 1;
-			pack1.num = num1;
 			pack1.crc = Crc16((uint8_t *)&pack1, sizeof(pack1) - 2);
 			nrf24_fifo_write(&nrf24, (uint8_t *)&pack1, sizeof(pack1), false);
 			nrf24_fifo_write(&nrf24, (uint8_t *)&pack1, sizeof(pack1), false);
@@ -650,15 +668,13 @@ int app_main(){
 			break;
 		case STATE_GEN_PACK_3:
 			nrf24_fifo_flush_tx(&nrf24);
-			pack3.time_ms = HAL_GetTick();
-			num3 += 1;
-			pack3.num = num3;
 			pack3.crc = Crc16((uint8_t *)&pack3, sizeof(pack3) - 2);
 			nrf24_fifo_write(&nrf24, (uint8_t *)&pack3, sizeof(pack3), false);
 			//uint8_t pack3_size = sizeof(pack3);
 			state_nrf = STATE_WAIT;
 			break;
  		}
+
  		/*printf("%d\n", HAL_GetTick());*/
 
 		if(res1 == FR_OK){
@@ -675,6 +691,22 @@ int app_main(){
 			str_wr = sd_parse_to_bytes_pack3(str_buf, &pack3);
 			res3 = f_write(&File3, str_buf, str_wr, &Bytes); // отправка на запись в файл
 			res3 = f_sync(&File3);
+		}
+		if(res1b == FR_OK){
+			res1b = f_write(&File1b,(uint8_t *)&pack1,sizeof(pack1), &Bytes); // отправка на запись в файл
+			res1b = f_sync(&File1b); // запись в файл (на sd контроллер пишет не сразу, а по закрытии файла. Также можно использовать эту команду)
+		}
+		if(res2b == FR_OK){
+			res2b = f_write(&File2b,(uint8_t *)&pack2,sizeof(pack2), &Bytes); // отправка на запись в файл
+			res2b = f_sync(&File2b); // запись в файл (на sd контроллер пишет не сразу, а по закрытии файла. Также можно использовать эту команду)
+		}
+		if(res3b == FR_OK){
+			res3b = f_write(&File3b,(uint8_t *)&pack3,sizeof(pack3), &Bytes); // отправка на запись в файл
+			res3b = f_sync(&File3b); // запись в файл (на sd контроллер пишет не сразу, а по закрытии файла. Также можно использовать эту команду)
+		}
+		if(resqb == FR_OK){
+			resqb = f_write(&Fileqb,(uint8_t *)&packq,sizeof(packq), &Bytes); // отправка на запись в файл
+			resqb = f_sync(&Fileqb); // запись в файл (на sd контроллер пишет не сразу, а по закрытии файла. Также можно использовать эту команду)
 		}
 	}
 }
