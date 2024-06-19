@@ -99,17 +99,11 @@ int app_main(){
 	FIL File2;
 	FIL File3;
 	FIL Fileq;
-	FIL File1b;
-	FIL File2b;
-	FIL File3b;
-	FIL Fileqb;
+	FIL Fileb;
 	FRESULT res1 = 255;
 	FRESULT res2 = 255;
 	FRESULT res3 = 255;
-	FRESULT res1b = 255;
-	FRESULT res2b = 255;
-	FRESULT res3b = 255;
-	FRESULT resqb = 255;
+	FRESULT resb = 255;
 	FRESULT resq = 255;
 	FRESULT res_bin = 255;
 	FRESULT megares = 255;
@@ -117,10 +111,8 @@ int app_main(){
  	const char path2[] = "packet2.csv";
  	const char path3[] = "packet3.csv";
  	const char pathq[] = "quaternion.csv";
- 	const char path1b[] = "packet1.bin";
-	const char path2b[] = "packet2.bin";
-	const char path3b[] = "packet3.bin";
-	const char pathqb[] = "q.bin";
+ 	const char pathb[] = "packet.bin";
+
 	memset(&fileSystem, 0x00, sizeof(fileSystem));
 	FRESULT is_mount = 0;
 	extern Disk_drvTypeDef disk;
@@ -147,10 +139,7 @@ int app_main(){
 		resq = f_sync(&Fileq);
 	}
 	if(is_mount == FR_OK){
-		res1b = f_open(&File1b, path1b, FA_WRITE | FA_OPEN_APPEND);
-		res2b = f_open(&File2b, path2b, FA_WRITE | FA_OPEN_APPEND);
-		res3b = f_open(&File3b, path3b, FA_WRITE | FA_OPEN_APPEND);
-		resqb = f_open(&Fileqb, pathqb, FA_WRITE | FA_OPEN_APPEND);
+		resb = f_open(&Fileb, pathb, FA_WRITE | FA_OPEN_APPEND);
 	}
 
 	//переменные
@@ -257,7 +246,7 @@ int app_main(){
 	nrf24_rf_config_t nrf_config;
 	nrf_config.data_rate = NRF24_DATARATE_250_KBIT;
 	nrf_config.tx_power = NRF24_TXPOWER_MINUS_0_DBM;
-	nrf_config.rf_channel = 101;
+	nrf_config.rf_channel = 10;		//101;
 	nrf24_setup_rf(&nrf24, &nrf_config);
 	nrf24_protocol_config_t nrf_protocol_config;
 	nrf_protocol_config.crc_size = NRF24_CRCSIZE_1BYTE;
@@ -601,6 +590,8 @@ int app_main(){
 		pack3.time_ms = HAL_GetTick();
 		num3 += 1;
 		pack3.num = num3;
+		num4 += 1;
+		packq.num = num4;
 		for (int i = 0; i < 3; i++){
 			pack1.accl[i] = acc_g[i]*1000;
 			pack1.gyro[i] = gyro[i];
@@ -634,7 +625,7 @@ int app_main(){
 					}
 				}*/
 			}
-			if (HAL_GetTick()-start_time_nrf >= 100)
+			if (HAL_GetTick()-start_time_nrf >= 1)
 			{
 				nrf24_irq_get(&nrf24, &comp);
 				nrf24_fifo_status(&nrf24, &rx_status, &tx_status);
@@ -659,8 +650,6 @@ int app_main(){
 			nrf24_fifo_write(&nrf24, (uint8_t *)&pack1, sizeof(pack1), false);
 			nrf24_fifo_write(&nrf24, (uint8_t *)&pack1, sizeof(pack1), false);
 			//uint8_t pack1_size = sizeof(pack1);
-			num4 += 1;
-			packq.num = num4;
 			packq.crc = Crc16((uint8_t *)&packq, sizeof(packq) - 2);
 			nrf24_fifo_write(&nrf24, (uint8_t *)&packq, sizeof(packq), false);
 			//uint8_t packq_size = sizeof(packq);
@@ -692,21 +681,12 @@ int app_main(){
 			res3 = f_write(&File3, str_buf, str_wr, &Bytes); // отправка на запись в файл
 			res3 = f_sync(&File3);
 		}
-		if(res1b == FR_OK){
-			res1b = f_write(&File1b,(uint8_t *)&pack1,sizeof(pack1), &Bytes); // отправка на запись в файл
-			res1b = f_sync(&File1b); // запись в файл (на sd контроллер пишет не сразу, а по закрытии файла. Также можно использовать эту команду)
-		}
-		if(res2b == FR_OK){
-			res2b = f_write(&File2b,(uint8_t *)&pack2,sizeof(pack2), &Bytes); // отправка на запись в файл
-			res2b = f_sync(&File2b); // запись в файл (на sd контроллер пишет не сразу, а по закрытии файла. Также можно использовать эту команду)
-		}
-		if(res3b == FR_OK){
-			res3b = f_write(&File3b,(uint8_t *)&pack3,sizeof(pack3), &Bytes); // отправка на запись в файл
-			res3b = f_sync(&File3b); // запись в файл (на sd контроллер пишет не сразу, а по закрытии файла. Также можно использовать эту команду)
-		}
-		if(resqb == FR_OK){
-			resqb = f_write(&Fileqb,(uint8_t *)&packq,sizeof(packq), &Bytes); // отправка на запись в файл
-			resqb = f_sync(&Fileqb); // запись в файл (на sd контроллер пишет не сразу, а по закрытии файла. Также можно использовать эту команду)
+		if(resb == FR_OK){
+			resb = f_write(&Fileb,(uint8_t *)&pack1,sizeof(pack1), &Bytes); // отправка на запись в файл
+			resb = f_write(&Fileb,(uint8_t *)&pack2,sizeof(pack2), &Bytes); // отправка на запись в файл
+			resb = f_write(&Fileb,(uint8_t *)&pack3,sizeof(pack3), &Bytes); // отправка на запись в файл
+			resb = f_write(&Fileb,(uint8_t *)&packq,sizeof(packq), &Bytes); // отправка на запись в файл
+			resb = f_sync(&Fileb); // запись в файл (на sd контроллер пишет не сразу, а по закрытии файла. Также можно использовать эту команду)
 		}
 	}
 }
