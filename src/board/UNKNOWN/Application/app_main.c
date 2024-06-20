@@ -592,6 +592,7 @@ int app_main(){
 			pack1.gyro[i] = gyro[i];
 			pack1.mag[i] = mag[i];
 		}
+		its_bme280_read(UNKNOWN_BME, &bme_shit);
 		pack2.crc = Crc16((uint8_t *)&pack2, sizeof(pack2) - 2);
 		pack1.crc = Crc16((uint8_t *)&pack1, sizeof(pack1) - 2);
 		packq.crc = Crc16((uint8_t *)&packq, sizeof(packq) - 2);
@@ -647,7 +648,6 @@ int app_main(){
 			break;
 		case STATE_GEN_PACK_1_Q:
 			nrf24_fifo_flush_tx(&nrf24);
-			its_bme280_read(UNKNOWN_BME, &bme_shit);
 
 			nrf24_fifo_write(&nrf24, (uint8_t *)&pack1, sizeof(pack1), false);
 			nrf24_fifo_write(&nrf24, (uint8_t *)&pack1, sizeof(pack1), false);
