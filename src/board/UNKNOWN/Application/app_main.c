@@ -597,12 +597,14 @@ int app_main(){
 			pack1.gyro[i] = gyro[i];
 			pack1.mag[i] = mag[i];
 		}
-
+		pack2.crc = Crc16((uint8_t *)&pack2, sizeof(pack2) - 2);
+		pack1.crc = Crc16((uint8_t *)&pack1, sizeof(pack1) - 2);
+		packq.crc = Crc16((uint8_t *)&packq, sizeof(packq) - 2);
+		pack3.crc = Crc16((uint8_t *)&pack3, sizeof(pack3) - 2);
  		switch(state_nrf){
 		case STATE_GEN_PACK_2:
 			nrf24_fifo_flush_tx(&nrf24);
 			nrf24_fifo_status(&nrf24, &rx_status, &tx_status);
-			pack2.crc = Crc16((uint8_t *)&pack2, sizeof(pack2) - 2);
 			nrf24_fifo_write(&nrf24, (uint8_t *)&pack2, sizeof(pack2), true);//32
 			//uint8_t pack2_size = sizeof(pack2);
 			start_time_nrf = HAL_GetTick();
@@ -646,18 +648,16 @@ int app_main(){
 		case STATE_GEN_PACK_1_Q:
 			nrf24_fifo_flush_tx(&nrf24);
 			its_bme280_read(UNKNOWN_BME, &bme_shit);
-			pack1.crc = Crc16((uint8_t *)&pack1, sizeof(pack1) - 2);
+
 			nrf24_fifo_write(&nrf24, (uint8_t *)&pack1, sizeof(pack1), false);
 			nrf24_fifo_write(&nrf24, (uint8_t *)&pack1, sizeof(pack1), false);
 			//uint8_t pack1_size = sizeof(pack1);
-			packq.crc = Crc16((uint8_t *)&packq, sizeof(packq) - 2);
 			nrf24_fifo_write(&nrf24, (uint8_t *)&packq, sizeof(packq), false);
 			//uint8_t packq_size = sizeof(packq);
 			state_nrf = STATE_WAIT;
 			break;
 		case STATE_GEN_PACK_3:
 			nrf24_fifo_flush_tx(&nrf24);
-			pack3.crc = Crc16((uint8_t *)&pack3, sizeof(pack3) - 2);
 			nrf24_fifo_write(&nrf24, (uint8_t *)&pack3, sizeof(pack3), false);
 			//uint8_t pack3_size = sizeof(pack3);
 			state_nrf = STATE_WAIT;
