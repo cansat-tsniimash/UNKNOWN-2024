@@ -443,11 +443,6 @@ int app_main(){
 
 		double delta = atan(quat_end[1]/quat_end[2]) * 63.66;
 		double ksi = atan((sqrt((quat_end[1]*quat_end[1]) + (quat_end[2]*quat_end[2])))/quat_end[3]) * 63.66;
-		if(resq == FR_OK){
-			str_wr = sd_parse_to_bytes_quaterneon(str_buf, &packq);
-			resq = f_write(&Fileq, str_buf, str_wr, &Bytes); // отправка на запись в файл
-			resq = f_sync(&Fileq);
-		}
 
 		/*printf("%d\n", HAL_GetTick());*/
 		/*//ina
@@ -608,6 +603,11 @@ int app_main(){
 			nrf24_fifo_write(&nrf24, (uint8_t *)&pack2, sizeof(pack2), true);//32
 			//uint8_t pack2_size = sizeof(pack2);
 			start_time_nrf = HAL_GetTick();
+			if(res2 == FR_OK){
+				str_wr = sd_parse_to_bytes_pack2(str_buf, &pack2);
+				res2 = f_write(&File2, str_buf, str_wr, &Bytes); // отправка на запись в файл
+				res2 = f_sync(&File2);
+			}
 			state_nrf = STATE_WAIT;
 			break;
 		case STATE_WAIT:
@@ -654,33 +654,32 @@ int app_main(){
 			//uint8_t pack1_size = sizeof(pack1);
 			nrf24_fifo_write(&nrf24, (uint8_t *)&packq, sizeof(packq), false);
 			//uint8_t packq_size = sizeof(packq);
+			if(res1 == FR_OK){
+				str_wr = sd_parse_to_bytes_pack1(str_buf, &pack1);
+				res1 = f_write(&File1, str_buf, str_wr, &Bytes); // отправка на запись в файл
+				res1 = f_sync(&File1);
+			}
+			if(resq == FR_OK){
+				str_wr = sd_parse_to_bytes_quaterneon(str_buf, &packq);
+				resq = f_write(&Fileq, str_buf, str_wr, &Bytes); // отправка на запись в файл
+				resq = f_sync(&Fileq);
+			}
 			state_nrf = STATE_WAIT;
 			break;
 		case STATE_GEN_PACK_3:
 			nrf24_fifo_flush_tx(&nrf24);
 			nrf24_fifo_write(&nrf24, (uint8_t *)&pack3, sizeof(pack3), false);
 			//uint8_t pack3_size = sizeof(pack3);
+			if(res3 == FR_OK){
+				str_wr = sd_parse_to_bytes_pack3(str_buf, &pack3);
+				res3 = f_write(&File3, str_buf, str_wr, &Bytes); // отправка на запись в файл
+				res3 = f_sync(&File3);
+			}
 			state_nrf = STATE_WAIT;
 			break;
  		}
 
  		/*printf("%d\n", HAL_GetTick());*/
-
-		if(res1 == FR_OK){
-			str_wr = sd_parse_to_bytes_pack1(str_buf, &pack1);
-			res1 = f_write(&File1, str_buf, str_wr, &Bytes); // отправка на запись в файл
-			res1 = f_sync(&File1);
-		}
-		if(res2 == FR_OK){
-			str_wr = sd_parse_to_bytes_pack2(str_buf, &pack2);
-			res2 = f_write(&File2, str_buf, str_wr, &Bytes); // отправка на запись в файл
-			res2 = f_sync(&File2);
-		}
-		if(res3 == FR_OK){
-			str_wr = sd_parse_to_bytes_pack3(str_buf, &pack3);
-			res3 = f_write(&File3, str_buf, str_wr, &Bytes); // отправка на запись в файл
-			res3 = f_sync(&File3);
-		}
 		if(resb == FR_OK){
 			resb = f_write(&Fileb,(uint8_t *)&pack1,sizeof(pack1), &Bytes); // отправка на запись в файл
 			resb = f_write(&Fileb,(uint8_t *)&pack2,sizeof(pack2), &Bytes); // отправка на запись в файл
