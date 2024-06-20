@@ -349,6 +349,7 @@ int app_main(){
 	uint32_t pack3time;
 	uint32_t pack3res;
 	uint32_t time_nrf = 0;
+
 	while(1){
 		//bme280
 		float start = HAL_GetTick();
@@ -594,6 +595,10 @@ int app_main(){
 		its_bme280_read(UNKNOWN_BME, &bme_shit);
 		time_nrf = HAL_GetTick();
 		while(HAL_GetTick() - time_nrf <= 4){
+			if(counter == 9){
+				counter = 1;
+				break;
+			}
 			switch(state_nrf){
 				case STATE_GEN_PACK_2:
 					pack2time = HAL_GetTick();
@@ -643,7 +648,6 @@ int app_main(){
 							state_nrf = STATE_GEN_PACK_2;
 						} else if(counter == 8){
 							state_nrf = STATE_GEN_PACK_3;
-							counter = 0;
 						}
 						else{
 							state_nrf = STATE_GEN_PACK_1_Q;
