@@ -144,8 +144,8 @@ int app_main(){
 
 	//переменные
 	uint8_t counter = 0;
-	state_nrf_t state_nrf;
-	state_nrf = STATE_GEN_PACK_2;
+	state_nrf_t state_nrf = STATE_GEN_PACK_1_Q;
+	state_nrf_t state_nrf_next = STATE_GEN_PACK_1_Q;
 	uint32_t start_time_nrf = HAL_GetTick();
 	nrf24_fifo_status_t rx_status = NRF24_FIFO_EMPTY;
 	nrf24_fifo_status_t tx_status = NRF24_FIFO_EMPTY;
@@ -349,7 +349,8 @@ int app_main(){
 	uint32_t pack3time;
 	uint32_t pack3res;
 	uint32_t time_nrf = 0;
-
+	uint32_t time_nrf_start;
+	uint32_t time_nrf_end;
 	while(1){
 		//bme280
 		float start = HAL_GetTick();
@@ -585,31 +586,24 @@ int app_main(){
 		pack2.bme_height = height;
 		pack2.lux = lux;
 
-
-
 		for (int i = 0; i < 3; i++){
 			pack1.accl[i] = acc_g[i]*1000;
 			pack1.gyro[i] = gyro[i];
 			pack1.mag[i] = mag[i];
 		}
 		its_bme280_read(UNKNOWN_BME, &bme_shit);
+
+
 		time_nrf = HAL_GetTick();
 		while(HAL_GetTick() - time_nrf <= 4){
-			if(counter == 9){
-				counter = 1;
-				break;
-			}
 			switch(state_nrf){
 				case STATE_GEN_PACK_2:
-					pack2time = HAL_GetTick();
 					pack2.time_ms = HAL_GetTick();
 					num2 += 1;
 					pack2.num = num2;
 					pack2.crc = Crc16((uint8_t *)&pack2, sizeof(pack2) - 2);
 					nrf24_fifo_flush_tx(&nrf24);
-					nrf24_fifo_status(&nrf24, &rx_status, &tx_status);
 					nrf24_fifo_write(&nrf24, (uint8_t *)&pack2, sizeof(pack2), true);//32
-					//uint8_t pack2_size = sizeof(pack2);
 					start_time_nrf = HAL_GetTick();
 					if(res2 == FR_OK){
 						str_wr = sd_parse_to_bytes_pack2(str_buf, &pack2);
@@ -618,44 +612,27 @@ int app_main(){
 					if(resb == FR_OK)
 						resb = f_write(&Fileb,(uint8_t *)&pack2,sizeof(pack2), &Bytes); // отправка на запись в файл
 					state_nrf = STATE_WAIT;
-					pack2res = HAL_GetTick()-pack2time;
+					state_nrf_next = STATE_GEN_PACK_1_Q;
 					break;
 				case STATE_WAIT:
 					nrf24_irq_get(&nrf24, &comp);
+
 					if(comp != 0){///HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_15)== GPIO_PIN_RESET){
 						//nrf24_irq_get(&nrf24, &comp);
 						nrf24_irq_clear(&nrf24, comp);
 						nrf24_fifo_status(&nrf24, &rx_status, &tx_status);
-						/*if(tx_status == NRF24_FIFO_EMPTY){
-							counter++;
-							if(counter == 2){
-								state_nrf = STATE_GEN_PACK_2;
-								counter = 0;
-							}
-							else{
-								state_nrf = STATE_GEN_PACK_1;
-							}
-						}*/
+						state_nrf = state_nrf_next;
 					}
-					if (HAL_GetTick()-start_time_nrf >= 1)
+					if (HAL_GetTick() - start_time_nrf >= 1)
 					{
 						nrf24_irq_get(&nrf24, &comp);
 						nrf24_fifo_status(&nrf24, &rx_status, &tx_status);
 						nrf24_fifo_flush_tx(&nrf24);
-						nrf24_fifo_status(&nrf24, &rx_status, &tx_status);
-						counter++;
-						if(counter == 4 || counter == 7){
-							state_nrf = STATE_GEN_PACK_2;
-						} else if(counter == 8){
-							state_nrf = STATE_GEN_PACK_3;
-						}
-						else{
-							state_nrf = STATE_GEN_PACK_1_Q;
-						}
+						state_nrf = state_nrf_next;
 					}
 					break;
 				case STATE_GEN_PACK_1_Q:
-					pack1_qtime = HAL_GetTick();
+					time_nrf_start = HAL_GetTick();
 					pack1.time_ms = HAL_GetTick();
 					packq.time_ms = HAL_GetTick();
 					num1 += 1;
@@ -667,33 +644,44 @@ int app_main(){
 					nrf24_fifo_flush_tx(&nrf24);
 					nrf24_fifo_write(&nrf24, (uint8_t *)&pack1, sizeof(pack1), false);
 					nrf24_fifo_write(&nrf24, (uint8_t *)&pack1, sizeof(pack1), false);
-					//uint8_t pack1_size = sizeof(pack1);
 					nrf24_fifo_write(&nrf24, (uint8_t *)&packq, sizeof(packq), false);
-					//uint8_t packq_size = sizeof(packq);
+					start_time_nrf = HAL_GetTick();
 					if(res1 == FR_OK){
 						str_wr = sd_parse_to_bytes_pack1(str_buf, &pack1);
 						res1 = f_write(&File1, str_buf, str_wr, &Bytes); // отправка на запись в файл
 					}
-					if(resb == FR_OK)
-						resb = f_write(&Fileb,(uint8_t *)&pack1,sizeof(pack1), &Bytes); // отправка на запись в файл
 					if(resq == FR_OK){
 						str_wr = sd_parse_to_bytes_quaterneon(str_buf, &packq);
 						resq = f_write(&Fileq, str_buf, str_wr, &Bytes); // отправка на запись в файл
 					}
 					if(resb == FR_OK)
-								resb = f_write(&Fileb,(uint8_t *)&packq,sizeof(packq), &Bytes); // отправка на запись в файл
+					{
+						resb = f_write(&Fileb,(uint8_t *)&pack1, sizeof(pack1), &Bytes); // отправка на запись в файл
+						resb = f_write(&Fileb,(uint8_t *)&packq, sizeof(packq), &Bytes); // отправка на запись в файл
+					}
+
+					state_nrf_next = STATE_GEN_PACK_1_Q;
+					if (counter == 1)
+						state_nrf_next = STATE_GEN_PACK_2;
+					if (counter >= 3)
+					{
+						state_nrf_next = STATE_GEN_PACK_3;
+						counter = 0;
+					}
+					else
+					{
+						counter++;
+					}
 					state_nrf = STATE_WAIT;
-					pack1_qres = HAL_GetTick()-pack1_qtime;
 					break;
 				case STATE_GEN_PACK_3:
-					pack3time = HAL_GetTick();
 					pack3.time_ms = HAL_GetTick();
 					num3 += 1;
 					pack3.num = num3;
 					pack3.crc = Crc16((uint8_t *)&pack3, sizeof(pack3) - 2);
 					nrf24_fifo_flush_tx(&nrf24);
 					nrf24_fifo_write(&nrf24, (uint8_t *)&pack3, sizeof(pack3), false);
-					//uint8_t pack3_size = sizeof(pack3);
+					start_time_nrf = HAL_GetTick();
 					if(res3 == FR_OK){
 						str_wr = sd_parse_to_bytes_pack3(str_buf, &pack3);
 						res3 = f_write(&File3, str_buf, str_wr, &Bytes); // отправка на запись в файл
@@ -701,15 +689,21 @@ int app_main(){
 					if(resb == FR_OK)
 						resb = f_write(&Fileb,(uint8_t *)&pack3,sizeof(pack3), &Bytes); // отправка на запись в файл
 					state_nrf = STATE_WAIT;
-					pack3res = HAL_GetTick()-pack3time;
+					state_nrf_next = STATE_GEN_PACK_1_Q;
 					break;
 			}
+			if (state_nrf_next == STATE_GEN_PACK_1_Q){
+				break;
+			}
 		}
- 		res2 = f_sync(&File2);
-		res3 = f_sync(&File3);
-		res1 = f_sync(&File1);
-		resq = f_sync(&Fileq);
-		resb = f_sync(&Fileb); // запись в файл (на sd контроллер пишет не сразу, а по закрытии файла. Также можно использовать эту команду)
+		time_nrf_end = HAL_GetTick() - time_nrf;
+		if(is_mount == FR_OK){
+			res2 = f_sync(&File2);
+			res3 = f_sync(&File3);
+			res1 = f_sync(&File1);
+			resq = f_sync(&Fileq);
+			resb = f_sync(&Fileb); // запись в файл (на sd контроллер пишет не сразу, а по закрытии файла. Также можно использовать эту команду)
+		}
  		/*printf("%d\n", HAL_GetTick());*/
 	}
 }
