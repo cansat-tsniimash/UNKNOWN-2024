@@ -16,12 +16,10 @@ from RF24 import RF24_CRC_16
 UDPServerSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
 UDPServerSocket.setblocking(False)
 UDPServerSocket.settimeout(0)
-UDPServerSocket.bind(("0.0.0.0", 20001))
+UDPServerSocket.bind(("0.0.0.0", 20000))
 addresses = []
 
-#radio2=RF24_CLASS(22, 1)
-
-radio2=RF24_CLASS(27, 0)
+radio2=RF24_CLASS(22, 1)
 
 #radio2=RF24_CLASS(24, 1)
 #radio2=RF24_CLASS(22, 0)
@@ -32,8 +30,14 @@ def generate_logfile_name():
     isostring = now.isoformat()  # string 2021-04-27T23:17:31
     isostring = isostring.replace("-", "")  # string 20210427T23:17:31
     isostring = isostring.replace(":", "")  # string 20210427T231731, òî ÷òî íàäî
-    return "./log/knpn_Mandarinas" + isostring + ".bin"
+    return "./log/knpn_binary" + isostring + ".bin"
 
+def generate_csv_name(text):
+    now = datetime.datetime.utcnow().replace(microsecond=0)
+    isostring = now.isoformat()  # string 2021-04-27T23:17:31
+    isostring = isostring.replace("-", "")  # string 20210427T23:17:31
+    isostring = isostring.replace(":", "")  # string 20210427T231731, òî ÷òî íàäî
+    return text + isostring + ".csv"
 
 if __name__ == '__main__':
     static_payload_size = None
@@ -44,7 +48,7 @@ if __name__ == '__main__':
 
     radio2.setCRCLength(RF24_CRC_8)
     radio2.setAddressWidth(5)
-    radio2.channel = 101
+    radio2.channel = 10
     radio2.setDataRate(RF24_250KBPS)
     radio2.setAutoAck(False)
 
@@ -64,10 +68,10 @@ if __name__ == '__main__':
 
 
     filename_f = generate_logfile_name()
-    filename_f1 = "./log/knpn_1.csv"
-    filename_f2 = "./log/knpn_2.csv"
-    filename_f3 = "./log/knpn_3.csv"
-    filename_f4 = "./log/knpn_4.csv"
+    filename_f1 = generate_csv_name("./log/1_knpn")
+    filename_f2 = generate_csv_name("./log/2_knpn")
+    filename_f3 = generate_csv_name("./log/3_knpn")
+    filename_f4 = generate_csv_name("./log/4_knpn")
     f = open(filename_f, 'wb')
     f.flush()
     f1 = open(filename_f1, 'w')
@@ -77,10 +81,10 @@ if __name__ == '__main__':
     f2.write('"Number";"Time_ms";"Temp BME";"Pressure";"Humidity";Height BME";"Lux";"State";"crc"\n')
     f2.flush()
     f3 = open(filename_f3, 'w')
-    f3.write('"Number";"Time_ms";Temp DS";"Latitude";"Longitude";"Height";"Time, s";"Time, mks";"Fix";"crc"\n')
+    f3.write('"Number";"Time_ms";"Fix";"Latitude";"Longitude";"Height";"Time, s";"Time, mks";"crc"\n')
     f3.flush()
     f4 = open(filename_f4, 'w')
-    f4.write('"Number";"Time_ms";"Time";"Q1";"Q2";"Q3";"Q4";"crc"\n')
+    f4.write('"Number";"Time_ms";"Q1";"Q2";"Q3";"Q4";"Time";"crc"\n')
     f4.flush()
 
 
@@ -145,11 +149,11 @@ if __name__ == '__main__':
                     # print ("Time", unpack_data[1])
                     print ('\n')
 
-                    for i in range(1,9):
-                        f1.write(str(unpack_data[i]))
-                        f1.write(";")
-                        f1.flush()
-                    f1.write('\n')
+                    for i in range(1,10):
+                        f2.write(str(unpack_data[i]))
+                        f2.write(";")
+                    f2.write('\n')
+                    f2.flush()
                     
                 elif data[0] == 170:
                     #continue
@@ -171,11 +175,11 @@ if __name__ == '__main__':
                     # print ("Time", unpack_data[1])
                     print ('\n')
 
-                    for i in range(1,12):
-                        f2.write(str(unpack_data[i]))
-                        f2.write(";")
-                        f2.flush()
-                    f2.write('\n')
+                    for i in range(1,13):
+                        f1.write(str(unpack_data[i]))
+                        f1.write(";")
+                    f1.write('\n')
+                    f1.flush()
                     
                 elif data[0] == 204:
                      print("==== Пакет тип 3 ====")
@@ -193,11 +197,11 @@ if __name__ == '__main__':
                      #print ("Time", unpack_data[1])
                      print ('\n')
 
-                     for i in range(1,8):
+                     for i in range(1,10):
                          f3.write(str(unpack_data[i]))
-                         f3.write(";")
-                         f3.flush()
+                         f3.write(";")   
                      f3.write('\n')
+                     f3.flush()
                      
                 elif data[0] == 255:
                      print("==== Пакет тип 4 ====")
@@ -212,11 +216,11 @@ if __name__ == '__main__':
                      print ("crc", unpack_data[8])
                      print ('\n')
                      
-                     for i in range(1,8):
+                     for i in range(1,9):
                          f4.write(str(unpack_data[i]))
-                         f4.write(";")
-                         f4.flush()
+                         f4.write(";")    
                      f4.write('\n')
+                     f4.flush()
                 else:
                     print('unknown flag ', data[0])
 
@@ -230,3 +234,4 @@ if __name__ == '__main__':
             pass
 
         #time.sleep(0.1)
+
