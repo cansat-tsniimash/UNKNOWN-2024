@@ -285,8 +285,8 @@ int app_main(){
 	uint16_t num2 = 0;
 	uint16_t num3 = 0;
 	uint16_t num4 = 0;
-	int a = 6378000;
-	int b = 6357000;
+	double a = 6378136.5;
+	double b = 6356751.758;
 	uint32_t gps_time_s;
 	uint32_t gps_time_us;
 	//gps
@@ -296,14 +296,11 @@ int app_main(){
 	gps_get_time(&cookie, &gps_time_s, &gps_time_us);
 	double b2da2 = (b*b)/(a*a);
 	double nb = (a*a)/sqrt((a*a)* (cos(lats)*cos(lats) + (b*b) * ((sin(lats) * sin(lats)))));
-	double x_gpss = (nb + alts)* cos(lats) * cos(lons);
-	double y_gpss = (nb + alts)* cos(lats) * sin(lons);
-	double z_gpss = (b2da2*nb + alts) * sin(lats);
+	double x_gpss;
+	double y_gpss;
+	double z_gpss;
 
-	double matrix1[3][3] =
-	{{-sin(lons), cos(lons), 0},
-	{(-sin(lats)*cos(lons)), (-sin(lats)*sin(lons)), cos(lats)},
-	{cos(lats)*cos(lons), cos(lats)*sin(lons), sin(lats)}};
+	double matrix1[3][3];
 
 	/*char str1[60]={0};
 	HAL_UART_Receive_IT(&huart1,(uint8_t*)str1,1);
@@ -375,13 +372,15 @@ int app_main(){
 		gps_get_time(&cookie, &gps_time_s, &gps_time_us);
 		lat = 55.91065;
 		lon = 37.80538;
-		alt = 200.0000;
+		alt = 105.0000;
+		lat = lat * 3.14159265358979323846 / 180;
+		lon = lon * 3.14159265358979323846 / 180;
 		pack3.fix = fix_;
 		pack3.lat = lat;
 		pack3.lon = lon;
 		pack3.alt = alt;
 		double b2da2 = (b*b)/(a*a);
-		double nb = (a*a)/sqrt((a*a)* (cos(lat)*cos(lat) + (b*b) * ((sin(lat) * sin(lat)))));
+		nb = (a*a)/sqrt((a*a) * cos(lat)*cos(lat) + (b*b) * sin(lat) * sin(lat));
 		double x_gps = (nb + alt)* cos(lat) * cos(lon);
 		double y_gps = (nb + alt)* cos(lat) * sin(lon);
 		double z_gps = (b2da2*nb + alt) * sin(lat);
@@ -501,8 +500,19 @@ int app_main(){
 					lats = 55.91119444;
 					lons = 37.80572222;
 					alts = 100.0000000;
+					lats = lats * 3.14159265358979323846 / 180;
+					lons = lons * 3.14159265358979323846 / 180;
+					matrix1[0][0] = -sin(lons);
+					matrix1[0][1] = cos(lons);
+					matrix1[0][2] = 0;
+					matrix1[1][0] = -sin(lats)*cos(lons);
+					matrix1[1][1] = -sin(lats)*sin(lons);
+					matrix1[1][2] = cos(lats);
+					matrix1[2][0] = cos(lats)*cos(lons);
+					matrix1[2][1] = cos(lats)*sin(lons);
+					matrix1[2][2] = sin(lats);
 					b2da2 = (b*b)/(a*a);
-					nb = (a*a)/sqrt((a*a)* (cos(lats)*cos(lats) + (b*b) * ((sin(lats) * sin(lats)))));
+					nb = (a*a)/sqrt((a*a) * cos(lats)*cos(lats) + (b*b) * sin(lats) * sin(lats));
 					x_gpss = (nb + alts)* cos(lats) * cos(lons);
 					y_gpss = (nb + alts)* cos(lats) * sin(lons);
 					z_gpss = (b2da2*nb + alts) * sin(lats);
@@ -515,7 +525,7 @@ int app_main(){
 				case STATE_IN_ROCKET:
 					rot = ksi-sca;
 					sca += rot;
-					if(rot >= 2){
+					if(rot >= 1 || rot <= -1){
 						if(rot >= 0)
 							rotate_sm(rot, 0);
 						else
