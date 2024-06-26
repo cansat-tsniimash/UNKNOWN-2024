@@ -8,7 +8,7 @@ import numpy as np
 import ctypes
 
 HowMuchMusor,HowMuchDefective=0,0
-
+WaitingForUDPServerConnectionCount=1
 
 
 def crc16(data : bytearray, offset=0, length=-1):
@@ -27,11 +27,23 @@ def crc16(data : bytearray, offset=0, length=-1):
             else:
                 crc = crc << 1
         crc = crc & 0xFFFF
-
     return crc & 0xFFFF
-def DoNothing(variable):
+def DoNothing(variable): #не удалять, очень важно
     return variable
-    
+
+UDPServerSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
+UDPServerSocket.setblocking(False)
+UDPServerSocket.settimeout(0)
+UDPServerSocket.bind(("0.0.0.0", 20000))
+addresses = []
+
+def generate_logfile_name():
+    now = datetime.datetime.utcnow().replace(microsecond=0)
+    isostring = now.isoformat()  # string 2021-04-27T23:17:31
+    isostring = isostring.replace("-", "")  # string 20210427T23:17:31
+    isostring = isostring.replace(":", "")  # string 20210427T231731, òî ÷òî íàäî
+    return "./log/knpn_binary" + isostring + ".bin"
+
 def generate_csv_name(text):
     now = datetime.datetime.utcnow().replace(microsecond=0)
     isostring = now.isoformat()  # string 2021-04-27T23:17:31
@@ -40,9 +52,7 @@ def generate_csv_name(text):
     return text + isostring + ".csv"
 
 if __name__ == '__main__':
-
-    #filename_f = str(input("Введите имя .bin файла:"))+".bin"
-    filename_f = "qwerty.bin"
+    filename_f = "1.bin"
     filename_f1 = generate_csv_name("./log/1_knpn")
     filename_f2 = generate_csv_name("./log/2_knpn")
     filename_f3 = generate_csv_name("./log/3_knpn")
@@ -61,12 +71,29 @@ if __name__ == '__main__':
     f4.write('"Number";"Time_ms";"Q1";"Q2";"Q3";"Q4";"Time";"crc"\n')
     f4.flush()
 
+
     while True:
+        try:
+            bytesAddressPair = UDPServerSocket.recvfrom(2)
+            flag = True
+            for i in range(len(addresses)):
+                if addresses[i][0] == bytesAddressPair[1][0]:
+                    addresses[i] = bytesAddressPair[1]
+                    flag = False
+                    break
+            if flag:
+                addresses.append(bytesAddressPair[1])        
+            clientIP  = "Client IP Address:{}".format(bytesAddressPair[1])
+        except BlockingIOError as e:
+            pass
+        except Exception as e:
+            print(str(e))
         try:
             data_sir = f.read(1)
             data = np.frombuffer(data_sir, dtype=np.uint8)
         except TimeoutError:
             print("No data")
+        
 
         try:
             if len(data) < 1:
@@ -76,6 +103,11 @@ if __name__ == '__main__':
                 exit()
             else:
                 one = DoNothing("one")
+            if WaitingForUDPServerConnectionCount == 1:
+            	print("У ВАС ЕСТЬ 5 СЕКУНД")
+            	time.sleep(5)
+            	WaitingForUDPServerConnectionCount = 0
+            VerificationCode=123456789
             if data[0] == 170:
                 data_sir = f.read(26)
                 data_sir = bytes(range(170,171)) + data_sir
@@ -105,6 +137,7 @@ if __name__ == '__main__':
                         f1.write(";")
                     f1.write('\n')
                     f1.flush()
+                    VerificationCode = 1448
                 else:
                     print("Не совпадает контрольная сумма")
                     HowMuchDefective+=1
@@ -140,6 +173,7 @@ if __name__ == '__main__':
                         f2.write(";")
                     f2.write('\n')
                     f2.flush()
+                    VerificationCode = 1448
                 else:
                     print("Не совпадает контрольная сумма")
                     HowMuchDefective+=1
@@ -170,6 +204,7 @@ if __name__ == '__main__':
                         f3.write(";")   
                     f3.write('\n')
                     f3.flush()
+                    VerificationCode = 1448
                  else:
                     print("Не совпадает контрольная сумма")
                     HowMuchDefective+=1
@@ -197,21 +232,22 @@ if __name__ == '__main__':
                         f4.write(";")    
                     f4.write('\n')
                     f4.flush()
+                    VerificationCode = 1448
                  else:
                     print("Не совпадает контрольная сумма")
                     HowMuchDefective+=1
                  print ('\n')
             else:
                 HowMuchMusor+=1
-            #time.sleep(1)
+            if VerificationCode == 1448:
+                for address in addresses:
+                    UDPServerSocket.sendto(data, address)
+            else:
+                WrongVerificationCodesCount=DoNothing("idk")
+            time.sleep(0.1)
         except Exception as e:
             print(e)
-
-        #f.write(record)
-        #f.flush()
-#else:
-            # print('got no data')
-    #pass
-
+    else:
+        # print('got no data')
+        pass
         #time.sleep(0.1)
-
