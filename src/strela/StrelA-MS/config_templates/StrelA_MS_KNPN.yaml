@@ -441,9 +441,9 @@ MainWindow:
       - 'radio.stats'
       - "antenna.telemetry_packet"
     KNPN:
-      #ServerIP: "pi-nocchio"
-      ServerIP: "192.168.43.157"
-      ServerPort: 20001
+      ServerIP: "pi-nocchio"
+      #ServerIP: "192.168.43.157"
+      ServerPort: 20000
     type: KNPN
   size:
   - 1000

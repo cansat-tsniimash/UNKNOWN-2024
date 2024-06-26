@@ -8,7 +8,7 @@ import numpy as np
 import ctypes
 
 HowMuchMusor,HowMuchDefective=0,0
-VerificationCode=123456789
+WaitingForUDPServerConnectionCount=1
 
 
 def crc16(data : bytearray, offset=0, length=-1):
@@ -84,14 +84,16 @@ if __name__ == '__main__':
             if flag:
                 addresses.append(bytesAddressPair[1])        
             clientIP  = "Client IP Address:{}".format(bytesAddressPair[1])
-            data_sir = f.read(1)
-            data = np.frombuffer(data_sir, dtype=np.uint8)
         except BlockingIOError as e:
             pass
-        except TimeoutError:
-            print("No data")
         except Exception as e:
             print(str(e))
+        try:
+            data_sir = f.read(1)
+            data = np.frombuffer(data_sir, dtype=np.uint8)
+        except TimeoutError:
+            print("No data")
+        
 
         try:
             if len(data) < 1:
@@ -101,6 +103,10 @@ if __name__ == '__main__':
                 exit()
             else:
                 one = DoNothing("one")
+            if WaitingForUDPServerConnectionCount == 1:
+            	print("У ВАС ЕСТЬ 5 СЕКУНД")
+            	time.sleep(5)
+            	WaitingForUDPServerConnectionCount = 0
             VerificationCode=123456789
             if data[0] == 170:
                 data_sir = f.read(26)
@@ -238,7 +244,7 @@ if __name__ == '__main__':
                     UDPServerSocket.sendto(data, address)
             else:
                 WrongVerificationCodesCount=DoNothing("idk")
-            time.sleep(0.5)
+            time.sleep(0.1)
         except Exception as e:
             print(e)
     else:
