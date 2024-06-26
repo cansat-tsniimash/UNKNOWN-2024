@@ -25,6 +25,11 @@
 #include "madgwick.h"
 #include "DWT_Delay/dwt_delay.h"
 
+
+void latlon_to_cartesian(double lat_rad, double lon_rad, double alt_m, double * xyz_m);
+void quat_vec_mul(const float * quat, const double * vec_in, double * vec_out);
+
+
 extern SPI_HandleTypeDef hspi5;
 extern SPI_HandleTypeDef hspi1;
 extern UART_HandleTypeDef huart1;
@@ -125,7 +130,7 @@ int app_main(){
 	}
 	if(is_mount == FR_OK) { // монтируете файловую систему по пути SDPath, проверяете, что она смонтировалась, только при этом условии начинаете с ней работать
 		res2 = f_open(&File2, (char*)path2, FA_WRITE | FA_CREATE_ALWAYS); // открытие файла, обязательно для работы с ним
-		f_puts("num; time; bmp_temp; bmp_press; bmp_humidity; bmp_height; photorez\n", &File2);
+		f_puts("num; time; bmp_temp; bmp_press; bmp_humidity; bmp_height; photorez; state\n", &File2);
 		res2 = f_sync(&File2);
 	}
 	if(is_mount == FR_OK) { // монтируете файловую систему по пути SDPath, проверяете, что она смонтировалась, только при этом условии начинаете с ней работать
@@ -156,12 +161,12 @@ int app_main(){
 	float mag[3] = {0};
 	float gyro_m[3] = {0};
 	float acc_m[3] = {0};
-	float lat;
-	float lon;
-	float alt;
-	float lats;
-	float lons;
-	float alts;
+	double lat;
+	double lon;
+	double alt;
+	double lats;
+	double lons;
+	double alts;
 	uint32_t timefv1 = 200000000;
 	uint32_t timefv2 = 200000000;
 	uint32_t timefv3 = 200000000;
@@ -373,8 +378,8 @@ int app_main(){
 		lat = 55.91065;
 		lon = 37.80538;
 		alt = 105.0000;
-		lat = lat * 3.14159265358979323846 / 180;
-		lon = lon * 3.14159265358979323846 / 180;
+		lat = lat * M_PI / 180.0;
+		lon = lon * M_PI / 180.0;
 		pack3.fix = fix_;
 		pack3.lat = lat;
 		pack3.lon = lon;
@@ -432,22 +437,19 @@ int app_main(){
 		time_before = time_now;
 		//printf("%f	%f	%f	%f	%f\n", time_now, seb_quaternion[0], seb_quaternion[1], seb_quaternion[2], seb_quaternion[3]);
 		/*printf("%f	%f	%f\n", gyro_dps[0], gyro_dps[1], gyro_dps[2]);*/
-
+		seb_quaternion[0] = 0.707;
+		seb_quaternion[1] = 0;
+		seb_quaternion[2] = 0;
+		seb_quaternion[3] = 0.707;
 		packq.q1 = seb_quaternion[0];
 		packq.q2 = seb_quaternion[1];
 		packq.q3 = seb_quaternion[2];
 		packq.q4 = seb_quaternion[3];
-		double quat_vec[4] = {0, matrix3[0][0], matrix3[0][1], matrix3[0][2]};
-		double quat_mid[4] = {seb_quaternion[0] * quat_vec[0] - seb_quaternion[1] * quat_vec[1] - seb_quaternion[2] * quat_vec[2] - seb_quaternion[3] * quat_vec[3],
-				seb_quaternion[0] * quat_vec[1] + seb_quaternion[1] * quat_vec[0] + seb_quaternion[2] * quat_vec[3] - seb_quaternion[3] * quat_vec[2],
-				seb_quaternion[0] * quat_vec[2] - seb_quaternion[1] * quat_vec[3] + seb_quaternion[2] * quat_vec[0] + seb_quaternion[3] * quat_vec[1],
-				seb_quaternion[0] * quat_vec[3] + seb_quaternion[1] * quat_vec[2] - seb_quaternion[2] * quat_vec[1] + seb_quaternion[3] * quat_vec[0]};
-		double quat_rev[4] = {seb_quaternion[0], seb_quaternion[1], seb_quaternion[2], seb_quaternion[3]};
 
-		double quat_end[4] = {quat_mid[0] * quat_rev[0] - quat_mid[1] * quat_rev[1] - quat_mid[2] * quat_rev[2] - quat_mid[3] * quat_rev[3],
-				quat_mid[0] * quat_rev[1] + quat_mid[1] * quat_rev[0] + quat_mid[2] * quat_rev[3] - quat_mid[3] * quat_rev[2],
-				quat_mid[0] * quat_rev[2] - quat_mid[1] * quat_rev[3] + quat_mid[2] * quat_rev[0] + quat_mid[3] * quat_rev[1],
-				quat_mid[0] * quat_rev[3] + quat_mid[1] * quat_rev[2] - quat_mid[2] * quat_rev[1] + quat_mid[3] * quat_rev[0]};
+		const double vec_in[3] = {matrix3[0][0], matrix3[0][1], matrix3[0][2]};
+		double vec_out[3] = {};
+		quat_vec_mul(seb_quaternion, vec_in, vec_out);
+		const double quat_end[4] = {0, vec_out[0], vec_out[1], vec_out[2]};
 
 		double delta = atan(quat_end[1]/quat_end[2]) * 63.66;
 		double ksi = atan((sqrt((quat_end[1]*quat_end[1]) + (quat_end[2]*quat_end[2])))/quat_end[3]) * 63.66;
@@ -500,8 +502,8 @@ int app_main(){
 					lats = 55.91119444;
 					lons = 37.80572222;
 					alts = 100.0000000;
-					lats = lats * 3.14159265358979323846 / 180;
-					lons = lons * 3.14159265358979323846 / 180;
+					lats = lats * M_PI / 180.0;
+					lons = lons * M_PI / 180.0;
 					matrix1[0][0] = -sin(lons);
 					matrix1[0][1] = cos(lons);
 					matrix1[0][2] = 0;
