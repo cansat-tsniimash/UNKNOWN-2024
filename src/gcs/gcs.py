@@ -127,34 +127,8 @@ if __name__ == '__main__':
             for address in addresses:
                 UDPServerSocket.sendto(data, address)
 
-            try:    
-                if data[0] == 170:
-                    #continue
-                    print("==== Пакет тип 1 ====")
-                    unpack_data = struct.unpack("<BHIhhhhhhhhhH", data[:27])
-                    print ("Number", unpack_data[1])
-                    print ("Time_ms", unpack_data[2])
-                    print ("Accelerometer x", unpack_data[3]/1000)
-                    print ("Accelerometer y", unpack_data[4]/1000)
-                    print ("Accelerometer z", unpack_data[5]/1000)
-                    print ("Gyroscope x", unpack_data[6]/1000)
-                    print ("Gyroscope y", unpack_data[7]/1000)
-                    print ("Gyroscope z", unpack_data[8]/1000)
-                    print ("Magnetometer x", unpack_data[9]/1000)
-                    print ("Magnetometer y", unpack_data[10]/1000)
-                    print ("Magnetometer z", unpack_data[11]/1000)
-                    print ("crc", unpack_data[12])
-                    # print ("Number", unpack_data[2])
-                    # print ("Time", unpack_data[1])
-                    print ('\n')
-
-                    for i in range(1,13):
-                        f1.write(str(unpack_data[i]))
-                        f1.write(";")
-                    f1.write('\n')
-                    f1.flush()
-
-                elif data[0] == 187:
+            try:
+                if data[0] == 187:
                     print("==== Пакет тип 2 ====")
                     unpack_data = struct.unpack("<BHIhIhffBH", data[:26])
                     
@@ -180,6 +154,32 @@ if __name__ == '__main__':
                         f2.write(";")
                     f2.write('\n')
                     f2.flush()
+                    
+                elif data[0] == 170:
+                    #continue
+                    print("==== Пакет тип 1 ====")
+                    unpack_data = struct.unpack("<BHIhhhhhhhhhH", data[:27])
+                    print ("Number", unpack_data[1])
+                    print ("Time_ms", unpack_data[2])
+                    print ("Accelerometer x", unpack_data[3]/1000)
+                    print ("Accelerometer y", unpack_data[4]/1000)
+                    print ("Accelerometer z", unpack_data[5]/1000)
+                    print ("Gyroscope x", unpack_data[6])
+                    print ("Gyroscope y", unpack_data[7])
+                    print ("Gyroscope z", unpack_data[8])
+                    print ("Magnetometer x", unpack_data[9]/1000)
+                    print ("Magnetometer y", unpack_data[10]/1000)
+                    print ("Magnetometer z", unpack_data[11]/1000)
+                    print ("crc", unpack_data[12])
+                    # print ("Number", unpack_data[2])
+                    # print ("Time", unpack_data[1])
+                    print ('\n')
+
+                    for i in range(1,13):
+                        f1.write(str(unpack_data[i]))
+                        f1.write(";")
+                    f1.write('\n')
+                    f1.flush()
                     
                 elif data[0] == 204:
                      print("==== Пакет тип 3 ====")
@@ -234,4 +234,3 @@ if __name__ == '__main__':
             pass
 
         #time.sleep(0.1)
-

@@ -148,7 +148,7 @@ CentralWidget:
         - 0
         - 1
         - 1
-        units: m/c^2
+        units: g
       Magnet:
         legend_is_on: true
         Packets:
@@ -350,7 +350,7 @@ CentralWidget:
       compute_normals: true
       draw_edges: true
       draw_faces: true
-      path: C:\Users\User\Desktop\UNKNOWN-2024\src\strela\StrelA-MS\source\models\knpn.stl
+      path: ./source/models/knpn.stl
       shader: edgeHilight
       smooth: false
     Scene:
@@ -443,7 +443,7 @@ MainWindow:
     KNPN:
       ServerIP: "pi-nocchio"
       #ServerIP: "192.168.43.157"
-      ServerPort: 20000
+      ServerPort: 20001
     type: KNPN
   size:
   - 1000
