@@ -24,6 +24,8 @@
 #include <Photorezistor/photorezistor.h>
 #include "madgwick.h"
 #include "DWT_Delay/dwt_delay.h"
+#include "Quaternion.h"
+
 
 
 void latlon_to_cartesian(double lat_rad, double lon_rad, double alt_m, double * xyz_m);
@@ -124,22 +126,22 @@ int app_main(){
 	disk.is_initialized[0] = 0;
 	is_mount = f_mount(&fileSystem, "", 1);
 	if(is_mount == FR_OK) { // монтируете файловую систему по пути SDPath, проверяете, что она смонтировалась, только при этом условии начинаете с ней работать
-		res1 = f_open(&File1, (char*)path1, FA_WRITE | FA_CREATE_ALWAYS); // открытие файла, обязательно для работы с ним
+		res1 = f_open(&File1, (char*)path1, FA_WRITE | FA_OPEN_APPEND); // открытие файла, обязательно для работы с ним
 		f_puts("num; time; accl1; accl2; accl3; gyro1; gyro2; gyro3; mag1; mag2; mag3\n", &File1);
 		res1 = f_sync(&File1);
 	}
 	if(is_mount == FR_OK) { // монтируете файловую систему по пути SDPath, проверяете, что она смонтировалась, только при этом условии начинаете с ней работать
-		res2 = f_open(&File2, (char*)path2, FA_WRITE | FA_CREATE_ALWAYS); // открытие файла, обязательно для работы с ним
+		res2 = f_open(&File2, (char*)path2, FA_WRITE | FA_OPEN_APPEND); // открытие файла, обязательно для работы с ним
 		f_puts("num; time; bmp_temp; bmp_press; bmp_humidity; bmp_height; photorez; state\n", &File2);
 		res2 = f_sync(&File2);
 	}
 	if(is_mount == FR_OK) { // монтируете файловую систему по пути SDPath, проверяете, что она смонтировалась, только при этом условии начинаете с ней работать
-		res3 = f_open(&File3, (char*)path3, FA_WRITE | FA_CREATE_ALWAYS); // открытие файла, обязательно для работы с ним
+		res3 = f_open(&File3, (char*)path3, FA_WRITE | FA_OPEN_APPEND); // открытие файла, обязательно для работы с ним
 		f_puts("num; time; fix; lat; lon; alt; times; timems\n", &File3);
 		res3 = f_sync(&File3);
 	}
 	if(is_mount == FR_OK) { // монтируете файловую систему по пути SDPath, проверяете, что она смонтировалась, только при этом условии начинаете с ней работать
-		resq = f_open(&Fileq, (char*)pathq, FA_WRITE | FA_CREATE_ALWAYS); // открытие файла, обязательно для работы с ним
+		resq = f_open(&Fileq, (char*)pathq, FA_WRITE | FA_OPEN_APPEND); // открытие файла, обязательно для работы с ним
 		f_puts("", &Fileq);
 		resq = f_sync(&Fileq);
 	}
@@ -375,15 +377,16 @@ int app_main(){
 		gps_work();
 		gps_get_coords(&cookie, &lat, &lon, &alt, &fix_);
 		gps_get_time(&cookie, &gps_time_s, &gps_time_us);
-		lat = 55.91065;
+		/*lat = 55.91065;
 		lon = 37.80538;
-		alt = 105.0000;
-		lat = lat * M_PI / 180.0;
-		lon = lon * M_PI / 180.0;
+		alt = 105.0000;*/
 		pack3.fix = fix_;
 		pack3.lat = lat;
 		pack3.lon = lon;
 		pack3.alt = alt;
+
+		lat = lat * M_PI / 180.0;
+		lon = lon * M_PI / 180.0;
 		double b2da2 = (b*b)/(a*a);
 		nb = (a*a)/sqrt((a*a) * cos(lat)*cos(lat) + (b*b) * sin(lat) * sin(lat));
 		double x_gps = (nb + alt)* cos(lat) * cos(lon);
@@ -437,10 +440,10 @@ int app_main(){
 		time_before = time_now;
 		//printf("%f	%f	%f	%f	%f\n", time_now, seb_quaternion[0], seb_quaternion[1], seb_quaternion[2], seb_quaternion[3]);
 		/*printf("%f	%f	%f\n", gyro_dps[0], gyro_dps[1], gyro_dps[2]);*/
-		seb_quaternion[0] = 0.707;
+		/*seb_quaternion[0] = 0.707;
 		seb_quaternion[1] = 0;
 		seb_quaternion[2] = 0;
-		seb_quaternion[3] = 0.707;
+		seb_quaternion[3] = 0.707;*/
 		packq.q1 = seb_quaternion[0];
 		packq.q2 = seb_quaternion[1];
 		packq.q3 = seb_quaternion[2];
@@ -450,7 +453,12 @@ int app_main(){
 		double vec_out[3] = {};
 		quat_vec_mul(seb_quaternion, vec_in, vec_out);
 		const double quat_end[4] = {0, vec_out[0], vec_out[1], vec_out[2]};
-
+		Quaternion q_end = {
+			.w = quat_end[0],
+			.v = {quat_end[1], quat_end[2], quat_end[3]}
+		};
+		double angles[3] = {};
+		Quaternion_toAxisAngle(&q_end, angles);
 		double delta = atan(quat_end[1]/quat_end[2]) * 63.66;
 		double ksi = atan((sqrt((quat_end[1]*quat_end[1]) + (quat_end[2]*quat_end[2])))/quat_end[3]) * 63.66;
 
@@ -601,7 +609,7 @@ int app_main(){
 		for (int i = 0; i < 3; i++){
 			pack1.accl[i] = acc_g[i]*1000;
 			pack1.gyro[i] = gyro[i];
-			pack1.mag[i] = mag[i];
+			pack1.mag[i] = mag[i]*1000;
 		}
 		its_bme280_read(UNKNOWN_BME, &bme_shit);
 
