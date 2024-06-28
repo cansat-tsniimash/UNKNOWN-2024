@@ -16,7 +16,7 @@ from RF24 import RF24_CRC_16
 UDPServerSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
 UDPServerSocket.setblocking(False)
 UDPServerSocket.settimeout(0)
-UDPServerSocket.bind(("0.0.0.0", 20000))
+UDPServerSocket.bind(("0.0.0.0", 20001))
 addresses = []
 
 radio2=RF24_CLASS(22, 1)
