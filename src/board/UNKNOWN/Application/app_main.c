@@ -56,6 +56,8 @@ void rotate_sm(double angle, bool side){
 
 }
 
+
+
 /*int _write(int file, char *ptr, int len)
 {
 	HAL_UART_Transmit(&huart1, (uint8_t *)ptr, len, 100);
@@ -88,6 +90,7 @@ typedef struct INA219_DATA{
 }INA219_DATA;
 
 void nrf_dump_regs(nrf24_lower_api_config_t * lower);
+void mag_cal_values(const float raws[3], float out[3]);
 
 uint16_t Crc16(uint8_t *buf, uint16_t len) {
 	uint16_t crc = 0xFFFF;
@@ -99,6 +102,20 @@ uint16_t Crc16(uint8_t *buf, uint16_t len) {
 	return crc;
 }
 
+FRESULT mount_again(FIL *File1, FIL *File2, FIL *File3, FIL *File4, FIL *Fileb, FATFS *fileSystem, const char *path1, const char *path2, const char *path3, const char *path4, const char *pathb){
+	FRESULT is_mount;
+	f_mount(0, "0", 1);
+	extern Disk_drvTypeDef disk;
+	disk.is_initialized[0] = 0;
+	is_mount = f_mount(fileSystem, "", 1);
+	f_open(File1, (char*)path1, FA_WRITE | FA_OPEN_APPEND);
+	f_open(File2, (char*)path2, FA_WRITE | FA_OPEN_APPEND);
+	f_open(File3, (char*)path3, FA_WRITE | FA_OPEN_APPEND);
+	f_open(File4, (char*)path4, FA_WRITE | FA_OPEN_APPEND);
+	f_open(Fileb, (char*)pathb, FA_WRITE | FA_OPEN_APPEND);
+	return is_mount;
+}
+
 int app_main(){
 	//файлы
 	FATFS fileSystem; // переменная типа FATFS
@@ -107,13 +124,13 @@ int app_main(){
 	FIL File3;
 	FIL Fileq;
 	FIL Fileb;
+	FRESULT megares = 255;
 	FRESULT res1 = 255;
 	FRESULT res2 = 255;
 	FRESULT res3 = 255;
 	FRESULT resb = 255;
 	FRESULT resq = 255;
 	FRESULT res_bin = 255;
-	FRESULT megares = 255;
 	const char path1[] = "packet1.csv";
  	const char path2[] = "packet2.csv";
  	const char path3[] = "packet3.csv";
@@ -122,31 +139,41 @@ int app_main(){
 
 	memset(&fileSystem, 0x00, sizeof(fileSystem));
 	FRESULT is_mount = 0;
+	int needs_mount = 0;
 	extern Disk_drvTypeDef disk;
 	disk.is_initialized[0] = 0;
 	is_mount = f_mount(&fileSystem, "", 1);
 	if(is_mount == FR_OK) { // монтируете файловую систему по пути SDPath, проверяете, что она смонтировалась, только при этом условии начинаете с ней работать
 		res1 = f_open(&File1, (char*)path1, FA_WRITE | FA_OPEN_APPEND); // открытие файла, обязательно для работы с ним
+		needs_mount = needs_mount || res1 != FR_OK;
 		f_puts("num; time; accl1; accl2; accl3; gyro1; gyro2; gyro3; mag1; mag2; mag3\n", &File1);
 		res1 = f_sync(&File1);
+		needs_mount = needs_mount || res1 != FR_OK;
 	}
 	if(is_mount == FR_OK) { // монтируете файловую систему по пути SDPath, проверяете, что она смонтировалась, только при этом условии начинаете с ней работать
 		res2 = f_open(&File2, (char*)path2, FA_WRITE | FA_OPEN_APPEND); // открытие файла, обязательно для работы с ним
+		needs_mount = needs_mount || res2 != FR_OK;
 		f_puts("num; time; bmp_temp; bmp_press; bmp_humidity; bmp_height; photorez; state\n", &File2);
 		res2 = f_sync(&File2);
+		needs_mount = needs_mount || res2 != FR_OK;
 	}
 	if(is_mount == FR_OK) { // монтируете файловую систему по пути SDPath, проверяете, что она смонтировалась, только при этом условии начинаете с ней работать
 		res3 = f_open(&File3, (char*)path3, FA_WRITE | FA_OPEN_APPEND); // открытие файла, обязательно для работы с ним
+		needs_mount = needs_mount || res3 != FR_OK;
 		f_puts("num; time; fix; lat; lon; alt; times; timems\n", &File3);
 		res3 = f_sync(&File3);
+		needs_mount = needs_mount || res3 != FR_OK;
 	}
 	if(is_mount == FR_OK) { // монтируете файловую систему по пути SDPath, проверяете, что она смонтировалась, только при этом условии начинаете с ней работать
 		resq = f_open(&Fileq, (char*)pathq, FA_WRITE | FA_OPEN_APPEND); // открытие файла, обязательно для работы с ним
+		needs_mount = needs_mount || resq != FR_OK;
 		f_puts("", &Fileq);
 		resq = f_sync(&Fileq);
+		needs_mount = needs_mount || resq != FR_OK;
 	}
 	if(is_mount == FR_OK){
 		resb = f_open(&Fileb, pathb, FA_WRITE | FA_OPEN_APPEND);
+		needs_mount = needs_mount || resb != FR_OK;
 	}
 
 	//переменные
@@ -161,14 +188,15 @@ int app_main(){
 	float gyro_dps[3] = {0};
 	float temperature_celsius_mag = 0.0;
 	float mag[3] = {0};
+	float magr[3] = {0};
 	float gyro_m[3] = {0};
 	float acc_m[3] = {0};
-	double lat;
-	double lon;
-	double alt;
-	double lats;
-	double lons;
-	double alts;
+	float lat;
+	float lon;
+	float alt;
+	float lats;
+	float lons;
+	float alts;
 	uint32_t timefv1 = 200000000;
 	uint32_t timefv2 = 200000000;
 	uint32_t timefv3 = 200000000;
@@ -294,7 +322,7 @@ int app_main(){
 	uint16_t num4 = 0;
 	double a = 6378136.5;
 	double b = 6356751.758;
-	uint32_t gps_time_s;
+	uint64_t gps_time_s;
 	uint32_t gps_time_us;
 	//gps
 	gps_init();
@@ -377,9 +405,9 @@ int app_main(){
 		gps_work();
 		gps_get_coords(&cookie, &lat, &lon, &alt, &fix_);
 		gps_get_time(&cookie, &gps_time_s, &gps_time_us);
-		/*lat = 55.91065;
+		lat = 55.91065;
 		lon = 37.80538;
-		alt = 105.0000;*/
+		alt = 105.0000;
 		pack3.fix = fix_;
 		pack3.lat = lat;
 		pack3.lon = lon;
@@ -419,6 +447,7 @@ int app_main(){
 
 		lsmread(&ctx_lsm, &temperature_celsius_gyro, &acc_g, &gyro_dps);
 		lisread(&ctx_lis, &temperature_celsius_mag, &mag);
+		mag_cal_values(mag, magr);
 		lsm6ds3_angular_rate_raw_get(&ctx_lsm, gyro);
 		lis3mdl_magnetic_raw_get(&ctx_lis, magg);
 		gyro[0] += 460;
@@ -434,7 +463,7 @@ int app_main(){
 		acc_m[1] = acc_g[1] * 9.81;
 		acc_m[2] = acc_g[2] * 9.81;
 		time_now = HAL_GetTick() / 1000.0;
-		MadgwickAHRSupdate(seb_quaternion, gyro_m[0], gyro_m[1], gyro_m[2], acc_m[0], acc_m[1], acc_m[2], mag[0], mag[1], mag[2], time_now-time_before, 0.3);
+		MadgwickAHRSupdate(seb_quaternion, gyro_m[0], gyro_m[1], gyro_m[2], acc_m[0], acc_m[1], acc_m[2], magr[0], magr[1], magr[2], time_now-time_before, 0.3);
 		/*MadgwickAHRSupdateIMU(seb_quaternion, gyro_m[0], gyro_m[1], gyro_m[2], acc_m[0], acc_m[1], acc_m[2], time_before-time_now, 0.3);*/
 		packq.times = time_now;
 		time_before = time_now;
@@ -609,7 +638,7 @@ int app_main(){
 		for (int i = 0; i < 3; i++){
 			pack1.accl[i] = acc_g[i]*1000;
 			pack1.gyro[i] = gyro[i];
-			pack1.mag[i] = mag[i]*1000;
+			pack1.mag[i] = magr[i]*1000;
 		}
 		its_bme280_read(UNKNOWN_BME, &bme_shit);
 
@@ -628,9 +657,12 @@ int app_main(){
 					if(res2 == FR_OK){
 						str_wr = sd_parse_to_bytes_pack2(str_buf, &pack2);
 						res2 = f_write(&File2, str_buf, str_wr, &Bytes); // отправка на запись в файл
+						needs_mount = needs_mount || res2 != FR_OK;
 					}
-					if(resb == FR_OK)
+					if(resb == FR_OK){
 						resb = f_write(&Fileb,(uint8_t *)&pack2,sizeof(pack2), &Bytes); // отправка на запись в файл
+						needs_mount = needs_mount || resb != FR_OK;
+					}
 					state_nrf = STATE_WAIT;
 					state_nrf_next = STATE_GEN_PACK_1_Q;
 					break;
@@ -669,15 +701,19 @@ int app_main(){
 					if(res1 == FR_OK){
 						str_wr = sd_parse_to_bytes_pack1(str_buf, &pack1);
 						res1 = f_write(&File1, str_buf, str_wr, &Bytes); // отправка на запись в файл
+						needs_mount = needs_mount || res1 != FR_OK;
 					}
 					if(resq == FR_OK){
 						str_wr = sd_parse_to_bytes_quaterneon(str_buf, &packq);
 						resq = f_write(&Fileq, str_buf, str_wr, &Bytes); // отправка на запись в файл
+						needs_mount = needs_mount || resq != FR_OK;
 					}
 					if(resb == FR_OK)
 					{
 						resb = f_write(&Fileb,(uint8_t *)&pack1, sizeof(pack1), &Bytes); // отправка на запись в файл
+						needs_mount = needs_mount || resb != FR_OK;
 						resb = f_write(&Fileb,(uint8_t *)&packq, sizeof(packq), &Bytes); // отправка на запись в файл
+						needs_mount = needs_mount || resb != FR_OK;
 					}
 
 					state_nrf_next = STATE_GEN_PACK_1_Q;
@@ -705,9 +741,12 @@ int app_main(){
 					if(res3 == FR_OK){
 						str_wr = sd_parse_to_bytes_pack3(str_buf, &pack3);
 						res3 = f_write(&File3, str_buf, str_wr, &Bytes); // отправка на запись в файл
+						needs_mount = needs_mount || res3 != FR_OK;
 					}
-					if(resb == FR_OK)
+					if(resb == FR_OK){
 						resb = f_write(&Fileb,(uint8_t *)&pack3,sizeof(pack3), &Bytes); // отправка на запись в файл
+						needs_mount = needs_mount || resb != FR_OK;
+					}
 					state_nrf = STATE_WAIT;
 					state_nrf_next = STATE_GEN_PACK_1_Q;
 					break;
@@ -719,10 +758,28 @@ int app_main(){
 		time_nrf_end = HAL_GetTick() - time_nrf;
 		if(is_mount == FR_OK){
 			res2 = f_sync(&File2);
+			needs_mount = needs_mount || res2 != FR_OK;
+			if(needs_mount)
+				break;
 			res3 = f_sync(&File3);
+			needs_mount = needs_mount || res3 != FR_OK;
+			if(needs_mount)
+				break;
 			res1 = f_sync(&File1);
+			needs_mount = needs_mount || res1 != FR_OK;
+			if(needs_mount)
+				break;
 			resq = f_sync(&Fileq);
+			needs_mount = needs_mount || resq != FR_OK;
+			if(needs_mount)
+				break;
 			resb = f_sync(&Fileb); // запись в файл (на sd контроллер пишет не сразу, а по закрытии файла. Также можно использовать эту команду)
+			needs_mount = needs_mount || resb != FR_OK;
+		}
+		if(needs_mount || is_mount){
+			is_mount = mount_again(&File1, &File2, &File3, &Fileq, &Fileb, &fileSystem, path1, path2, path3, pathq, pathb);
+			if (!is_mount)
+				needs_mount = 0;
 		}
  		/*printf("%d\n", HAL_GetTick());*/
 	}

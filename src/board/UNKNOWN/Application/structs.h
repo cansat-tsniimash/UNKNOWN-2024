@@ -43,7 +43,7 @@ typedef struct{
 	float lat;
 	float lon;
 	float alt;
-	uint32_t gps_time_s;
+	uint64_t gps_time_s;
 	uint32_t gps_time_us;
 	uint16_t crc;
 }pack3_t;

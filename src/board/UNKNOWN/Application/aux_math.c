@@ -35,3 +35,31 @@ void quat_vec_mul(const float * quat, const double * vec_in, double * vec_out)
 
 	Quaternion_rotate(&q, (double*)vec_in, vec_out);
 }
+
+
+void mag_cal_values(const float raws[3], float out[3])
+{
+	const double bx = -0.145156;
+	const double by = -0.816267;
+	const double bz = -0.981632;
+
+	const double xx = 2.385585;
+	const double xy = -0.181853;
+	const double xz = -0.380441;
+
+	const double yy = 2.270106;
+	const double yz = -0.537272;
+
+	const double zz = 1.220646;
+
+	const double braws[3] = {
+		raws[0] - bx,
+		raws[1] - by,
+		raws[2] - bz,
+	};
+
+	double rv[3];
+	out[0] = braws[0] * xx + braws[1] * xy + braws[2] * xz;
+	out[1] = braws[0] * xy + braws[1] * yy + braws[2] * yz;
+	out[2] = braws[0] * xz + braws[1] * yz + braws[2] * zz;
+}
