@@ -399,7 +399,8 @@ int app_main(){
 		lux = photorezistor_get_lux(photrez);
 
 
-		double alpha = 15.3; double beta = 13.5;
+		double alpha = 15.3;
+		double beta = 13.5;
 
 		//gps
 		gps_work();
@@ -412,6 +413,8 @@ int app_main(){
 		pack3.lat = lat;
 		pack3.lon = lon;
 		pack3.alt = alt;
+		pack3.gps_time_s = (uint32_t)gps_time_s;
+		pack3.gps_time_us = gps_time_us;
 
 		lat = lat * M_PI / 180.0;
 		lon = lon * M_PI / 180.0;
@@ -738,8 +741,9 @@ int app_main(){
 					nrf24_fifo_flush_tx(&nrf24);
 					nrf24_fifo_write(&nrf24, (uint8_t *)&pack3, sizeof(pack3), false);
 					start_time_nrf = HAL_GetTick();
+					str_wr = sd_parse_to_bytes_pack3(str_buf, &pack3);
 					if(res3 == FR_OK){
-						str_wr = sd_parse_to_bytes_pack3(str_buf, &pack3);
+
 						res3 = f_write(&File3, str_buf, str_wr, &Bytes); // отправка на запись в файл
 						needs_mount = needs_mount || res3 != FR_OK;
 					}
@@ -778,6 +782,16 @@ int app_main(){
 		}
 		if(needs_mount || is_mount){
 			is_mount = mount_again(&File1, &File2, &File3, &Fileq, &Fileb, &fileSystem, path1, path2, path3, pathq, pathb);
+
+			f_puts("num; time; accl1; accl2; accl3; gyro1; gyro2; gyro3; mag1; mag2; mag3\n", &File1);
+			res1 = f_sync(&File1);
+			f_puts("num; time; bmp_temp; bmp_press; bmp_humidity; bmp_height; photorez; state\n", &File2);
+			res2 = f_sync(&File2);
+			f_puts("num; time; fix; lat; lon; alt; times; timems\n", &File3);
+			res3 = f_sync(&File3);
+			f_puts("", &Fileq);
+			resq = f_sync(&Fileq);
+
 			if (!is_mount)
 				needs_mount = 0;
 		}
