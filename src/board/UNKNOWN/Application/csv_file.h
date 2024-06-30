@@ -20,4 +20,6 @@ uint16_t sd_parse_to_bytes_pack3(char *buffer, pack3_t *pack3);
 
 uint16_t sd_parse_to_bytes_quaterneon(char *buffer, packq_t *q);
 
+uint16_t sd_parse_to_bytes_vec(char *buffer, pack_vec_t *pack_vec);
+
 #endif /* CSV_FILE_H_ */

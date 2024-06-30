@@ -27,6 +27,21 @@
 #include "Quaternion.h"
 
 
+#define PACKET1_PERIOD 2
+#define PACKET1_OFFSET 0
+
+#define PACKET2_PERIOD 11
+#define PACKET2_OFFSET 0
+
+#define PACKET3_PERIOD 11
+#define PACKET3_OFFSET 3
+
+#define PACKETQ_PERIOD 2
+#define PACKETQ_OFFSET 1
+
+#define PACKETV_PERIOD 11
+#define PACKETV_OFFSET 7
+
 
 void latlon_to_cartesian(double lat_rad, double lon_rad, double alt_m, double * xyz_m);
 void quat_vec_mul(const float * quat, const double * vec_in, double * vec_out);
@@ -178,7 +193,7 @@ int app_main(){
 	if(is_mount == FR_OK){
 		resv = f_open(&Filev, (char*)pathv, FA_WRITE | FA_OPEN_APPEND); // открытие файла, обязательно для работы с ним
 		needs_mount = needs_mount || resv != FR_OK;
-		f_puts("num; vec1; vec2; vec3; delta; ksi;", &Filev);
+		f_puts("num; vec1; vec2; vec3; delta; ksi\n", &Filev);
 		resv = f_sync(&Filev);
 		needs_mount = needs_mount || resv != FR_OK;
 	}
@@ -399,6 +414,7 @@ int app_main(){
 	uint32_t time_nrf = 0;
 	uint32_t time_nrf_start;
 	uint32_t time_nrf_end;
+	uint64_t tick = 0;
 	while(1){
 		//bme280
 		float start = HAL_GetTick();
@@ -408,15 +424,11 @@ int app_main(){
 		bmp_humidity = bme_shit.humidity;
 		float angle = 123.321;
 		const uint8_t * angle_bytes = (const uint8_t*)&angle;
-		uint8_t frame[] = {0xAA, 0xBB, 0xCC, 0x01, angle_bytes[0], angle_bytes[1], angle_bytes[2], angle_bytes[3]};
+		//uint8_t frame[] = {0xAA, 0xBB, 0xCC, 0x01, angle_bytes[0], angle_bytes[1], angle_bytes[2], angle_bytes[3]};
 		//HAL_UART_Transmit(&huart1, frame, sizeof(frame), HAL_MAX_DELAY);
 		height = 44330 * (1 - pow(bmp_press / ground_pressure, 1.0 / 5.255));
 		float lux = 22.91;
 		lux = photorezistor_get_lux(photrez);
-
-
-		double alpha = 15.3;
-		double beta = 13.5;
 
 		//gps
 		gps_work();
@@ -532,7 +544,7 @@ int app_main(){
 		//Photorez
 
  		//rotate_sm(5, 1);
- 		uint8_t message[] = {'a', 'n', 'g', 'l', 'e', 0x00, 0x00, 0x00, 0x00};
+ 		//uint8_t message[] = {'a', 'n', 'g', 'l', 'e', 0x00, 0x00, 0x00, 0x00};
  		uint8_t array[8] = {'s', 't', 'a', 'r', 't', 0xFF};
  		uint8_t array1[6] = {'s', 't', 'o', 'p', 0, 0xFF};
  //		HAL_UART_Transmit(&huart1, array, sizeof(array), 100);
@@ -671,135 +683,110 @@ int app_main(){
 		}
 		its_bme280_read(UNKNOWN_BME, &bme_shit);
 
-
 		time_nrf = HAL_GetTick();
-		while(HAL_GetTick() - time_nrf <= 4){
-			switch(state_nrf){
-				case STATE_GEN_PACK_2:
-					pack2.time_ms = HAL_GetTick();
-					num2 += 1;
-					pack2.num = num2;
-					pack2.crc = Crc16((uint8_t *)&pack2, sizeof(pack2) - 2);
-					nrf24_fifo_flush_tx(&nrf24);
-					nrf24_fifo_write(&nrf24, (uint8_t *)&pack_vec, sizeof(pack_vec), false);
-					nrf24_fifo_write(&nrf24, (uint8_t *)&pack_vec, sizeof(pack_vec), false);
-					nrf24_fifo_write(&nrf24, (uint8_t *)&pack2, sizeof(pack2), false);//32
-					start_time_nrf = HAL_GetTick();
-					if(res2 == FR_OK){
-						str_wr = sd_parse_to_bytes_pack2(str_buf, &pack2);
-						res2 = f_write(&File2, str_buf, str_wr, &Bytes); // отправка на запись в файл
-						needs_mount = needs_mount || res2 != FR_OK;
-					}
-					if(resb == FR_OK){
-						resb = f_write(&Fileb,(uint8_t *)&pack2,sizeof(pack2), &Bytes); // отправка на запись в файл
-						needs_mount = needs_mount || resb != FR_OK;
-					}
-					state_nrf = STATE_WAIT;
-					state_nrf_next = STATE_GEN_PACK_1_Q;
-					break;
-				case STATE_WAIT:
-					nrf24_irq_get(&nrf24, &comp);
 
-					if(comp != 0){///HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_15)== GPIO_PIN_RESET){
-						//nrf24_irq_get(&nrf24, &comp);
-						nrf24_irq_clear(&nrf24, comp);
-						nrf24_fifo_status(&nrf24, &rx_status, &tx_status);
-						state_nrf = state_nrf_next;
-					}
-					if (HAL_GetTick() - start_time_nrf >= 1)
-					{
-						nrf24_irq_get(&nrf24, &comp);
-						nrf24_fifo_status(&nrf24, &rx_status, &tx_status);
-						nrf24_fifo_flush_tx(&nrf24);
-						state_nrf = state_nrf_next;
-					}
-					break;
-				case STATE_GEN_PACK_1_Q:
-					time_nrf_start = HAL_GetTick();
-					pack1.time_ms = HAL_GetTick();
-					packq.time_ms = HAL_GetTick();
-					pack_vec.time_ms = HAL_GetTick();
-					num1 += 1;
-					pack1.num = num1;
-					num4 += 1;
-					num5 += 1;
-					pack_vec.num = num5;
-					packq.num = num4;
-					pack1.crc = Crc16((uint8_t *)&pack1, sizeof(pack1) - 2);
-					packq.crc = Crc16((uint8_t *)&packq, sizeof(packq) - 2);
-					pack_vec.crc = Crc16((uint8_t *)&pack_vec, sizeof(pack_vec) - 2);
-					nrf24_fifo_flush_tx(&nrf24);
-					nrf24_fifo_write(&nrf24, (uint8_t *)&pack1, sizeof(pack1), false);
-					nrf24_fifo_write(&nrf24, (uint8_t *)&pack1, sizeof(pack1), false);
-					nrf24_fifo_write(&nrf24, (uint8_t *)&packq, sizeof(packq), false);
-					start_time_nrf = HAL_GetTick();
-					if(res1 == FR_OK){
-						str_wr = sd_parse_to_bytes_pack1(str_buf, &pack1);
-						res1 = f_write(&File1, str_buf, str_wr, &Bytes); // отправка на запись в файл
-						needs_mount = needs_mount || res1 != FR_OK;
-					}
-					if(resq == FR_OK){
-						str_wr = sd_parse_to_bytes_quaterneon(str_buf, &packq);
-						resq = f_write(&Fileq, str_buf, str_wr, &Bytes); // отправка на запись в файл
-						needs_mount = needs_mount || resq != FR_OK;
-					}
-					if(resv == FR_OK){
-						str_wr = sd_parse_to_bytes_vec(str_buf, &pack_vec);
-						resv = f_write(&Filev, str_buf, str_wr, &Bytes); // отправка на запись в файл
-						needs_mount = needs_mount || resv != FR_OK;
-					}
-					if(resb == FR_OK)
-					{
-						resb = f_write(&Fileb,(uint8_t *)&pack1, sizeof(pack1), &Bytes); // отправка на запись в файл
-						needs_mount = needs_mount || resb != FR_OK;
-						resb = f_write(&Fileb,(uint8_t *)&packq, sizeof(packq), &Bytes); // отправка на запись в файл
-						needs_mount = needs_mount || resb != FR_OK;
-						resb = f_write(&Fileb,(uint8_t *)&pack_vec, sizeof(pack_vec), &Bytes); // отправка на запись в файл
-						needs_mount = needs_mount || resb != FR_OK;
-					}
-
-					state_nrf_next = STATE_GEN_PACK_1_Q;
-					if (counter == 1)
-						state_nrf_next = STATE_GEN_PACK_2;
-					if (counter >= 3)
-					{
-						state_nrf_next = STATE_GEN_PACK_3;
-						counter = 0;
-					}
-					else
-					{
-						counter++;
-					}
-					state_nrf = STATE_WAIT;
-					break;
-				case STATE_GEN_PACK_3:
-					pack3.time_ms = HAL_GetTick();
-					num3 += 1;
-					pack3.num = num3;
-					pack3.crc = Crc16((uint8_t *)&pack3, sizeof(pack3) - 2);
-					nrf24_fifo_flush_tx(&nrf24);
-					nrf24_fifo_write(&nrf24, (uint8_t *)&pack3, sizeof(pack3), false);
-					nrf24_fifo_write(&nrf24, (uint8_t *)&pack3, sizeof(pack3), false);
-					start_time_nrf = HAL_GetTick();
-					str_wr = sd_parse_to_bytes_pack3(str_buf, &pack3);
-					if(res3 == FR_OK){
-
-						res3 = f_write(&File3, str_buf, str_wr, &Bytes); // отправка на запись в файл
-						needs_mount = needs_mount || res3 != FR_OK;
-					}
-					if(resb == FR_OK){
-						resb = f_write(&Fileb,(uint8_t *)&pack3,sizeof(pack3), &Bytes); // отправка на запись в файл
-						needs_mount = needs_mount || resb != FR_OK;
-					}
-					state_nrf = STATE_WAIT;
-					state_nrf_next = STATE_GEN_PACK_1_Q;
-					break;
+		if (tick % PACKET1_PERIOD == PACKET1_OFFSET)
+		{
+			num1 += 1;
+			pack1.num = num1;
+			pack1.time_ms = HAL_GetTick();
+			pack1.crc = Crc16((uint8_t *)&pack1, sizeof(pack1) - 2);
+			//nrf24_fifo_flush_tx(&nrf24);
+			nrf24_fifo_write(&nrf24, (uint8_t *)&pack1, sizeof(pack1), false);
+			if(res1 == FR_OK){
+				str_wr = sd_parse_to_bytes_pack1(str_buf, &pack1);
+				res1 = f_write(&File1, str_buf, str_wr, &Bytes); // отправка на запись в файл
+				needs_mount = needs_mount || res1 != FR_OK;
 			}
-			if (state_nrf_next == STATE_GEN_PACK_1_Q){
-				break;
+			if (resb == FR_OK)
+			{
+				resb = f_write(&Fileb,(uint8_t *)&pack1, sizeof(pack1), &Bytes); // отправка на запись в файл
+				needs_mount = needs_mount || resb != FR_OK;
 			}
 		}
-		time_nrf_end = HAL_GetTick() - time_nrf;
+
+		if (tick % PACKET2_PERIOD == PACKET2_OFFSET)
+		{
+			num2 += 1;
+			pack2.num = num2;
+			pack2.time_ms = HAL_GetTick();
+			pack2.crc = Crc16((uint8_t *)&pack2, sizeof(pack2) - 2);
+			//nrf24_fifo_flush_tx(&nrf24);
+			nrf24_fifo_write(&nrf24, (uint8_t *)&pack2, sizeof(pack2), false);//32
+			if(res2 == FR_OK){
+				str_wr = sd_parse_to_bytes_pack2(str_buf, &pack2);
+				res2 = f_write(&File2, str_buf, str_wr, &Bytes); // отправка на запись в файл
+				needs_mount = needs_mount || res2 != FR_OK;
+			}
+			if(resb == FR_OK){
+				resb = f_write(&Fileb,(uint8_t *)&pack2, sizeof(pack2), &Bytes); // отправка на запись в файл
+				needs_mount = needs_mount || resb != FR_OK;
+			}
+		}
+
+		if (tick % PACKET3_PERIOD == PACKET3_OFFSET)
+		{
+			num3 += 1;
+			pack3.num = num3;
+			pack3.time_ms = HAL_GetTick();
+			pack3.crc = Crc16((uint8_t *)&pack3, sizeof(pack3) - 2);
+			nrf24_fifo_write(&nrf24, (uint8_t *)&pack3, sizeof(pack3), false);
+			if(res3 == FR_OK){
+				str_wr = sd_parse_to_bytes_pack3(str_buf, &pack3);
+				res3 = f_write(&File3, str_buf, str_wr, &Bytes); // отправка на запись в файл
+				needs_mount = needs_mount || res3 != FR_OK;
+			}
+			if(resb == FR_OK){
+				resb = f_write(&Fileb,(uint8_t *)&pack3, sizeof(pack3), &Bytes); // отправка на запись в файл
+				needs_mount = needs_mount || resb != FR_OK;
+			}
+		}
+
+		if (tick % PACKETQ_PERIOD == PACKETQ_OFFSET)
+		{
+			num4 += 1;
+			packq.num = num4;
+			packq.time_ms = HAL_GetTick();
+			packq.crc = Crc16((uint8_t *)&packq, sizeof(packq) - 2);
+			nrf24_fifo_write(&nrf24, (uint8_t *)&packq, sizeof(packq), false);
+			if(resq == FR_OK){
+				str_wr = sd_parse_to_bytes_quaterneon(str_buf, &packq);
+				resq = f_write(&Fileq, str_buf, str_wr, &Bytes); // отправка на запись в файл
+				needs_mount = needs_mount || resq != FR_OK;
+			}
+			if(resb == FR_OK)
+			{
+				resb = f_write(&Fileb,(uint8_t *)&packq, sizeof(packq), &Bytes); // отправка на запись в файл
+				needs_mount = needs_mount || resb != FR_OK;
+			}
+		}
+
+		if (tick % PACKETV_PERIOD == PACKETV_OFFSET)
+		{
+			num5 += 1;
+			pack_vec.num = num5;
+			pack_vec.time_ms = HAL_GetTick();
+			pack_vec.crc = Crc16((uint8_t *)&pack_vec, sizeof(pack_vec) - 2);
+			nrf24_fifo_write(&nrf24, (uint8_t *)&pack_vec, sizeof(pack_vec), false);
+			if(resv == FR_OK){
+				str_wr = sd_parse_to_bytes_vec(str_buf, &pack_vec);
+				resv = f_write(&Filev, str_buf, str_wr, &Bytes); // отправка на запись в файл
+				needs_mount = needs_mount || resv != FR_OK;
+			}
+			if(resb == FR_OK)
+			{
+				resb = f_write(&Fileb,(uint8_t *)&pack_vec, sizeof(pack_vec), &Bytes); // отправка на запись в файл
+				needs_mount = needs_mount || resb != FR_OK;
+			}
+		}
+
+		{
+			int irq_status;
+			nrf24_irq_get(&nrf24, &irq_status);
+			nrf24_irq_clear(&nrf24, comp);
+			//nrf24_fifo_flush_tx(&nrf24);
+		}
+
 		if(is_mount == FR_OK){
 			res2 = f_sync(&File2);
 			needs_mount = needs_mount || res2 != FR_OK;
@@ -824,6 +811,7 @@ int app_main(){
 			resv = f_sync(&Filev); // запись в файл (на sd контроллер пишет не сразу, а по закрытии файла. Также можно использовать эту команду)
 			needs_mount = needs_mount || resv != FR_OK;
 		}
+
 		if(needs_mount || is_mount){
 			is_mount = mount_again(&File1, &File2, &File3, &Fileq, &Fileb, &Filev, &fileSystem, path1, path2, path3, pathq, pathv, pathb);
 			f_puts("num; time; accl1; accl2; accl3; gyro1; gyro2; gyro3; mag1; mag2; mag3\n", &File1);
@@ -840,6 +828,10 @@ int app_main(){
 				needs_mount = 0;
 		}
  		/*printf("%d\n", HAL_GetTick());*/
+
+		tick++;
 	}
+
+	return 0;
 }
 

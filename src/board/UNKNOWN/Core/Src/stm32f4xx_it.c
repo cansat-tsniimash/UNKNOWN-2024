@@ -31,7 +31,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-
+int gps_push_byte(uint8_t byte);
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/

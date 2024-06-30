@@ -58,7 +58,6 @@ void mag_cal_values(const float raws[3], float out[3])
 		raws[2] - bz,
 	};
 
-	double rv[3];
 	out[0] = braws[0] * xx + braws[1] * xy + braws[2] * xz;
 	out[1] = braws[0] * xy + braws[1] * yy + braws[2] * yz;
 	out[2] = braws[0] * xz + braws[1] * yz + braws[2] * zz;
