@@ -102,7 +102,7 @@ uint16_t Crc16(uint8_t *buf, uint16_t len) {
 	return crc;
 }
 
-FRESULT mount_again(FIL *File1, FIL *File2, FIL *File3, FIL *File4, FIL *Fileb, FATFS *fileSystem, const char *path1, const char *path2, const char *path3, const char *path4, const char *pathb){
+FRESULT mount_again(FIL *File1, FIL *File2, FIL *File3, FIL *File4, FIL *Fileb, FIL *Filev, FATFS *fileSystem, const char *path1, const char *path2, const char *path3, const char *path4, const char *pathv, const char *pathb){
 	FRESULT is_mount;
 	f_mount(0, "0", 1);
 	extern Disk_drvTypeDef disk;
@@ -113,6 +113,7 @@ FRESULT mount_again(FIL *File1, FIL *File2, FIL *File3, FIL *File4, FIL *Fileb, 
 	f_open(File3, (char*)path3, FA_WRITE | FA_OPEN_APPEND);
 	f_open(File4, (char*)path4, FA_WRITE | FA_OPEN_APPEND);
 	f_open(Fileb, (char*)pathb, FA_WRITE | FA_OPEN_APPEND);
+	f_open(Filev, (char*)pathv, FA_WRITE | FA_OPEN_APPEND);
 	return is_mount;
 }
 
@@ -123,8 +124,10 @@ int app_main(){
 	FIL File2;
 	FIL File3;
 	FIL Fileq;
+	FIL Filev;
 	FIL Fileb;
 	FRESULT megares = 255;
+	FRESULT resv = 255;
 	FRESULT res1 = 255;
 	FRESULT res2 = 255;
 	FRESULT res3 = 255;
@@ -135,6 +138,7 @@ int app_main(){
  	const char path2[] = "packet2.csv";
  	const char path3[] = "packet3.csv";
  	const char pathq[] = "quaternion.csv";
+ 	const char pathv[] = "vec.csv";
  	const char pathb[] = "packet.bin";
 
 	memset(&fileSystem, 0x00, sizeof(fileSystem));
@@ -172,6 +176,13 @@ int app_main(){
 		needs_mount = needs_mount || resq != FR_OK;
 	}
 	if(is_mount == FR_OK){
+		resv = f_open(&Filev, (char*)pathv, FA_WRITE | FA_OPEN_APPEND); // открытие файла, обязательно для работы с ним
+		needs_mount = needs_mount || resv != FR_OK;
+		f_puts("num; vec1; vec2; vec3; delta; ksi;", &Filev);
+		resv = f_sync(&Filev);
+		needs_mount = needs_mount || resv != FR_OK;
+	}
+	if(is_mount == FR_OK){
 		resb = f_open(&Fileb, pathb, FA_WRITE | FA_OPEN_APPEND);
 		needs_mount = needs_mount || resb != FR_OK;
 	}
@@ -197,6 +208,8 @@ int app_main(){
 	float lats;
 	float lons;
 	float alts;
+	float height_bme_prev;
+	int counter_height = 0;
 	uint32_t timefv1 = 200000000;
 	uint32_t timefv2 = 200000000;
 	uint32_t timefv3 = 200000000;
@@ -320,6 +333,7 @@ int app_main(){
 	uint16_t num2 = 0;
 	uint16_t num3 = 0;
 	uint16_t num4 = 0;
+	uint16_t num5 = 0;
 	double a = 6378136.5;
 	double b = 6356751.758;
 	uint64_t gps_time_s;
@@ -357,6 +371,8 @@ int app_main(){
 	pack2_t pack2 = {0};
 	pack3_t pack3 = {0};
 	packq_t packq = {0};
+	pack_vec_t pack_vec = {0};
+	pack_vec.flag = 0xDD;
 	pack1.flag = 0xAA;
 	pack2.flag = 0xBB;
 	pack3.flag = 0xCC;
@@ -370,8 +386,8 @@ int app_main(){
 	float height = 44330 * (1 - pow(bmp_press / ground_pressure, 1.0 / 5.255));
 	float ground_height = 44330 * (1 - pow(bmp_press / ground_pressure, 1.0 / 5.255));
 	ground_height += 30;
-	int cntcnt = 0;
-	int anglee = 120;
+	/*int cntcnt = 0;
+	int anglee = 120;*/
 	float sca = 0;
 	float rot = 0;
 	uint32_t pack2time;
@@ -408,7 +424,7 @@ int app_main(){
 		gps_get_time(&cookie, &gps_time_s, &gps_time_us);
 		lat = 55.91065;
 		lon = 37.80538;
-		alt = 105.0000;
+		alt = 200.0000;
 		pack3.fix = fix_;
 		pack3.lat = lat;
 		pack3.lon = lon;
@@ -491,9 +507,13 @@ int app_main(){
 		};
 		double angles[3] = {};
 		Quaternion_toAxisAngle(&q_end, angles);
-		double delta = atan(quat_end[1]/quat_end[2]) * 63.66;
+		double delta = atan2(quat_end[1], quat_end[2]) * 63.66;
 		double ksi = atan((sqrt((quat_end[1]*quat_end[1]) + (quat_end[2]*quat_end[2])))/quat_end[3]) * 63.66;
-
+		pack_vec.vec[0] = quat_end[1];
+		pack_vec.vec[1] = quat_end[2];
+		pack_vec.vec[2] = quat_end[3];
+		pack_vec.delta = delta;
+		pack_vec.ksi = ksi;
 		/*printf("%d\n", HAL_GetTick());*/
 		/*//ina
 		ina_res = ina219_read_primary(&ina219,&primary_data);
@@ -539,9 +559,9 @@ int app_main(){
 					//HAL_Delay(100);
 					HAL_UART_Transmit(&huart1, array, sizeof(array), 100);
 					gps_get_coords(&cookie, &lats, &lons, &alts, &fix_);
-					lats = 55.91119444;
-					lons = 37.80572222;
-					alts = 100.0000000;
+					lats = 55.91065;
+					lons = 37.80538;
+					alts = 100.00000;
 					lats = lats * M_PI / 180.0;
 					lons = lons * M_PI / 180.0;
 					matrix1[0][0] = -sin(lons);
@@ -610,8 +630,14 @@ int app_main(){
 					/*char buffer[40] = {};
 					const int len = snprintf(buffer, sizeof(buffer), "angle %f\n", delta);*/
 					//HAL_UART_Transmit(&huart1, (uint8_t *)buffer, len, 100);
-					if(height <= ground_height){
-						//state_now = STATE_ON_EARTH;
+					if(fabs(pack2.bme_height - height_bme_prev) < 1)
+						counter_height++;
+					else
+						counter_height = 0;
+					height_bme_prev = pack2.bme_height;
+					if(counter_height >=10)
+					{
+						state_now = STATE_ON_EARTH;
 					}
 					break;
 				case STATE_ON_EARTH:
@@ -655,7 +681,9 @@ int app_main(){
 					pack2.num = num2;
 					pack2.crc = Crc16((uint8_t *)&pack2, sizeof(pack2) - 2);
 					nrf24_fifo_flush_tx(&nrf24);
-					nrf24_fifo_write(&nrf24, (uint8_t *)&pack2, sizeof(pack2), true);//32
+					nrf24_fifo_write(&nrf24, (uint8_t *)&pack_vec, sizeof(pack_vec), false);
+					nrf24_fifo_write(&nrf24, (uint8_t *)&pack_vec, sizeof(pack_vec), false);
+					nrf24_fifo_write(&nrf24, (uint8_t *)&pack2, sizeof(pack2), false);//32
 					start_time_nrf = HAL_GetTick();
 					if(res2 == FR_OK){
 						str_wr = sd_parse_to_bytes_pack2(str_buf, &pack2);
@@ -690,12 +718,16 @@ int app_main(){
 					time_nrf_start = HAL_GetTick();
 					pack1.time_ms = HAL_GetTick();
 					packq.time_ms = HAL_GetTick();
+					pack_vec.time_ms = HAL_GetTick();
 					num1 += 1;
 					pack1.num = num1;
 					num4 += 1;
+					num5 += 1;
+					pack_vec.num = num5;
 					packq.num = num4;
 					pack1.crc = Crc16((uint8_t *)&pack1, sizeof(pack1) - 2);
 					packq.crc = Crc16((uint8_t *)&packq, sizeof(packq) - 2);
+					pack_vec.crc = Crc16((uint8_t *)&pack_vec, sizeof(pack_vec) - 2);
 					nrf24_fifo_flush_tx(&nrf24);
 					nrf24_fifo_write(&nrf24, (uint8_t *)&pack1, sizeof(pack1), false);
 					nrf24_fifo_write(&nrf24, (uint8_t *)&pack1, sizeof(pack1), false);
@@ -711,11 +743,18 @@ int app_main(){
 						resq = f_write(&Fileq, str_buf, str_wr, &Bytes); // отправка на запись в файл
 						needs_mount = needs_mount || resq != FR_OK;
 					}
+					if(resv == FR_OK){
+						str_wr = sd_parse_to_bytes_vec(str_buf, &pack_vec);
+						resv = f_write(&Filev, str_buf, str_wr, &Bytes); // отправка на запись в файл
+						needs_mount = needs_mount || resv != FR_OK;
+					}
 					if(resb == FR_OK)
 					{
 						resb = f_write(&Fileb,(uint8_t *)&pack1, sizeof(pack1), &Bytes); // отправка на запись в файл
 						needs_mount = needs_mount || resb != FR_OK;
 						resb = f_write(&Fileb,(uint8_t *)&packq, sizeof(packq), &Bytes); // отправка на запись в файл
+						needs_mount = needs_mount || resb != FR_OK;
+						resb = f_write(&Fileb,(uint8_t *)&pack_vec, sizeof(pack_vec), &Bytes); // отправка на запись в файл
 						needs_mount = needs_mount || resb != FR_OK;
 					}
 
@@ -739,6 +778,7 @@ int app_main(){
 					pack3.num = num3;
 					pack3.crc = Crc16((uint8_t *)&pack3, sizeof(pack3) - 2);
 					nrf24_fifo_flush_tx(&nrf24);
+					nrf24_fifo_write(&nrf24, (uint8_t *)&pack3, sizeof(pack3), false);
 					nrf24_fifo_write(&nrf24, (uint8_t *)&pack3, sizeof(pack3), false);
 					start_time_nrf = HAL_GetTick();
 					str_wr = sd_parse_to_bytes_pack3(str_buf, &pack3);
@@ -779,10 +819,13 @@ int app_main(){
 				break;
 			resb = f_sync(&Fileb); // запись в файл (на sd контроллер пишет не сразу, а по закрытии файла. Также можно использовать эту команду)
 			needs_mount = needs_mount || resb != FR_OK;
+			if(needs_mount)
+				break;
+			resv = f_sync(&Filev); // запись в файл (на sd контроллер пишет не сразу, а по закрытии файла. Также можно использовать эту команду)
+			needs_mount = needs_mount || resv != FR_OK;
 		}
 		if(needs_mount || is_mount){
-			is_mount = mount_again(&File1, &File2, &File3, &Fileq, &Fileb, &fileSystem, path1, path2, path3, pathq, pathb);
-
+			is_mount = mount_again(&File1, &File2, &File3, &Fileq, &Fileb, &Filev, &fileSystem, path1, path2, path3, pathq, pathv, pathb);
 			f_puts("num; time; accl1; accl2; accl3; gyro1; gyro2; gyro3; mag1; mag2; mag3\n", &File1);
 			res1 = f_sync(&File1);
 			f_puts("num; time; bmp_temp; bmp_press; bmp_humidity; bmp_height; photorez; state\n", &File2);
@@ -791,7 +834,8 @@ int app_main(){
 			res3 = f_sync(&File3);
 			f_puts("", &Fileq);
 			resq = f_sync(&Fileq);
-
+			f_puts("num; vec1; vec2; vec3; delta; ksi;", &Filev);
+			resv = f_sync(&Filev);
 			if (!is_mount)
 				needs_mount = 0;
 		}

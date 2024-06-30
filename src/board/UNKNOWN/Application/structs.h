@@ -59,6 +59,16 @@ typedef struct{
 	float q4;
 	uint16_t crc;
 }packq_t;
+
+typedef struct{
+	uint8_t flag; // 1
+	uint16_t num;
+	uint32_t time_ms;
+	float vec[3];
+	float delta;
+	float ksi;
+	uint16_t crc;
+}pack_vec_t;
 #pragma pack(pop)
 
 #endif /* STRUCTS_H_ */
