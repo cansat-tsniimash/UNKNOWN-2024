@@ -10,6 +10,7 @@
 #include <LIS3MDL/DLIS3.h>
 #include <string.h>
 #include <stdio.h>
+#include <float.h>
 #include "csv_file.h"
 #include "structs.h"
 #include <fatfs.h>
@@ -68,9 +69,57 @@ void rotate_sm(double angle, bool side){
 		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_9, false);
 		dwt_delay_us(70);
 	}
-
 }
 
+
+static const double wgs_a = 6378136.5;
+static const double wgs_b = 6356751.758;
+static const double wgs_b2da2 = (wgs_b * wgs_b)/(wgs_a * wgs_a);
+
+
+void geodedic_to_cartesian(double lon_deg, double lat_deg, double alt, double xyz[3])
+{
+	const double lon = lon_deg * M_PI / 180.0;
+	const double lat = lat_deg * M_PI / 180.0;
+
+	const double nb = (wgs_a * wgs_a) / sqrt((wgs_a * wgs_a)
+			* (cos(lat)*cos(lat) + (wgs_b*wgs_b) * ((sin(lat) * sin(lat)))));
+
+	const double x = (nb + alt)* cos(lat) * cos(lon);
+	const double y = (nb + alt)* cos(lat) * sin(lon);
+	const double z = (wgs_b2da2*nb + alt) * sin(lat);
+
+	xyz[0] = x;
+	xyz[1] = y;
+	xyz[2] = z;
+}
+
+
+void v3f_norm_unalign(float v_[3])
+{
+	float v[3];
+	memcpy(v, v_, sizeof(v));
+
+	float s = v[0]*v[0] + v[1]*v[1] + v[2]*v[2];
+	s = sqrt(s);
+
+	v[0] /= s;
+	v[1] /= s;
+	v[2] /= s;
+
+	memcpy(v_, v, sizeof(v));
+}
+
+
+void v3d_norm(double v[3])
+{
+	double s = v[0]*v[0] + v[1]*v[1] + v[2]*v[2];
+	s = sqrt(s);
+
+	v[0] /= s;
+	v[1] /= s;
+	v[2] /= s;
+}
 
 
 /*int _write(int file, char *ptr, int len)
@@ -141,14 +190,12 @@ int app_main(){
 	FIL Fileq;
 	FIL Filev;
 	FIL Fileb;
-	FRESULT megares = 255;
 	FRESULT resv = 255;
 	FRESULT res1 = 255;
 	FRESULT res2 = 255;
 	FRESULT res3 = 255;
 	FRESULT resb = 255;
 	FRESULT resq = 255;
-	FRESULT res_bin = 255;
 	const char path1[] = "packet1.csv";
  	const char path2[] = "packet2.csv";
  	const char path3[] = "packet3.csv";
@@ -203,12 +250,6 @@ int app_main(){
 	}
 
 	//переменные
-	uint8_t counter = 0;
-	state_nrf_t state_nrf = STATE_GEN_PACK_1_Q;
-	state_nrf_t state_nrf_next = STATE_GEN_PACK_1_Q;
-	uint32_t start_time_nrf = HAL_GetTick();
-	nrf24_fifo_status_t rx_status = NRF24_FIFO_EMPTY;
-	nrf24_fifo_status_t tx_status = NRF24_FIFO_EMPTY;
 	float temperature_celsius_gyro = 0.0;
 	float acc_g[3] = {0};
 	float gyro_dps[3] = {0};
@@ -225,10 +266,6 @@ int app_main(){
 	float alts;
 	float height_bme_prev;
 	int counter_height = 0;
-	uint32_t timefv1 = 200000000;
-	uint32_t timefv2 = 200000000;
-	uint32_t timefv3 = 200000000;
-	uint32_t timefv4 = 200000000;
 	uint32_t start_time_par = 0;
 	uint32_t start_time_stab = 0;
 	uint32_t start_time_luxes = 0;
@@ -349,22 +386,13 @@ int app_main(){
 	uint16_t num3 = 0;
 	uint16_t num4 = 0;
 	uint16_t num5 = 0;
-	double a = 6378136.5;
-	double b = 6356751.758;
 	uint64_t gps_time_s;
 	uint32_t gps_time_us;
 	//gps
 	gps_init();
 	gps_work();
-	gps_get_coords(&cookie, &lats, &lons, &alts, &fix_);
-	gps_get_time(&cookie, &gps_time_s, &gps_time_us);
-	double b2da2 = (b*b)/(a*a);
-	double nb = (a*a)/sqrt((a*a)* (cos(lats)*cos(lats) + (b*b) * ((sin(lats) * sin(lats)))));
-	double x_gpss;
-	double y_gpss;
-	double z_gpss;
-
-	double matrix1[3][3];
+	double gpss[3] = {};
+	double matrix1[3][3] = {};
 
 	/*char str1[60]={0};
 	HAL_UART_Receive_IT(&huart1,(uint8_t*)str1,1);
@@ -405,25 +433,16 @@ int app_main(){
 	int anglee = 120;*/
 	float sca = 0;
 	float rot = 0;
-	uint32_t pack2time;
-	uint32_t pack2res;
-	uint32_t pack1_qtime;
-	uint32_t pack1_qres;
-	uint32_t pack3time;
-	uint32_t pack3res;
-	uint32_t time_nrf = 0;
-	uint32_t time_nrf_start;
-	uint32_t time_nrf_end;
 	uint64_t tick = 0;
+
 	while(1){
 		//bme280
-		float start = HAL_GetTick();
 		its_bme280_read(UNKNOWN_BME, &bme_shit);
 		bmp_temp = bme_shit.temperature * 100;
 		bmp_press = bme_shit.pressure;
 		bmp_humidity = bme_shit.humidity;
-		float angle = 123.321;
-		const uint8_t * angle_bytes = (const uint8_t*)&angle;
+		//float angle = 123.321;
+		//const uint8_t * angle_bytes = (const uint8_t*)&angle;
 		//uint8_t frame[] = {0xAA, 0xBB, 0xCC, 0x01, angle_bytes[0], angle_bytes[1], angle_bytes[2], angle_bytes[3]};
 		//HAL_UART_Transmit(&huart1, frame, sizeof(frame), HAL_MAX_DELAY);
 		height = 44330 * (1 - pow(bmp_press / ground_pressure, 1.0 / 5.255));
@@ -444,18 +463,13 @@ int app_main(){
 		pack3.gps_time_s = (uint32_t)gps_time_s;
 		pack3.gps_time_us = gps_time_us;
 
-		lat = lat * M_PI / 180.0;
-		lon = lon * M_PI / 180.0;
-		double b2da2 = (b*b)/(a*a);
-		nb = (a*a)/sqrt((a*a) * cos(lat)*cos(lat) + (b*b) * sin(lat) * sin(lat));
-		double x_gps = (nb + alt)* cos(lat) * cos(lon);
-		double y_gps = (nb + alt)* cos(lat) * sin(lon);
-		double z_gps = (b2da2*nb + alt) * sin(lat);
+		double gps[3];
+		geodedic_to_cartesian(lat, lon, alt, gps);
 
 		double matrix2[3][1] =
-		{{x_gps - x_gpss},
-		 {y_gps - y_gpss},
-		 {z_gps - z_gpss}};
+		{{gps[0] - gpss[0]},
+		 {gps[1] - gpss[1]},
+		 {gps[2] - gpss[2]}};
 
 		double matrix3[3][1] =
 		{{0},
@@ -481,15 +495,15 @@ int app_main(){
 		mag_cal_values(mag, magr);
 		lsm6ds3_angular_rate_raw_get(&ctx_lsm, gyro);
 		lis3mdl_magnetic_raw_get(&ctx_lis, magg);
-		gyro[0] += 460;
-		gyro[1] += 4830;
-		gyro[2] += 3850;
-		gyro_dps[0] += 0.46;
-		gyro_dps[1] += 4.83;
-		gyro_dps[2] += 3.85;
-		gyro_m[0] = gyro_dps[0] * 3.14 / 180;
-		gyro_m[1] = gyro_dps[1] * 3.14 / 180;
-		gyro_m[2] = gyro_dps[2] * 3.14 / 180;
+//		gyro[0] += 460;
+//		gyro[1] += 4830;
+//		gyro[2] += 3850;
+//		gyro_dps[0] += 0.46;
+//		gyro_dps[1] += 4.83;
+//		gyro_dps[2] += 3.85;
+		gyro_m[0] = gyro_dps[0] * M_PI / 180.0;
+		gyro_m[1] = gyro_dps[1] * M_PI / 180.0;
+		gyro_m[2] = gyro_dps[2] * M_PI / 180.0;
 		acc_m[0] = acc_g[0] * 9.81;
 		acc_m[1] = acc_g[1] * 9.81;
 		acc_m[2] = acc_g[2] * 9.81;
@@ -509,21 +523,18 @@ int app_main(){
 		packq.q3 = seb_quaternion[2];
 		packq.q4 = seb_quaternion[3];
 
-		const double vec_in[3] = {matrix3[0][0], matrix3[0][1], matrix3[0][2]};
+		double vec_in[3] = {matrix3[0][0], matrix3[0][1], matrix3[0][2]};
+		v3d_norm(vec_in);
+		vec_in[0] = 0; vec_in[1] = 0; vec_in[2] = -1;
+
 		double vec_out[3] = {};
 		quat_vec_mul(seb_quaternion, vec_in, vec_out);
-		const double quat_end[4] = {0, vec_out[0], vec_out[1], vec_out[2]};
-		Quaternion q_end = {
-			.w = quat_end[0],
-			.v = {quat_end[1], quat_end[2], quat_end[3]}
-		};
-		double angles[3] = {};
-		Quaternion_toAxisAngle(&q_end, angles);
-		double delta = atan2(quat_end[1], quat_end[2]) * 63.66;
-		double ksi = atan((sqrt((quat_end[1]*quat_end[1]) + (quat_end[2]*quat_end[2])))/quat_end[3]) * 63.66;
-		pack_vec.vec[0] = quat_end[1];
-		pack_vec.vec[1] = quat_end[2];
-		pack_vec.vec[2] = quat_end[3];
+		v3d_norm(vec_out);
+
+		double delta = atan2(vec_out[0], vec_out[1]) * 180.0 / M_PI;
+		double ksi = atan(sqrt(vec_out[0]*vec_out[0] + vec_out[1]*vec_out[1]) / vec_out[2]) * 180.0 / M_PI;
+		memcpy(pack_vec.vec, vec_out, sizeof(vec_out));
+		v3f_norm_unalign(pack_vec.vec);
 		pack_vec.delta = delta;
 		pack_vec.ksi = ksi;
 		/*printf("%d\n", HAL_GetTick());*/
@@ -574,22 +585,19 @@ int app_main(){
 					lats = 55.91065;
 					lons = 37.80538;
 					alts = 100.00000;
-					lats = lats * M_PI / 180.0;
-					lons = lons * M_PI / 180.0;
-					matrix1[0][0] = -sin(lons);
-					matrix1[0][1] = cos(lons);
+					geodedic_to_cartesian(lons, lats, alts, gpss);
+
+					const float latsr = lats * M_PI / 180.0;
+					const float lonsr = lons * M_PI / 180.0;
+					matrix1[0][0] = -sin(lonsr);
+					matrix1[0][1] = cos(lonsr);
 					matrix1[0][2] = 0;
-					matrix1[1][0] = -sin(lats)*cos(lons);
-					matrix1[1][1] = -sin(lats)*sin(lons);
-					matrix1[1][2] = cos(lats);
-					matrix1[2][0] = cos(lats)*cos(lons);
-					matrix1[2][1] = cos(lats)*sin(lons);
-					matrix1[2][2] = sin(lats);
-					b2da2 = (b*b)/(a*a);
-					nb = (a*a)/sqrt((a*a) * cos(lats)*cos(lats) + (b*b) * sin(lats) * sin(lats));
-					x_gpss = (nb + alts)* cos(lats) * cos(lons);
-					y_gpss = (nb + alts)* cos(lats) * sin(lons);
-					z_gpss = (b2da2*nb + alts) * sin(lats);
+					matrix1[1][0] = -sin(latsr)*cos(lonsr);
+					matrix1[1][1] = -sin(latsr)*sin(lonsr);
+					matrix1[1][2] = cos(latsr);
+					matrix1[2][0] = cos(latsr)*cos(lonsr);
+					matrix1[2][1] = cos(latsr)*sin(lonsr);
+					matrix1[2][2] = sin(latsr);
 					if(HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_12)){
 						state_now = STATE_IN_ROCKET;
 						start_time_luxes = HAL_GetTick();
@@ -682,8 +690,6 @@ int app_main(){
 			pack1.mag[i] = magr[i]*1000;
 		}
 		its_bme280_read(UNKNOWN_BME, &bme_shit);
-
-		time_nrf = HAL_GetTick();
 
 		if (tick % PACKET1_PERIOD == PACKET1_OFFSET)
 		{
