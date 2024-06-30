@@ -380,6 +380,23 @@ class UnknownDataSource():
                         "Time": data[3],
                         "crc": data[8]
                         })]
+
+            elif bytearray(msgFromServer[0])[0] == 221:
+                data = struct.unpack("<BHIfffffH", bytearray(msgFromServer[0])[:29])
+                return[Message(message_id='paket_5',
+                        source_id='board',
+                        msg_time=data[2],
+                        msg_data= {
+                        "Number": data[1],
+                        "Time_ms": data[2],
+                        "VectorX": data[3],
+                        "VectorY": data[4],
+                        "VectorZ": data[5],
+                        "DeltaStep": data[6],
+                        "KsiServo": data[7],
+                        "crc": data[8]
+                        })]
+
         except BlockingIOError as e:
             pass
         return []

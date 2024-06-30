@@ -72,6 +72,7 @@ if __name__ == '__main__':
     filename_f2 = generate_csv_name("./log/2_knpn")
     filename_f3 = generate_csv_name("./log/3_knpn")
     filename_f4 = generate_csv_name("./log/4_knpn")
+    filename_f5 = generate_csv_name("./log/5_knpn")
     f = open(filename_f, 'wb')
     f.flush()
     f1 = open(filename_f1, 'w')
@@ -84,8 +85,11 @@ if __name__ == '__main__':
     f3.write('"Number";"Time_ms";"Fix";"Latitude";"Longitude";"Height";"Time, s";"Time, mks";"crc"\n')
     f3.flush()
     f4 = open(filename_f4, 'w')
-    f4.write('"Number";"Time_ms";"Q1";"Q2";"Q3";"Q4";"Time";"crc"\n')
+    f4.write('"Number";"Time_ms";"Time";"Q1";"Q2";"Q3";"Q4";"crc"\n')
     f4.flush()
+    f5 = open(filename_f5, 'w')
+    f5.write('"Number";"Time_ms";"VectorX";"VectorY";"VectorZ";"DeltaStep";"KsiServo";"crc"\n')
+    f5.flush()
 
 
     while True:
@@ -208,11 +212,11 @@ if __name__ == '__main__':
                      unpack_data = struct.unpack("<BHIfffffH", data[:29])
                      print ("Number", unpack_data[1])
                      print ("Time_ms", unpack_data[2])
+                     print ("Time", unpack_data[3])
                      print ("Q1", unpack_data[4])
                      print ("Q2", unpack_data[5])
                      print ("Q3", unpack_data[6])
                      print ("Q4", unpack_data[7])
-                     print ("Time", unpack_data[3])
                      print ("crc", unpack_data[8])
                      print ('\n')
                      
@@ -221,8 +225,29 @@ if __name__ == '__main__':
                          f4.write(";")    
                      f4.write('\n')
                      f4.flush()
+
+                elif data[0] == 221:
+                     print("==== Пакет тип 5 ====")
+                     unpack_data = struct.unpack("<BHIfffffH", data[:29])
+                     print ("Number", unpack_data[1])
+                     print ("Time_ms", unpack_data[2])
+                     print ("VectorX", unpack_data[3])
+                     print ("VectorY", unpack_data[4])
+                     print ("VectorZ", unpack_data[5])
+                     print ("DeltaStep", unpack_data[6])
+                     print ("KsiServo", unpack_data[7])
+                     print ("crc", unpack_data[8])
+                     print ('\n')
+                     
+                     for i in range(1,9):
+                         f5.write(str(unpack_data[i]))
+                         f5.write(";")    
+                     f5.write('\n')
+                     f5.flush()
+
                 else:
-                    print('unknown flag ', data[0])
+                    print('unknown flag ', data[0], data)
+                    radio2.flush_rx()
 
             except Exception as e:
                 print(e)
