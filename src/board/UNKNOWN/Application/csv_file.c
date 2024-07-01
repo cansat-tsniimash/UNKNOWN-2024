@@ -51,7 +51,7 @@ uint16_t sd_parse_to_bytes_vec(char *buffer, pack_vec_t *pack_vec) {
 	memset(buffer, 0, 300);
 	uint16_t num_written = snprintf(
 			buffer, 300,
-			"%d;%f;%f;%f;%f;%f\n",
-			(int)pack_vec->num, pack_vec->vec[0], pack_vec->vec[1], pack_vec->vec[2], pack_vec->delta, pack_vec->ksi);
+			"%d;%"PRIu32";%f;%f;%f;%f;%f\n",
+			(int)pack_vec->num, pack_vec->time_ms, pack_vec->vec[0], pack_vec->vec[1], pack_vec->vec[2], pack_vec->delta, pack_vec->ksi);
 	return num_written;
 }

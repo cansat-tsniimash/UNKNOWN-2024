@@ -283,6 +283,7 @@ int app_main(){
 	double bmp_temp;
 	double bmp_press;
 	double bmp_humidity;
+	uint32_t estime;
 	//сдвиговый регистр
 
 	shift_reg_t shift_reg_r;
@@ -410,6 +411,7 @@ int app_main(){
 	lisset_sr(&ctx_lis, &lis_sr);
 	int16_t magg[3];
 	int16_t gyro[3];
+	int16_t acc_raw[3];
 	pack1_t pack1 = {0};
 	pack2_t pack2 = {0};
 	pack3_t pack3 = {0};
@@ -434,7 +436,10 @@ int app_main(){
 	float sca = 0;
 	float rot = 0;
 	uint64_t tick = 0;
-
+	uint32_t time_to_flush;
+	estime = HAL_GetTick();
+	time_to_flush = HAL_GetTick();
+	float l_lux;
 	while(1){
 		//bme280
 		its_bme280_read(UNKNOWN_BME, &bme_shit);
@@ -491,6 +496,7 @@ int app_main(){
 		//lsm и lis
 
 		lsmread(&ctx_lsm, &temperature_celsius_gyro, &acc_g, &gyro_dps);
+		lsm6ds3_acceleration_raw_get(&ctx_lsm, acc_raw);
 		lisread(&ctx_lis, &temperature_celsius_mag, &mag);
 		mag_cal_values(mag, magr);
 		lsm6ds3_angular_rate_raw_get(&ctx_lsm, gyro);
@@ -537,23 +543,6 @@ int app_main(){
 		v3f_norm_unalign(pack_vec.vec);
 		pack_vec.delta = delta;
 		pack_vec.ksi = ksi;
-		/*printf("%d\n", HAL_GetTick());*/
-		/*//ina
-		ina_res = ina219_read_primary(&ina219,&primary_data);
-		if (ina_res == 2)
-		{
-			I2C_ClearBusyFlagErratum(&hi2c1, 20);
-		}
-		ina_res = ina219_read_secondary(&ina219,&secondary_data);
-		if (ina_res == 2)
-		{
-			I2C_ClearBusyFlagErratum(&hi2c1, 20);
-		}
-		//НЕ ЗАБЫТЬ ПОМЕНЯТЬ КОоФИЦЕТ!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		current = ina219_current_convert(&ina219, secondary_data.current) * 0.67034;
-		bus_voltage = ina219_bus_voltage_convert(&ina219, primary_data.busv) * 1.0399;*/
-		//Photorez
-
  		//rotate_sm(5, 1);
  		//uint8_t message[] = {'a', 'n', 'g', 'l', 'e', 0x00, 0x00, 0x00, 0x00};
  		uint8_t array[8] = {'s', 't', 'a', 'r', 't', 0xFF};
@@ -576,11 +565,12 @@ int app_main(){
 		{
 			HAL_UART_Transmit(&huart1, array1, sizeof(array1), 100);
 		}*/
+ 		pack2.state = state_now;
 		switch (state_now)
 				{
 				case STATE_READY:
 					//HAL_Delay(100);
-					HAL_UART_Transmit(&huart1, array, sizeof(array), 100);
+					//HAL_UART_Transmit(&huart1, array, sizeof(array), 100);
 					gps_get_coords(&cookie, &lats, &lons, &alts, &fix_);
 					lats = 55.91065;
 					lons = 37.80538;
@@ -600,12 +590,13 @@ int app_main(){
 					matrix1[2][2] = sin(latsr);
 					if(HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_12)){
 						state_now = STATE_IN_ROCKET;
+
 						start_time_luxes = HAL_GetTick();
-						limit_lux = lux * 0.8;
+						l_lux = lux;
 					}
 					break;
 				case STATE_IN_ROCKET:
-					rot = ksi-sca;
+					/*rot = ksi-sca;
 					sca += rot;
 					if(rot >= 1 || rot <= -1){
 						if(rot >= 0)
@@ -615,16 +606,20 @@ int app_main(){
 					}
 					char buffer[40] = {};
 					const int len = snprintf(buffer, sizeof(buffer), "angle %f\n", delta);
-					HAL_UART_Transmit(&huart1, (uint8_t *)buffer, len, 100);
-					/*if (HAL_GetTick()-start_time_luxes >= 300010000){
+					HAL_UART_Transmit(&huart1, (uint8_t *)buffer, len, 100);*/
+
+					if (HAL_GetTick()-start_time_luxes >= 10000){
 						if(lux >=  limit_lux){
 							state_now = STATE_AFTER_ROCKET;
 							start_time_par = HAL_GetTick();
 						}
-					}*/
+					}
+					else
+						limit_lux = (l_lux - lux) * 0.8 + lux;
+
 					break;
 				case STATE_AFTER_ROCKET:
-					if (HAL_GetTick()-start_time_par >= 1488)
+					if (HAL_GetTick()-start_time_par >= 2500)
 					{
 						state_now = STATE_STABILZATORS;
 						start_time_stab = HAL_GetTick();
@@ -643,21 +638,26 @@ int app_main(){
 					//наведение
 					rot = ksi-sca;
 					sca += rot;
-					if(rot >= 0)
-						rotate_sm(rot, 0);
-					else
-						rotate_sm(rot*-1, 1);
-					/*char buffer[40] = {};
-					const int len = snprintf(buffer, sizeof(buffer), "angle %f\n", delta);*/
-					//HAL_UART_Transmit(&huart1, (uint8_t *)buffer, len, 100);
-					if(fabs(pack2.bme_height - height_bme_prev) < 1)
-						counter_height++;
-					else
-						counter_height = 0;
-					height_bme_prev = pack2.bme_height;
-					if(counter_height >=10)
-					{
-						state_now = STATE_ON_EARTH;
+					if(rot >= 1 || rot <= -1){
+						if(rot >= 0)
+							rotate_sm(rot, 0);
+						else
+							rotate_sm(rot*-1, 1);
+					}
+					char buffer[40] = {};
+					const int len = snprintf(buffer, sizeof(buffer), "angle %f\n", delta);
+					HAL_UART_Transmit(&huart1, (uint8_t *)buffer, len, 100);
+					if(HAL_GetTick() - estime >= 1000){
+						if(fabs(pack2.bme_height - height_bme_prev) < 1)
+							counter_height++;
+						else
+							counter_height = 0;
+						height_bme_prev = pack2.bme_height;
+						if(counter_height >=10)
+						{
+							state_now = STATE_ON_EARTH;
+						}
+						estime = HAL_GetTick();
 					}
 					break;
 				case STATE_ON_EARTH:
@@ -685,9 +685,9 @@ int app_main(){
 		pack2.lux = lux;
 
 		for (int i = 0; i < 3; i++){
-			pack1.accl[i] = acc_g[i]*1000;
+			pack1.accl[i] = acc_raw[i];
 			pack1.gyro[i] = gyro[i];
-			pack1.mag[i] = magr[i]*1000;
+			pack1.mag[i] = magg[i];
 		}
 		its_bme280_read(UNKNOWN_BME, &bme_shit);
 
@@ -791,6 +791,12 @@ int app_main(){
 			nrf24_irq_get(&nrf24, &irq_status);
 			nrf24_irq_clear(&nrf24, comp);
 			//nrf24_fifo_flush_tx(&nrf24);
+		}
+
+
+		if(HAL_GetTick()-time_to_flush >= 5000){
+			nrf24_fifo_flush_tx(&nrf24);
+			time_to_flush = HAL_GetTick();
 		}
 
 		if(is_mount == FR_OK){
