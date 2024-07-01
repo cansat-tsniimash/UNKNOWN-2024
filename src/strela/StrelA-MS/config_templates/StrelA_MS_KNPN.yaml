@@ -59,6 +59,19 @@ CentralWidget:
         - Time
         - Time_ms
         - crc
+      PACKET_PYATIY:
+        name: PAKET_5
+        sourse_id: 'board'
+        message_id: 'paket_5'
+        field_name:
+        - DeltaStep
+        - KsiServo
+        - Number
+        - VectorX
+        - VectorY
+        - VectorZ
+        - Time_ms
+        - crc
       is_on: true
       def_time_limit: 20
     Packet_table:
@@ -78,6 +91,10 @@ CentralWidget:
         name: 'PAKET_4'
         sourse_id: 'board'
         message_id: 'paket_4'
+      paket_5:
+        name: 'PAKET_5'
+        sourse_id: 'board'
+        message_id: 'paket_5'
       is_on: true
     Time_table:
       is_on: false

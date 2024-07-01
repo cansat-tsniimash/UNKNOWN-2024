@@ -336,15 +336,15 @@ class UnknownDataSource():
                         msg_data= {
                         "Number": data[1],
                         "Time_ms": data[2],
-                        "Accelerometer x": data[3]/1000,
-                        "Accelerometer y": data[4]/1000,
-                        "Accelerometer z": data[5]/1000,
-                        "Gyroscope x": data[6]/1000,
-                        "Gyroscope y": data[7]/1000,
-                        "Gyroscope z": data[8]/1000,
-                        "Magnetometer x": data[9]/1000,
-                        "Magnetometer y": data[10]/1000,
-                        "Magnetometer z": data[11]/1000,
+                        "Accelerometer x": data[3]*488/1000/1000,
+                        "Accelerometer y": data[4]*488/1000/1000,
+                        "Accelerometer z": data[5]*488/1000/1000,
+                        "Gyroscope x": data[6]*70/1000,
+                        "Gyroscope y": data[7]*70/1000,
+                        "Gyroscope z": data[8]*70/1000,
+                        "Magnetometer x": data[9]/1711,
+                        "Magnetometer y": data[10]/1711,
+                        "Magnetometer z": data[11]/1711,
                         "crc": data[12]
                         })]
 
@@ -380,6 +380,23 @@ class UnknownDataSource():
                         "Time": data[3],
                         "crc": data[8]
                         })]
+
+            elif bytearray(msgFromServer[0])[0] == 221:
+                data = struct.unpack("<BHIfffffH", bytearray(msgFromServer[0])[:29])
+                return[Message(message_id='paket_5',
+                        source_id='board',
+                        msg_time=data[2],
+                        msg_data= {
+                        "Number": data[1],
+                        "Time_ms": data[2],
+                        "VectorX": data[3],
+                        "VectorY": data[4],
+                        "VectorZ": data[5],
+                        "DeltaStep": data[6],
+                        "KsiServo": data[7],
+                        "crc": data[8]
+                        })]
+
         except BlockingIOError as e:
             pass
         return []

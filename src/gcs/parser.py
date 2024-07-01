@@ -42,11 +42,12 @@ def generate_csv_name(text):
 if __name__ == '__main__':
 
     #filename_f = str(input("Введите имя .bin файла:"))+".bin"
-    filename_f = "qwerty.bin"
+    filename_f = "packet.bin"
     filename_f1 = generate_csv_name("./log/1_knpn")
     filename_f2 = generate_csv_name("./log/2_knpn")
     filename_f3 = generate_csv_name("./log/3_knpn")
     filename_f4 = generate_csv_name("./log/4_knpn")
+    filename_f5 = generate_csv_name("./log/5_knpn")
     f = open(filename_f, 'rb')
     f1 = open(filename_f1, 'w')
     f1.write('"Number";"Time_ms";"Accel x";"Accel y";"Accel z";"Gyro x";"Gyro y";"Gyro z";"Mag x";"Mag y";"Mag z";"crc"\n')
@@ -60,6 +61,9 @@ if __name__ == '__main__':
     f4 = open(filename_f4, 'w')
     f4.write('"Number";"Time_ms";"Q1";"Q2";"Q3";"Q4";"Time";"crc"\n')
     f4.flush()
+    f5 = open(filename_f5, 'w')
+    f5.write('"Number";"Time_ms";"VectorX";"VectorY";"VectorZ";"DeltaStep";"KsiServo";"crc"\n')
+    f5.flush()
 
     while True:
         try:
@@ -85,15 +89,15 @@ if __name__ == '__main__':
                 unpack_data = struct.unpack("<BHIhhhhhhhhhH", data)
                 print ("Number", unpack_data[1])
                 print ("Time_ms", unpack_data[2])
-                print ("Accelerometer x", unpack_data[3]/1000)
-                print ("Accelerometer y", unpack_data[4]/1000)
-                print ("Accelerometer z", unpack_data[5]/1000)
-                print ("Gyroscope x", unpack_data[6]/1000)
-                print ("Gyroscope y", unpack_data[7]/1000)
-                print ("Gyroscope z", unpack_data[8]/1000)
-                print ("Magnetometer x", unpack_data[9]/1000)
-                print ("Magnetometer y", unpack_data[10]/1000)
-                print ("Magnetometer z", unpack_data[11]/1000)
+                print ("Accelerometer x", unpack_data[3]*488/1000/1000)
+                print ("Accelerometer y", unpack_data[4]*488/1000/1000)
+                print ("Accelerometer z", unpack_data[5]*488/1000/1000)
+                print ("Gyroscope x", unpack_data[6]*70/1000)
+                print ("Gyroscope y", unpack_data[7]*70/1000)
+                print ("Gyroscope z", unpack_data[8]*70/1000)
+                print ("Magnetometer x", unpack_data[9]/1711)
+                print ("Magnetometer y", unpack_data[10]/1711)
+                print ("Magnetometer z", unpack_data[11]/1711)
                 print ("crc", unpack_data[12])
                 print(crc16(data[:25]))
                 # print ("Number", unpack_data[2])
@@ -201,6 +205,34 @@ if __name__ == '__main__':
                     print("Не совпадает контрольная сумма")
                     HowMuchDefective+=1
                  print ('\n')
+
+            elif data[0] == 221:
+                data_sir = f.read(28)
+                data_sir = bytes(range(221,222)) + data_sir
+                data = np.frombuffer(data_sir, dtype=np.uint8)
+                print("==== Пакет тип 5 ====")
+                unpack_data = struct.unpack("<BHIfffffH", data)
+                print ("Number", unpack_data[1])
+                print ("Time_ms", unpack_data[2])
+                print ("VectorX", unpack_data[3])
+                print ("VectorY", unpack_data[4])
+                print ("VectorZ", unpack_data[5])
+                print ("DeltaStep", unpack_data[6])
+                print ("KsiServo", unpack_data[7])
+                print ("crc", unpack_data[8])
+                print(crc16(data[:27]))
+     
+                if crc16(data[:27])==unpack_data[8]:
+                    for i in range(1,9):
+                        f5.write(str(unpack_data[i]))
+                        f5.write(";")    
+                    print("Не совпадает контрольная сумма")
+                    f5.write('\n')
+                    f5.flush()
+                else:
+                    HowMuchDefective+=1
+                print ('\n')
+
             else:
                 HowMuchMusor+=1
             #time.sleep(1)
