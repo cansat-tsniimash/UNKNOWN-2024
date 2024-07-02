@@ -28,20 +28,26 @@
 #include "Quaternion.h"
 
 
-#define PACKET1_PERIOD 2
+#define PACKET1_PERIOD 3
 #define PACKET1_OFFSET 0
 
 #define PACKET2_PERIOD 11
 #define PACKET2_OFFSET 0
 
 #define PACKET3_PERIOD 11
-#define PACKET3_OFFSET 3
+#define PACKET3_OFFSET 6
 
-#define PACKETQ_PERIOD 2
+#define PACKETQ_PERIOD 3
 #define PACKETQ_OFFSET 1
 
 #define PACKETV_PERIOD 11
-#define PACKETV_OFFSET 7
+#define PACKETV_OFFSET 10
+
+#define RADIO_TX_FLUSH_PERIOD 5000
+
+#define STEPPER_HALF_CIRCLE_STEPS (22100)
+
+#define FSYNC_PERIOD 1000
 
 
 void latlon_to_cartesian(double lat_rad, double lon_rad, double alt_m, double * xyz_m);
@@ -56,10 +62,12 @@ extern SPI_HandleTypeDef hspi4;
 extern I2C_HandleTypeDef hi2c1;
 extern ADC_HandleTypeDef hadc1;
 
-void rotate_sm(double angle, bool side){
+
+
+/*void rotate_sm(double angle, bool side){
 	double steps = angle*2/0.0325791855;
-	if(steps>22100){
-		steps = 22100;
+	if(steps>4000){
+		steps = 4000;
 	}
 
 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_10, side);
@@ -69,8 +77,79 @@ void rotate_sm(double angle, bool side){
 		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_9, false);
 		dwt_delay_us(70);
 	}
+}*/
+
+int target_steps = 0;
+int current_steps = 0;
+
+
+static double target_angle()
+{
+	return target_steps * 180.0 / STEPPER_HALF_CIRCLE_STEPS;
 }
 
+
+static double current_angle()
+{
+	return current_steps * 180.0 / STEPPER_HALF_CIRCLE_STEPS;
+}
+
+
+void stepper_command(double absulte_angle)
+{
+	target_steps = absulte_angle / 180.0 * STEPPER_HALF_CIRCLE_STEPS;
+
+	while (target_steps > STEPPER_HALF_CIRCLE_STEPS)
+		target_steps -= STEPPER_HALF_CIRCLE_STEPS * 2;
+
+	while (target_steps < -STEPPER_HALF_CIRCLE_STEPS)
+		target_steps += STEPPER_HALF_CIRCLE_STEPS * 2;
+}
+
+
+int stepper_done()
+{
+	return target_steps == current_steps;
+}
+
+
+void stepper_work()
+{
+	//if (abs(current_steps - target_steps) * 180.0 / STEPPER_HALF_CIRCLE_STEPS < 2)
+		//return;
+
+	if (stepper_done())
+		return;
+
+	int dir = current_steps < target_steps ? +1 : -1;
+	int steps_to_do = abs(target_steps - current_steps);
+	if (steps_to_do > STEPPER_HALF_CIRCLE_STEPS)
+	{
+		steps_to_do = STEPPER_HALF_CIRCLE_STEPS * 2 - steps_to_do;
+		dir = -1 * dir;
+	}
+
+	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_10, dir > 0 ? GPIO_PIN_SET : GPIO_PIN_RESET);
+
+	int steps_per_stage = 10;
+	if (steps_to_do < steps_per_stage)
+		steps_per_stage = steps_to_do;
+
+	for (int i = 0 ; i < steps_per_stage; i++)
+	{
+		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_9, GPIO_PIN_SET);
+		dwt_delay_us(70);
+		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_9, GPIO_PIN_RESET);
+		dwt_delay_us(70);
+	}
+
+	current_steps += dir * steps_per_stage;
+	while (current_steps > STEPPER_HALF_CIRCLE_STEPS)
+		current_steps -= STEPPER_HALF_CIRCLE_STEPS * 2;
+
+	while (current_steps < -STEPPER_HALF_CIRCLE_STEPS)
+		current_steps += STEPPER_HALF_CIRCLE_STEPS * 2;
+}
 
 static const double wgs_a = 6378136.5;
 static const double wgs_b = 6356751.758;
@@ -181,34 +260,38 @@ FRESULT mount_again(FIL *File1, FIL *File2, FIL *File3, FIL *File4, FIL *Fileb, 
 	return is_mount;
 }
 
+FATFS fileSystem; // переменная типа FATFS
+FIL File1; // хендлер файла
+FIL File2;
+FIL File3;
+FIL Fileq;
+FIL Filev;
+FIL Fileb;
+FRESULT resv = 255;
+FRESULT res1 = 255;
+FRESULT res2 = 255;
+FRESULT res3 = 255;
+FRESULT resb = 255;
+FRESULT resq = 255;
+const char path1[] = "packet1.csv";
+const char path2[] = "packet2.csv";
+const char path3[] = "packet3.csv";
+const char pathq[] = "quaternion.csv";
+const char pathv[] = "vec.csv";
+const char pathb[] = "packet.bin";
+FRESULT is_mount = 0;
+int needs_mount = 0;
+
+
 int app_main(){
 	//файлы
-	FATFS fileSystem; // переменная типа FATFS
-	FIL File1; // хендлер файла
-	FIL File2;
-	FIL File3;
-	FIL Fileq;
-	FIL Filev;
-	FIL Fileb;
-	FRESULT resv = 255;
-	FRESULT res1 = 255;
-	FRESULT res2 = 255;
-	FRESULT res3 = 255;
-	FRESULT resb = 255;
-	FRESULT resq = 255;
-	const char path1[] = "packet1.csv";
- 	const char path2[] = "packet2.csv";
- 	const char path3[] = "packet3.csv";
- 	const char pathq[] = "quaternion.csv";
- 	const char pathv[] = "vec.csv";
- 	const char pathb[] = "packet.bin";
 
 	memset(&fileSystem, 0x00, sizeof(fileSystem));
-	FRESULT is_mount = 0;
-	int needs_mount = 0;
+
 	extern Disk_drvTypeDef disk;
 	disk.is_initialized[0] = 0;
 	is_mount = f_mount(&fileSystem, "", 1);
+
 	if(is_mount == FR_OK) { // монтируете файловую систему по пути SDPath, проверяете, что она смонтировалась, только при этом условии начинаете с ней работать
 		res1 = f_open(&File1, (char*)path1, FA_WRITE | FA_OPEN_APPEND); // открытие файла, обязательно для работы с ним
 		needs_mount = needs_mount || res1 != FR_OK;
@@ -436,11 +519,13 @@ int app_main(){
 	float sca = 0;
 	float rot = 0;
 	uint64_t tick = 0;
-	uint32_t time_to_flush;
+	uint32_t tx_flush_deadline = HAL_GetTick() + RADIO_TX_FLUSH_PERIOD;
+	uint32_t fsync_deadline = HAL_GetTick() + FSYNC_PERIOD;
 	estime = HAL_GetTick();
-	time_to_flush = HAL_GetTick();
 	float l_lux;
 	while(1){
+		tick++;
+
 		//bme280
 		its_bme280_read(UNKNOWN_BME, &bme_shit);
 		bmp_temp = bme_shit.temperature * 100;
@@ -458,9 +543,9 @@ int app_main(){
 		gps_work();
 		gps_get_coords(&cookie, &lat, &lon, &alt, &fix_);
 		gps_get_time(&cookie, &gps_time_s, &gps_time_us);
-		lat = 55.91065;
+		/*lat = 55.91065;
 		lon = 37.80538;
-		alt = 200.0000;
+		alt = 200.0000;*/
 		pack3.fix = fix_;
 		pack3.lat = lat;
 		pack3.lon = lon;
@@ -498,9 +583,10 @@ int app_main(){
 		lsmread(&ctx_lsm, &temperature_celsius_gyro, &acc_g, &gyro_dps);
 		lsm6ds3_acceleration_raw_get(&ctx_lsm, acc_raw);
 		lisread(&ctx_lis, &temperature_celsius_mag, &mag);
-		mag_cal_values(mag, magr);
+
 		lsm6ds3_angular_rate_raw_get(&ctx_lsm, gyro);
 		lis3mdl_magnetic_raw_get(&ctx_lis, magg);
+		//mag_cal_values(magg, magr);
 //		gyro[0] += 460;
 //		gyro[1] += 4830;
 //		gyro[2] += 3850;
@@ -566,15 +652,19 @@ int app_main(){
 			HAL_UART_Transmit(&huart1, array1, sizeof(array1), 100);
 		}*/
  		pack2.state = state_now;
+ 		/*if (stepper_done())
+ 			stepper_command(target_angle() + 100);
+
+		stepper_work();*/
 		switch (state_now)
 				{
 				case STATE_READY:
 					//HAL_Delay(100);
 					//HAL_UART_Transmit(&huart1, array, sizeof(array), 100);
 					gps_get_coords(&cookie, &lats, &lons, &alts, &fix_);
-					lats = 55.91065;
+					/*lats = 55.91065;
 					lons = 37.80538;
-					alts = 100.00000;
+					alts = 100.00000;*/
 					geodedic_to_cartesian(lons, lats, alts, gpss);
 
 					const float latsr = lats * M_PI / 180.0;
@@ -636,19 +726,14 @@ int app_main(){
 					break;
 				case STATE_DESCENT:
 					//наведение
-					rot = ksi-sca;
-					sca += rot;
-					if(rot >= 1 || rot <= -1){
-						if(rot >= 0)
-							rotate_sm(rot, 0);
-						else
-							rotate_sm(rot*-1, 1);
-					}
+					if (stepper_done())
+						stepper_command(ksi);
+					stepper_work();
 					char buffer[40] = {};
 					const int len = snprintf(buffer, sizeof(buffer), "angle %f\n", delta);
 					HAL_UART_Transmit(&huart1, (uint8_t *)buffer, len, 100);
 					if(HAL_GetTick() - estime >= 1000){
-						if(fabs(pack2.bme_height - height_bme_prev) < 1)
+						if(fabs(pack2.bme_height - height_bme_prev) < 2)
 							counter_height++;
 						else
 							counter_height = 0;
@@ -789,41 +874,15 @@ int app_main(){
 		{
 			int irq_status;
 			nrf24_irq_get(&nrf24, &irq_status);
-			nrf24_irq_clear(&nrf24, comp);
+			nrf24_irq_clear(&nrf24, irq_status);
 			//nrf24_fifo_flush_tx(&nrf24);
 		}
 
 
-		if(HAL_GetTick()-time_to_flush >= 5000){
+		if(HAL_GetTick() >= tx_flush_deadline){
 			nrf24_fifo_flush_tx(&nrf24);
-			time_to_flush = HAL_GetTick();
+			tx_flush_deadline = HAL_GetTick() + 5000;
 		}
-
-		if(is_mount == FR_OK){
-			res2 = f_sync(&File2);
-			needs_mount = needs_mount || res2 != FR_OK;
-			if(needs_mount)
-				break;
-			res3 = f_sync(&File3);
-			needs_mount = needs_mount || res3 != FR_OK;
-			if(needs_mount)
-				break;
-			res1 = f_sync(&File1);
-			needs_mount = needs_mount || res1 != FR_OK;
-			if(needs_mount)
-				break;
-			resq = f_sync(&Fileq);
-			needs_mount = needs_mount || resq != FR_OK;
-			if(needs_mount)
-				break;
-			resb = f_sync(&Fileb); // запись в файл (на sd контроллер пишет не сразу, а по закрытии файла. Также можно использовать эту команду)
-			needs_mount = needs_mount || resb != FR_OK;
-			if(needs_mount)
-				break;
-			resv = f_sync(&Filev); // запись в файл (на sd контроллер пишет не сразу, а по закрытии файла. Также можно использовать эту команду)
-			needs_mount = needs_mount || resv != FR_OK;
-		}
-
 		if(needs_mount || is_mount){
 			is_mount = mount_again(&File1, &File2, &File3, &Fileq, &Fileb, &Filev, &fileSystem, path1, path2, path3, pathq, pathv, pathb);
 			f_puts("num; time; accl1; accl2; accl3; gyro1; gyro2; gyro3; mag1; mag2; mag3\n", &File1);
@@ -839,9 +898,35 @@ int app_main(){
 			if (!is_mount)
 				needs_mount = 0;
 		}
- 		/*printf("%d\n", HAL_GetTick());*/
+		if(is_mount == FR_OK && HAL_GetTick() + fsync_deadline){
+			fsync_deadline = HAL_GetTick() + FSYNC_PERIOD;
 
-		tick++;
+			res2 = f_sync(&File2);
+			needs_mount = needs_mount || res2 != FR_OK;
+			if(needs_mount)
+				continue;
+			res3 = f_sync(&File3);
+			needs_mount = needs_mount || res3 != FR_OK;
+			if(needs_mount)
+				continue;
+			res1 = f_sync(&File1);
+			needs_mount = needs_mount || res1 != FR_OK;
+			if(needs_mount)
+				continue;
+			resq = f_sync(&Fileq);
+			needs_mount = needs_mount || resq != FR_OK;
+			if(needs_mount)
+				continue;
+			resb = f_sync(&Fileb); // запись в файл (на sd контроллер пишет не сразу, а по закрытии файла. Также можно использовать эту команду)
+			needs_mount = needs_mount || resb != FR_OK;
+			if(needs_mount)
+				continue;
+			resv = f_sync(&Filev); // запись в файл (на sd контроллер пишет не сразу, а по закрытии файла. Также можно использовать эту команду)
+			needs_mount = needs_mount || resv != FR_OK;
+		}
+
+
+ 		/*printf("%d\n", HAL_GetTick());*/
 	}
 
 	return 0;
