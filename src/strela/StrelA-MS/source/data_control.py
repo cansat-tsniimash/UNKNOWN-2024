@@ -1,8 +1,8 @@
 import typing
 import os
-os.environ['MAVLINK_DIALECT'] = "its"
-os.environ['MAVLINK20'] = "its"
-from pymavlink.dialects.v20 import its as its_mav
+#os.environ['MAVLINK_DIALECT'] = "its"
+#os.environ['MAVLINK20'] = "its"
+#from pymavlink.dialects.v20 import its as its_mav
 from pymavlink import mavutil
 import time
 import re
