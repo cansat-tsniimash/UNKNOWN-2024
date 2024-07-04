@@ -30,8 +30,14 @@ def generate_logfile_name():
     isostring = now.isoformat()  # string 2021-04-27T23:17:31
     isostring = isostring.replace("-", "")  # string 20210427T23:17:31
     isostring = isostring.replace(":", "")  # string 20210427T231731, òî ÷òî íàäî
-    return "./log/knpn_Mandarinas" + isostring + ".bin"
+    return "./log/knpn_binary" + isostring + ".bin"
 
+def generate_csv_name(text):
+    now = datetime.datetime.utcnow().replace(microsecond=0)
+    isostring = now.isoformat()  # string 2021-04-27T23:17:31
+    isostring = isostring.replace("-", "")  # string 20210427T23:17:31
+    isostring = isostring.replace(":", "")  # string 20210427T231731, òî ÷òî íàäî
+    return text + isostring + ".csv"
 
 if __name__ == '__main__':
     static_payload_size = None
@@ -42,7 +48,7 @@ if __name__ == '__main__':
 
     radio2.setCRCLength(RF24_CRC_8)
     radio2.setAddressWidth(5)
-    radio2.channel = 101
+    radio2.channel = 10
     radio2.setDataRate(RF24_250KBPS)
     radio2.setAutoAck(False)
 
@@ -62,10 +68,11 @@ if __name__ == '__main__':
 
 
     filename_f = generate_logfile_name()
-    filename_f1 = "./log/knpn_1.csv"
-    filename_f2 = "./log/knpn_2.csv"
-    filename_f3 = "./log/knpn_3.csv"
-    filename_f4 = "./log/knpn_4.csv"
+    filename_f1 = generate_csv_name("./log/1_knpn")
+    filename_f2 = generate_csv_name("./log/2_knpn")
+    filename_f3 = generate_csv_name("./log/3_knpn")
+    filename_f4 = generate_csv_name("./log/4_knpn")
+    filename_f5 = generate_csv_name("./log/5_knpn")
     f = open(filename_f, 'wb')
     f.flush()
     f1 = open(filename_f1, 'w')
@@ -75,11 +82,14 @@ if __name__ == '__main__':
     f2.write('"Number";"Time_ms";"Temp BME";"Pressure";"Humidity";Height BME";"Lux";"State";"crc"\n')
     f2.flush()
     f3 = open(filename_f3, 'w')
-    f3.write('"Number";"Time_ms";Temp DS";"Latitude";"Longitude";"Height";"Time, s";"Time, mks";"Fix";"crc"\n')
+    f3.write('"Number";"Time_ms";"Fix";"Latitude";"Longitude";"Height";"Time, s";"Time, mks";"crc"\n')
     f3.flush()
     f4 = open(filename_f4, 'w')
     f4.write('"Number";"Time_ms";"Time";"Q1";"Q2";"Q3";"Q4";"crc"\n')
     f4.flush()
+    f5 = open(filename_f5, 'w')
+    f5.write('"Number";"Time_ms";"VectorX";"VectorY";"VectorZ";"DeltaStep";"KsiServo";"crc"\n')
+    f5.flush()
 
 
     while True:
@@ -143,11 +153,11 @@ if __name__ == '__main__':
                     # print ("Time", unpack_data[1])
                     print ('\n')
 
-                    for i in range(1,9):
-                        f1.write(str(unpack_data[i]))
-                        f1.write(";")
-                        f1.flush()
-                    f1.write('\n')
+                    for i in range(1,10):
+                        f2.write(str(unpack_data[i]))
+                        f2.write(";")
+                    f2.write('\n')
+                    f2.flush()
                     
                 elif data[0] == 170:
                     #continue
@@ -155,68 +165,89 @@ if __name__ == '__main__':
                     unpack_data = struct.unpack("<BHIhhhhhhhhhH", data[:27])
                     print ("Number", unpack_data[1])
                     print ("Time_ms", unpack_data[2])
-                    print ("Accelerometer x", unpack_data[3]/1000)
-                    print ("Accelerometer y", unpack_data[4]/1000)
-                    print ("Accelerometer z", unpack_data[5]/1000)
-                    print ("Gyroscope x", unpack_data[6]/1000)
-                    print ("Gyroscope y", unpack_data[7]/1000)
-                    print ("Gyroscope z", unpack_data[8]/1000)
-                    print ("Magnetometer x", unpack_data[9]/1000)
-                    print ("Magnetometer y", unpack_data[10]/1000)
-                    print ("Magnetometer z", unpack_data[11]/1000)
+                    print ("Accelerometer x", unpack_data[3]*488/1000/1000)
+                    print ("Accelerometer y", unpack_data[4]*488/1000/1000)
+                    print ("Accelerometer z", unpack_data[5]*488/1000/1000)
+                    print ("Gyroscope x", unpack_data[6]*70/1000)
+                    print ("Gyroscope y", unpack_data[7]*70/1000)
+                    print ("Gyroscope z", unpack_data[8]*70/1000)
+                    print ("Magnetometer x", unpack_data[9]/1711)
+                    print ("Magnetometer y", unpack_data[10]/1711)
+                    print ("Magnetometer z", unpack_data[11]/1711)
                     print ("crc", unpack_data[12])
                     # print ("Number", unpack_data[2])
                     # print ("Time", unpack_data[1])
                     print ('\n')
 
-                    for i in range(1,12):
-                        f2.write(str(unpack_data[i]))
-                        f2.write(";")
-                        f2.flush()
-                    f2.write('\n')
+                    for i in range(1,13):
+                        f1.write(str(unpack_data[i]))
+                        f1.write(";")
+                    f1.write('\n')
+                    f1.flush()
                     
                 elif data[0] == 204:
                      print("==== Пакет тип 3 ====")
-                     unpack_data = struct.unpack("<BHIfffLLH", data[:29])
+                     unpack_data = struct.unpack("<BHIhfffLLH", data[:31])
                      print ("Number", unpack_data[1])
                      print ("Time_ms", unpack_data[2])
-                     print ("Latitude", unpack_data[3])
-                     print ("Longitude", unpack_data[4])
-                     print ("Height", unpack_data[5])
-                     print ("Time, s", unpack_data[6])
-                     print ("Time, mks", unpack_data[7])
-                     print ("crc", unpack_data[8])
-                     #print ("Fix", unpack_data[9])
+                     print ("Fix", unpack_data[3])
+                     print ("Latitude", unpack_data[4])
+                     print ("Longitude", unpack_data[5])
+                     print ("Height", unpack_data[6])
+                     print ("Time, s", unpack_data[7])
+                     print ("Time, mks", unpack_data[8])
+                     print ("crc", unpack_data[9])
                      #print ("Number", unpack_data[2])
                      #print ("Time", unpack_data[1])
                      print ('\n')
 
-                     for i in range(1,8):
+                     for i in range(1,10):
                          f3.write(str(unpack_data[i]))
-                         f3.write(";")
-                         f3.flush()
+                         f3.write(";")   
                      f3.write('\n')
+                     f3.flush()
                      
                 elif data[0] == 255:
                      print("==== Пакет тип 4 ====")
                      unpack_data = struct.unpack("<BHIfffffH", data[:29])
                      print ("Number", unpack_data[1])
                      print ("Time_ms", unpack_data[2])
+                     print ("Time", unpack_data[3])
                      print ("Q1", unpack_data[4])
                      print ("Q2", unpack_data[5])
                      print ("Q3", unpack_data[6])
                      print ("Q4", unpack_data[7])
-                     print ("Time", unpack_data[3])
                      print ("crc", unpack_data[8])
                      print ('\n')
                      
-                     for i in range(1,8):
+                     for i in range(1,9):
                          f4.write(str(unpack_data[i]))
-                         f4.write(";")
-                         f4.flush()
+                         f4.write(";")    
                      f4.write('\n')
+                     f4.flush()
+
+                elif data[0] == 221:
+                     print("==== Пакет тип 5 ====")
+                     unpack_data = struct.unpack("<BHIfffffH", data[:29])
+                     print ("Number", unpack_data[1])
+                     print ("Time_ms", unpack_data[2])
+                     print ("VectorX", unpack_data[3])
+                     print ("VectorY", unpack_data[4])
+                     print ("VectorZ", unpack_data[5])
+                     print ("DeltaStep", unpack_data[6])
+                     print ("KsiServo", unpack_data[7])
+                     print ("crc", unpack_data[8])
+                     print ('\n')
+                     
+                     for i in range(1,9):
+                         f5.write(str(unpack_data[i]))
+                         f5.write(";")    
+                     f5.write('\n')
+                     f5.flush()
+
                 else:
-                    print('unknown flag ', data[0])
+                    print('unknown flag ', data[0], data)
+                    radio2.flush_rx()
 
             except Exception as e:
                 print(e)
